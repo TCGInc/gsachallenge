@@ -28,7 +28,7 @@ app.use(expressWinston.logger({transports: [logger]}));
 
 require('./routes/testroutes.js')(app);
 
-var server = exports.server = app.listen(3000, function () {
+var server = exports.server = app.listen(80, function () {
 
   var host = server.address().address;
   var port = server.address().port;
