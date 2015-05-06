@@ -15,7 +15,7 @@ module.exports = function(app) {
 				return console.error('error fetching client from pool', err);
 			}
 
-			client.query('SELECT letters FROM alphabet WHERE id = $1', ['1'], function(err, result) {
+			client.query('SELECT display FROM test WHERE id = $1', ['1'], function(err, result) {
 
 				done();
 
@@ -24,7 +24,7 @@ module.exports = function(app) {
 				}
 
 				res.json({
-					"str": result.rows[0].letters,
+					"str": result.rows[0].display,
 					"num": 123,
 					"bool": true
 				});
