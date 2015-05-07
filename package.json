@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "mocha"
+    "test": "mocha tests/*.js",
+    "citest": "istanbul cover _mocha -- -R tap tests/*.js > test.tap "
   },
   "author": "TCG",
   "license": "ISC",
@@ -15,12 +16,16 @@
     "express-winston": "^0.3.0",
     "gulp-mocha": "^2.0.1",
     "gulp-nodemon": "^2.0.2",
+    "gulp-tap": "^0.1.3",
     "pg": "^4.3.0",
     "should": "^6.0.1",
     "supertest": "^0.15.0",
     "winston": "^1.0.0"
   },
   "devDependencies": {
-    "gulp": "^3.8.11"
+    "gulp": "^3.8.11",
+    "gulp-istanbul": "^0.8.1",
+    "istanbul": "^0.3.13",
+    "tape": "^4.0.0"
   }
 }
