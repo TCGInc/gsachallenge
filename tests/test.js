@@ -25,7 +25,7 @@ describe('GET /json', function() {
 			.expect(200)
 			.expect('Content-Type', /json/)
 			.expect(function(res) {
-				res.body.should.have.property('str', 'abc database');
+				res.body.should.have.property('str', 'abc databas');
 				res.body.should.have.property('num', 123);
 				res.body.should.have.property('bool', true);
 			})
