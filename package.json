@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "test": "mocha tests/*.js",
-    "citest": "istanbul cover _mocha -- -R tap tests/*.js > test.tap "
+    "citest": "istanbul cover _mocha -- -R tap tests/*.js > test.tap && istanbul report clover"
   },
   "author": "TCG",
   "license": "ISC",
