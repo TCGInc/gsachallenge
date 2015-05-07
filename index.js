@@ -24,11 +24,11 @@ app.use(bodyParser.urlencoded({'extended':'true'}));
 app.use(bodyParser.json());
 
 // Use express-winston for access logs
-app.use(expressWinston.logger({transports: [logger]}));
+//app.use(expressWinston.logger({transports: [logger]}));
 
 require('./routes/testroutes.js')(app);
 
-var server = exports.server = app.listen(80, function () {
+var server = exports.server = app.listen(8081, function () {
 
   var host = server.address().address;
   var port = server.address().port;
