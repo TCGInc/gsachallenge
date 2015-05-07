@@ -24,7 +24,7 @@ module.exports = function(app) {
 				}
 
 				res.json({
-					"str": result.rows[0].display,
+					"str": "from db: " + result.rows[0].display,
 					"num": 123,
 					"bool": true
 				});
