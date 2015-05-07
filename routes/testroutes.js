@@ -24,7 +24,7 @@ module.exports = function(app) {
 				}
 
 				res.json({
-					"str": "from db2: " + result.rows[0].display,
+					"str": "from db3: " + result.rows[0].display,
 					"num": 123,
 					"bool": true
 				});
