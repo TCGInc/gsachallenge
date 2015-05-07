@@ -28,8 +28,11 @@ module.exports = function(app) {
 					"num": 123,
 					"bool": true
 				});
+
+				client.end();
 			});
 		});
+		
 	});
 
 }
