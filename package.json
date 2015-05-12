@@ -26,6 +26,12 @@
     "gulp": "^3.8.11",
     "gulp-istanbul": "^0.8.1",
     "istanbul": "^0.3.13",
+    "karma": "^0.12.31",
+    "karma-chrome-launcher": "^0.1.8",
+    "karma-mocha": "^0.1.10",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-requirejs": "^0.2.2",
+    "requirejs": "^2.1.17",
     "tape": "^4.0.0"
   }
 }
