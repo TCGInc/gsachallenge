@@ -37,6 +37,7 @@ var server = exports.server = app.listen(process.env.PORT || 80, function () {
 
 });
 
+logger.info('Malone added simple log message');
 
 
 
