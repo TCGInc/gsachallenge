@@ -4,6 +4,7 @@ var mocha = require('gulp-mocha');
 var eslint = require('gulp-eslint');
 var prettify = require('gulp-jsbeautifier');
 var args = require('yargs').argv;
+var fs = require('fs');
 
 gulp.task('default', function() {
 
@@ -26,7 +27,9 @@ gulp.task('test', function() {
 
 gulp.task('lint', ['lint-server', 'lint-ui', 'lint-tests']);
 
-gulp.task('lint-server', function () {
+gulp.task('lint-server', function (cb) {
+	var wstream = fs.createWriteStream('checkstyle-server.xml');
+
 	return gulp.src(['index.js', 'routes/**/*.js'])
 		.pipe(eslint({
 			rules: {
@@ -39,10 +42,15 @@ gulp.task('lint-server', function () {
 			]
 		}))
 		.pipe(eslint.format())
+		.pipe(eslint.format('checkstyle', wstream))
 		.pipe(eslint.failOnError());
+
+	
 });
 
-gulp.task('lint-ui', function () {
+gulp.task('lint-ui', function (cb) {
+	var wstream = fs.createWriteStream('checkstyle-ui.xml');
+
 	return gulp.src(['public/js/*.js'])
 		.pipe(eslint({
 			globals: {
@@ -58,10 +66,14 @@ gulp.task('lint-ui', function () {
 			]
 		}))
 		.pipe(eslint.format())
+		.pipe(eslint.format('checkstyle', wstream))
 		.pipe(eslint.failOnError());
+
 });
 
-gulp.task('lint-tests', function () {
+gulp.task('lint-tests', function (cb) {
+	var wstream = fs.createWriteStream('checkstyle-tests.xml');
+
 	return gulp.src(['tests/**/*.js'])
 		.pipe(eslint({
 			rules: {
@@ -77,7 +89,9 @@ gulp.task('lint-tests', function () {
 			]
 		}))
 		.pipe(eslint.format())
+		.pipe(eslint.format('checkstyle', wstream))
 		.pipe(eslint.failOnError());
+
 });
 
 // Run as: gulp format --file [file]
