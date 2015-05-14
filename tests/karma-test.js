@@ -1,4 +1,5 @@
 require(['supertest', 'should', '../index'], function (request, should, app) {
+	'use strict';
 
 	describe('GET /json', function() {
 		it('returns json', function(done) {

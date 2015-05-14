@@ -1,3 +1,6 @@
+/*eslint-disable no-unused-vars*/
+'use strict';
+
 var request = require('supertest');
 var should = require('should');
 
