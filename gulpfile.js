@@ -5,6 +5,7 @@ var eslint = require('gulp-eslint');
 var prettify = require('gulp-jsbeautifier');
 var args = require('yargs').argv;
 var fs = require('fs');
+var karma = require('karma').server;
 
 gulp.task('default', function() {
 
@@ -23,6 +24,13 @@ gulp.task('start', function() {
 gulp.task('test', function() {
 	return gulp.src('tests/test.js', {read: false})
 		.pipe(mocha());
+});
+
+gulp.task('test-karma', function(done) {
+	karma.start({
+		configFile: __dirname + '/karma.conf.js',
+		singleRun: true
+	}, done);
 });
 
 gulp.task('lint', ['lint-server', 'lint-ui', 'lint-tests']);
