@@ -46,7 +46,7 @@ var server = exports.server = app.listen(process.env.PORT || 80, function () {
 
 logger.info('Malone added simple log message');
 
-logger.info('Maone another liune');
+logger.info('Maone another test.....5/20');
 
 
 
