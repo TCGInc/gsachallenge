@@ -48,5 +48,5 @@ logger.info('Malone added simple log message');
 
 logger.info('Maone another test.....5/20');
 
-
+logger.info('Maone another test.....5/20 Again');
 
