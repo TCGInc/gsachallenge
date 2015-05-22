@@ -1,0 +1,36 @@
+Directory Overview
+-------------------
+database - database schema and scripts for updating the database schema
+public - static resources served by node (html, js, css, etc)
+routes - express endpoints for backend rest api
+tests - unit tests using mocha/karma
+
+
+Development Commands
+-------------------
+"gulp start" - starts node on index.js while watching the filesystem for changes and restarts node any time there is a javascript file change
+"gulp test" - runs the mocha unit tests and prints the results
+"gulp test-karma" - runs the karma unit tests and prints the results
+"gulp lint" - runs static code analysis on all of the source code and prints the results
+"gulp format --file <PATH TO FILE>" - beautifies the source code file at the given path
+
+
+Adding a mocha test case
+-------------------
+Mocha test cases are stored in tests/test.js. 
+
+In mocha, test casess are grouped with describe() functions and defined with it() functions. The basic format is as follows:
+
+describe('test grouping', function() {
+	it('description of test case 1', fuction() {
+		/* code for test case 1 */
+	});
+
+	it('description of test case 2', fuction() {
+		/* code for test case 2 */
+	});
+});
+
+See also: http://samwize.com/2014/02/08/a-guide-to-mochas-describe-it-and-setup-hooks/
+
+To add a new test case, edit tests/test.js and define a new testcase with an it() function inside an existing describe() grouping or create a new describe() grouping. 
