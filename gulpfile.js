@@ -6,6 +6,7 @@ var prettify = require('gulp-jsbeautifier');
 var args = require('yargs').argv;
 var fs = require('fs');
 var karma = require('karma').server;
+var protractor = require('gulp-protractor').protractor;
 
 gulp.task('default', function() {
 
@@ -31,6 +32,14 @@ gulp.task('test-karma', function(done) {
 		configFile: __dirname + '/karma.conf.js',
 		singleRun: true
 	}, done);
+});
+
+
+gulp.task('test-protractor', function() {
+	var stream = gulp.src(['tests/protractor-*.js'])
+		.pipe(protractor({
+			configFile: 'protractor.conf.js'
+		})).on('error', function(e) { throw e });
 });
 
 gulp.task('lint', ['lint-server', 'lint-ui', 'lint-tests']);
