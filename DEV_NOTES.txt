@@ -57,7 +57,7 @@ Protractor utilizes the Selemium server and webdriver. The server can be kicked 
 Make changes to the database
 ----------------------------
 To make schema and data changes to the database, update or create a new liquibase changelog XML file which can be applied to the database
-useing the "gulp liquibase" command. See the database/db.changelog-1.0.xml file as an example.
+using the "gulp liquibase" command. See the database/db.changelog-1.0.xml file as an example.
 
 IMPORTANT: For a new changelog to be included in the gulp liquibase task, it must be registered in the database/db.changelog-master.xml file.
 
