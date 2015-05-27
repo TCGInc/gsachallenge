@@ -1,10 +1,25 @@
-Directory Overview
+Basic Test To Validate Environment 
 -------------------
-database - database schema and scripts for updating the database schema
-public - static resources served by node (html, js, css, etc)
-routes - express endpoints for backend rest api
-tests - unit tests using mocha/karma
-bin - executable scripts for managing server processes
+1. Edit index.js
+2. At the end of the file, add a new logging line: logger.info('my test string');
+3. Save & Close
+4. Edit public/index.html
+5. Inside the </body> tag, add a new line: <h1>my ui test string</h1>
+6. Save & Close
+7. Start Node with the command "node index.js"
+8. "my test string" should be immediately logged to the console window
+9. Open http://localhost in the browser
+10. "my ui test string" should be displayed on the screen
+
+
+File/Directory Overview
+-------------------
+index.js - entry point for the application
+database/ - database schema and scripts for updating the database schema
+public/ - static resources served by node (html, js, css, etc)
+routes/ - express endpoints for backend rest api
+tests/ - unit tests using mocha/karma
+bin/ - executable scripts for managing server processes
 
 
 Development Commands
@@ -22,7 +37,7 @@ Adding a mocha test case
 -------------------
 Mocha test cases are stored in tests/test.js. 
 
-In mocha, test casess are grouped with describe() functions and defined with it() functions. The basic format is as follows:
+In mocha, test cases are grouped with describe() functions and defined with it() functions. The basic format is as follows:
 
 describe('test grouping', function() {
 	it('description of test case 1', fuction() {
@@ -47,7 +62,7 @@ In addition, Karma provides a mock backend to handle AJAX requests. See the file
 
 
 Add a protractor test case
------------------------------
+------------------------
 Protractor test cases are stored in tests/protractor-*.js files. Protractor uses Jasmine as its testing framework. The
 tests are in the same describe/it pattern described in the above mocha section.
 
@@ -55,10 +70,18 @@ Protractor utilizes the Selemium server and webdriver. The server can be kicked 
 
 
 Make changes to the database
-----------------------------
+------------------------
 To make schema and data changes to the database, update or create a new liquibase changelog XML file which can be applied to the database
 using the "gulp liquibase" command. See the database/db.changelog-1.0.xml file as an example.
 
 IMPORTANT: For a new changelog to be included in the gulp liquibase task, it must be registered in the database/db.changelog-master.xml file.
+
+
+Jenkins
+------------------------
+If the server running jenkins is restarted, pm2 (the node process monitor) will need to be restarted as well. To do that, run the following as the 'jenkins' user:
+sudo pm2 start index.js
+
+
 
 
