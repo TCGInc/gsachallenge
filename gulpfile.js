@@ -7,6 +7,7 @@ var args = require('yargs').argv;
 var fs = require('fs');
 var karma = require('karma').server;
 var protractor = require('gulp-protractor').protractor;
+var shell = require('gulp-shell');
 
 gulp.task('default', function() {
 
@@ -118,3 +119,8 @@ gulp.task('format', function() {
     	.pipe(prettify({config: '.jsbeautifyrc', mode: 'VERIFY_AND_WRITE'}))
     	.pipe(gulp.dest('./'));
 });
+
+gulp.task('liquibase', shell.task([
+	'database/db.update.sh gsac gsac123'
+]));
+

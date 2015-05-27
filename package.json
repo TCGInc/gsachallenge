@@ -34,6 +34,7 @@
     "gulp-istanbul": "^0.8.1",
     "gulp-jsbeautifier": "0.0.8",
     "gulp-protractor": "^1.0.0",
+    "gulp-shell": "^0.4.1",
     "istanbul": "^0.3.13",
     "jasmine-reporters": "^2.0.6",
     "karma": "^0.12.31",
@@ -43,6 +44,7 @@
     "karma-mocha": "^0.1.10",
     "karma-phantomjs-launcher": "^0.1.4",
     "karma-requirejs": "^0.2.2",
+    "protractor": "^2.1.0",
     "requirejs": "^2.1.17",
     "tape": "^4.0.0"
   }
