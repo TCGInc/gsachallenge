@@ -4,6 +4,7 @@ database - database schema and scripts for updating the database schema
 public - static resources served by node (html, js, css, etc)
 routes - express endpoints for backend rest api
 tests - unit tests using mocha/karma
+bin - executable scripts for managing server processes
 
 
 Development Commands
@@ -11,8 +12,10 @@ Development Commands
 "gulp start" - starts node on index.js while watching the filesystem for changes and restarts node any time there is a javascript file change
 "gulp test" - runs the mocha unit tests and prints the results
 "gulp test-karma" - runs the karma unit tests and prints the results
+"gulp test-protractor" - runs the protractor E2E browser tests
 "gulp lint" - runs static code analysis on all of the source code and prints the results
 "gulp format --file <PATH TO FILE>" - beautifies the source code file at the given path
+"gulp liquibase" - updates the database with the latest liquibase changelogs
 
 
 Adding a mocha test case
@@ -34,3 +37,28 @@ describe('test grouping', function() {
 See also: http://samwize.com/2014/02/08/a-guide-to-mochas-describe-it-and-setup-hooks/
 
 To add a new test case, edit tests/test.js and define a new testcase with an it() function inside an existing describe() grouping or create a new describe() grouping. 
+
+
+Adding a karma test case
+------------------------
+Karma test cases are stored in tests/karma-*.js files. Karma uses the mocha unit testing framework so see section above on creating tests.
+
+In addition, Karma provides a mock backend to handle AJAX requests. See the file tests/karma-testController.js for an example.
+
+
+Add a protractor test case
+-----------------------------
+Protractor test cases are stored in tests/protractor-*.js files. Protractor uses Jasmine as its testing framework. The
+tests are in the same describe/it pattern described in the above mocha section.
+
+Protractor utilizes the Selemium server and webdriver. The server can be kicked off with the bin/protractor_startup.sh script.
+
+
+Make changes to the database
+----------------------------
+To make schema and data changes to the database, update or create a new liquibase changelog XML file which can be applied to the database
+useing the "gulp liquibase" command. See the database/db.changelog-1.0.xml file as an example.
+
+IMPORTANT: For a new changelog to be included in the gulp liquibase task, it must be registered in the database/db.changelog-master.xml file.
+
+

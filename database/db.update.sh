@@ -12,12 +12,12 @@ if [ "$#" -ne 2 ]; then
 	exit 1;
 fi
 
-./liquibase \
-	--changeLogFile=db.changelog-master.xml \
+database/liquibase \
+	--changeLogFile=database/db.changelog-master.xml \
 	--username=$1 \
 	--password=$2 \
 	--url=jdbc:postgresql://localhost:5432/gsac \
 	--driver=org.postgresql.Driver \
-	--classpath=postgresql-9.4-1201.jdbc4.jar \
+	--classpath=database/postgresql-9.4-1201.jdbc4.jar \
 	update
 
