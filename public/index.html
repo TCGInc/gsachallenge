@@ -4,12 +4,21 @@
 <head>
 	<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-resource.js"></script>
 	<script src="js/external/angulartics.js"></script>
 	<script src="js/external/angulartics-ga.js"></script>
-	<script src="js/app.js"></script>
 	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
 	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+	<script src="js/external/ui-bootstrap-0.13.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js" charset="utf-8"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.19/topojson.js"></script>
+	<script src="js/external/datamaps.usa.min.js"></script>
+
+	<script src="js/app.js"></script>
+	<script src="js/controllers/dashboardController.js"></script>
+	<script src="js/services/utilityService.js"></script>
+	<script src="js/directives/heatmap.js"></script>
 
 	<script>
 		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -22,15 +31,42 @@
 	<title>GSA Challenge</title>
 </head>
 
-<body ng-controller="testController">
-    <h1> Hello World, 5/26 Malone </h1>
-	<h3><span class="label label-default">{{testModel}}</span></h3>
+<body ng-controller="dashboardController" style="text-align: center;">
 
-	<p style='margin-top:3em'>Wisely and slow; they stumble that run fast.<br/>&nbsp;&nbsp;&nbsp; – Romeo in Romeo and Juliet</p>
+	<h3 style="text-align: center;">Federal Drug Administration Enforcement Events</h3>
 
-	<p>another change</p>
-	
-	
-	<a ng-click="rerun()" analytics-on="click" analytics-category="Link Click" analytics-label="Rerun Label" analytics-event="Rerun Event">Re-run</a>
+	<table style="margin-left: auto; margin-right: auto;">
+		<tr><td style="padding: 10px; text-align: left;">
+			<form ng-submit="search.submit(search)">
+				<div>
+					<label for="typeFood">Food:</label>
+					<input type="checkbox" name="typeFood" id="typeFood" ng-model="search.typeFood" />
+					<label for="typeDrugs">Drugs:</label>
+					<input type="checkbox" name="typeDrugs" id="typeDrugs" ng-model="search.typeDrugs" />
+					<label for="typeDevices">Devices:</label>
+					<input type="checkbox" name="typeDevices" id="typeDevices" ng-model="search.typeDevices" />
+				</div>
+				<div>
+					<label for="dateFrom">From:</label>
+					<input type="date" name="dateFrom" id="dateFrom" ng-model="search.dateFrom" datepicker-popup />
+				</div>
+				<div>
+					<label for="dateTo">To:</label>
+					<input type="date" name="dateTo" id="dateTo" ng-model="search.dateTo" datepicker-popup />
+				</div>
+				<div>
+					<label for="foodName">Food Name:</label>
+					<input type="text" name="foodName" id="foodName" ng-model="search.foodName" />
+				</div>
+				<div>
+					<button type="submit">Submit</button>
+				</div>
+			</form>
+		</td><td>
+		<div style="border: solid 1px black;">
+			<heatmap state-counts="search.counts" />
+		</td></tr>
+	</table>
+
 </body>
 </html>
