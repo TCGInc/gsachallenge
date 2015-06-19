@@ -1,13 +1,42 @@
-var gulp = require('gulp');
-var nodemon = require('gulp-nodemon');
-var mocha = require('gulp-mocha');
-var eslint = require('gulp-eslint');
-var prettify = require('gulp-jsbeautifier');
-var args = require('yargs').argv;
-var fs = require('fs');
-var karma = require('karma').server;
-var protractor = require('gulp-protractor').protractor;
-var shell = require('gulp-shell');
+var gulp          = require('gulp');
+var nodemon       = require('gulp-nodemon');
+var mocha         = require('gulp-mocha');
+var eslint        = require('gulp-eslint');
+var prettify      = require('gulp-jsbeautifier');
+var args          = require('yargs').argv;
+var fs            = require('fs');
+var karma         = require('karma').server;
+var protractor    = require('gulp-protractor').protractor;
+var shell         = require('gulp-shell');
+var sass          = require('gulp-ruby-sass');
+var autoprefixer  = require('gulp-autoprefixer');
+var concat        = require('gulp-concat');
+var sourcemaps    = require('gulp-sourcemaps');
+var imagemin      = require('gulp-imagemin');
+var pngquant      = require('imagemin-pngquant');
+var svg2png       = require('gulp-svg2png');
+var merge         = require('merge-stream');
+
+var paths = {
+  node: {
+    src:   'node_modules/'
+  },
+  styles: {
+    src:   'source/scss/main.scss',
+    dest:  'public/css/',
+    watch: '**/*.scss'
+  },
+  icons: {
+    src:   'node_modules/font-awesome/fonts/**.*',
+    dest:  'public/fonts/'
+  },
+  img: {
+    src:   'source/img/',
+    dest:  'public/img/'
+  }
+};
+
+
 
 gulp.task('default', function() {
 
@@ -63,7 +92,7 @@ gulp.task('lint-server', function (cb) {
 		.pipe(eslint.format('checkstyle', wstream))
 		.pipe(eslint.failOnError());
 
-	
+
 });
 
 gulp.task('lint-ui', function (cb) {
@@ -124,3 +153,42 @@ gulp.task('liquibase', shell.task([
 	'database/db.update.sh gsac gsac123'
 ]));
 
+
+gulp.task('styles', function( ) {
+	return sass(paths.styles.src, {
+    loadPath: [
+      paths.node.src + '/bootstrap-sass/assets/stylesheets',
+      paths.node.src + '/font-awesome/scss'
+    ],
+    sourcemap: true,
+    style: 'compressed'
+  })
+    .pipe(autoprefixer())
+    .pipe(concat('all.min.css'))
+    .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest(paths.styles.dest));
+});
+
+gulp.task('icons', function() { 
+  gulp.src(paths.icons.src)
+    .pipe(gulp.dest(paths.icons.dest));
+});
+
+gulp.task('img', function() { 
+  var imgall = gulp.src(paths.img.src + '*');
+  var imgsvg = gulp.src(paths.img.src + '*.svg')
+    .pipe(svg2png());
+  return merge([imgall, imgsvg])
+    .pipe(imagemin({
+      progressive: true,
+      svgoPlugins: [{removeViewBox: false}],
+      use: [pngquant()]
+    }))
+    .pipe(gulp.dest(paths.img.dest));
+});
+
+gulp.task('ux', function() {
+	gulp.watch(paths.styles.watch, ['styles']);
+  gulp.watch(paths.icons.src,    ['icons']);
+  gulp.watch(paths.img.src,      ['img']);
+});

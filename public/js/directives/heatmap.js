@@ -36,7 +36,7 @@ app.directive("heatmap", function(utilityService) {
 
 	return {
 		restrict: "E",
-		template: '<div style="position: relative; width: 500px; height: 300px;"></div>',
+		template: '<div></div>',
 		link: function(scope, element, attrs) {
 
 			function updateMap(stateCounts, map, data) {
@@ -53,6 +53,7 @@ app.directive("heatmap", function(utilityService) {
 			var map = new Datamap({
 				element: element.children("div")[0],
 				scope: 'usa',
+        responsive: true,
 				fills: {
 			        LOW: 'blue',
 			        MEDIUM: 'yellow',
@@ -69,6 +70,10 @@ app.directive("heatmap", function(utilityService) {
 		        data: data
 			});
 			map.legend();
+
+      window.addEventListener('resize', function(event){
+        map.resize();
+      });
 
 			scope.$watch(attrs.stateCounts, function(stateCounts) {
 				updateMap(stateCounts, map, data);
