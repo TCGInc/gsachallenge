@@ -7,7 +7,7 @@ var _ = require('lodash');
 
 function FdaService() {
 
-	var _FdaService = this;
+	var serviceSelf = this;
 
 	function addToStateCount(map, state, count) {
 		if (map[state] === undefined) {
@@ -24,16 +24,16 @@ function FdaService() {
 		var nationwideCount = 0;
 
 		counts.forEach(function (term) {
-			if (_FdaService.statesAbbr.indexOf(term.term) > -1) {
+			if (serviceSelf.statesAbbr.indexOf(term.term) > -1) {
 				addToStateCount(stateCounts, term.term, term.count);
-			} else if (_FdaService.statesMap[term.term]) {
-				addToStateCount(stateCounts, _FdaService.statesMap[term.term], term.count);
+			} else if (serviceSelf.statesMap[term.term]) {
+				addToStateCount(stateCounts, serviceSelf.statesMap[term.term], term.count);
 			} else if (term.term === 'nationwide') {
 				nationwideCount = term.count;
 			}
 		});
 
-		_FdaService.statesAbbr.forEach(function (abbr) {
+		serviceSelf.statesAbbr.forEach(function (abbr) {
 			addToStateCount(stateCounts, abbr, nationwideCount);
 		});
 
@@ -87,7 +87,7 @@ function FdaService() {
 		var promises = [];
 
 		nouns.forEach(function (noun) {
-			promises.push(_FdaService.getStateRecallCountsByNoun(noun));
+			promises.push(serviceSelf.getStateRecallCountsByNoun(noun));
 		});
 
 		Promise.all(promises).then(function (counts) {
