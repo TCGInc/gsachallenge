@@ -48,7 +48,7 @@ gulp.task('lint', ['lint-server', 'lint-ui', 'lint-tests']);
 gulp.task('lint-server', function (cb) {
 	var wstream = fs.createWriteStream('checkstyle-server.xml');
 
-	return gulp.src(['index.js', 'routes/**/*.js'])
+	return gulp.src(['index.js', 'routes/**/*.js', 'services/**/*.js'])
 		.pipe(eslint({
 			rules: {
 				quotes: 0,

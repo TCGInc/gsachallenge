@@ -34,10 +34,11 @@ app.use(bodyParser.json());
 //app.use(expressWinston.logger({transports: [logger]}));
 
 require('./routes/testroutes.js')(app);
+require('./routes/fdaroutes.js')(app);
 
 var server = exports.server = app.listen(process.env.PORT || 80, function () {
 
-  var host = server.address().address;
+	var host = server.address().address;
 	var port = server.address().port;
 
 	logger.info('Example app listening at http://%s:%s', host, port);
