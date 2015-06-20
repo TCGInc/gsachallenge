@@ -1,34 +1,24 @@
 app.directive("heatmap", function(utilityService) {
 
-	function heatmap_palette(high, low, bands) {
-		var hot = [255, 0, 0];
-    	var cold = [0, 0, 255];
-    	var bands = 50;
-    	var delta = []; // Difference between color in each channel
+	// Configuration settings for heatmap color bands.
+	// See available options in public/js/external/colorbrewer.js
+	var colorbrewerConfig = {
+		palette: "YlOrRd",
+		numberOfBands: 9 // Allowable number of color bands are 3-9.
+	};
 
-		// Compute difference between each color
-		for (var i = 0; i < 4; i++){
-  			delta[i] = (hot[i] - cold[i]) / (bands + 1);
-		}
-
-		// Use that difference to create your bands
-		for (i = 0; i <= bands + 1; i++){
-			var r = Math.round(hot[0] - delta[0] * i);
-			var g = Math.round(hot[1] - delta[1] * i);
-			var b = Math.round(hot[2] - delta[2] * i);
-			console.log("<div style='background-color: #" + dec2hex(r) + dec2hex(g) + dec2hex(b) + "'>Band " + i + "</div>");
-		}	
-
-		// A helper function for formatting
-		function dec2hex(i) {
-			return (i+0x100).toString(16).substr(-2).toUpperCase();
-		}
+	// Generate map fills based on number of bands.
+	var fillKeys = [];
+	var fills = {};
+	for (var i = 0; i < colorbrewerConfig.numberOfBands; i++) {
+		fillKeys.push("band " + i);
+		fills["band " + i] = colorbrewer[colorbrewerConfig.palette][colorbrewerConfig.numberOfBands][i];
 	}
 
-	// Intitialize default values for each state.
-	var data = {};
+	// Intitialize default fill values for each state.
+	var stateFillData = {};
 	angular.forEach(utilityService.stateNames, function(name, abbreviation) {
-		data[abbreviation] = {
+		stateFillData[abbreviation] = {
 			fillKey: "",
 			numberOfEvents: 0
 		};
@@ -39,27 +29,12 @@ app.directive("heatmap", function(utilityService) {
 		template: '<div></div>',
 		link: function(scope, element, attrs) {
 
-			function updateMap(stateCounts, map, data) {
-				console.log(JSON.stringify(data));
-				data = {
-					AK: {
-						fillKey: "LOW",
-						numberOfEvents: 100
-					}
-				};
-				map.updateChoropleth(data);
-			}
-
+			// Initialize heatmap.
 			var map = new Datamap({
 				element: element.children("div")[0],
 				scope: 'usa',
-        responsive: true,
-				fills: {
-			        LOW: 'blue',
-			        MEDIUM: 'yellow',
-			        HIGH: 'red',
-			        defaultFill: 'green'
-			    },
+        		responsive: true,
+				fills: fills,
 			    geographyConfig: {
 			        popupTemplate: function(geo, data) {
 			            return ['<div class="hoverinfo"><strong>',
@@ -67,16 +42,39 @@ app.directive("heatmap", function(utilityService) {
 			                    ': ' + data.numberOfEvents,
 			                    '</strong></div>'].join('');			            }
 		        },
-		        data: data
+		        data: stateFillData
 			});
 			map.legend();
 
-      window.addEventListener('resize', function(event){
-        map.resize();
-      });
+			// Resize heatmap when window size changes.
+      		window.addEventListener('resize', function(event){
+        		map.resize();
+      		});
 
+      		// Refresh the heatmap colors based on the new state counts.
+      		function updateMap(stateCounts, stateFillData, map) {
+
+				// Calculate the domain of the state counts.
+				var counts = d3.values(stateCounts);
+				var countDomain = [d3.min(counts), d3.max(counts)];
+
+				// Create lookup function used to calculate what heatmap band a state should be assigned to.
+				var getFillKey = d3.scale.quantize().domain(countDomain).range(fillKeys);
+
+				angular.forEach(stateCounts, function(count, state) {
+					stateFillData[state.toUpperCase()] = {
+						fillKey: getFillKey(count),
+						numberOfEvents: count
+					};
+				});
+				map.updateChoropleth(stateFillData);
+			}
+
+			// Update map after state-count attribute value is changed.
 			scope.$watch(attrs.stateCounts, function(stateCounts) {
-				updateMap(stateCounts, map, data);
+				if (Object.keys(stateCounts).length > 0) {
+					updateMap(stateCounts, stateFillData, map);
+				}
 			});
 		}
     }
