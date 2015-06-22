@@ -65,15 +65,15 @@ CREATE INDEX Recall_initiation_Date_index
 CREATE INDEX Report_Date_index
    ON fda_enforcement_events (report_date ASC NULLS LAST);
 
-CREATE INDEX Product_Description_index
-  ON fda_enforcement_events
-  USING btree
-  (Product_Description COLLATE pg_catalog.default);
+--CREATE INDEX Product_Description_index
+--  ON fda_enforcement_events
+--  USING gin
+--  (Product_Description);
 
-CREATE INDEX Reason_for_Recall_index
-  ON fda_enforcement_events
-  USING btree
-  (Reason_for_Recall COLLATE pg_catalog.default);
+--CREATE INDEX Reason_for_Recall_index
+--  ON fda_enforcement_events
+--  USING gin
+--  (Reason_for_Recall);
 
 
 
