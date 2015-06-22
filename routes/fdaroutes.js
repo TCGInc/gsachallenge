@@ -10,7 +10,8 @@ module.exports = function (app) {
 
 	function processFilteringRequestParams(req) {
 		var searchParams = {
-			nouns: []
+			nouns: [],
+			classifications: []
 		};
 		var errors = [];
 
@@ -67,8 +68,14 @@ module.exports = function (app) {
 			searchParams.recallingFirm = req.query.recallingFirm;
 		}
 
-		if(req.query.classification && req.query.classification.trim().length) {
-			searchParams.classification = req.query.classification;
+		if(req.query.includeClass1 === 'true') {
+			searchParams.classifications.push('Class I');
+		}
+		if(req.query.includeClass2 === 'true') {
+			searchParams.classifications.push('Class II');
+		}
+		if(req.query.includeClass3 === 'true') {
+			searchParams.classifications.push('Class III');
 		}
 
 		return {

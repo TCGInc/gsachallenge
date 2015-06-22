@@ -173,7 +173,7 @@ function FdaService() {
 				},
 				recallInitiationDate: {
 					$between: [params.fromDate, params.toDate]
-				}
+				},
 			},
 			group: ['product_type', 'state_abbr'],
 			order: [['state_abbr'], ['product_type']]
@@ -194,8 +194,10 @@ function FdaService() {
 				$ilike: '%' + params.recallingFirm + '%'
 			};
 		}
-		if(params.classification) {
-			findAll.where.classification = params.classification;
+		if(params.classifications.length) {
+			findAll.where.classification = {
+				in: params.classifications
+			}
 		}
 
 		// Query
@@ -336,8 +338,10 @@ function FdaService() {
 				$ilike: '%' + params.recallingFirm + '%'
 			};
 		}
-		if(params.classification) {
-			findAll.where.classification = params.classification;
+		if(params.classifications.length) {
+			findAll.where.classification = {
+				in: params.classifications
+			}
 		}
 
 		// Get count of recalls matching criteria
