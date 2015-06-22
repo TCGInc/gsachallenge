@@ -153,7 +153,7 @@ describe('FDA data tests', function() {
 	describe('GET /fda/counts/:nouns', function() {
 		it('returns results for all nouns', function(done) {
 			request(app.app)
-				.get('/fda/counts/drug,device,food')
+				.get('/fda/counts?includeDrugs=true&includeDevices=true&includeFood=true')
 				.set('Accept', 'application/json')
 				.expect('Content-Type', /json/)
 				.expect(200)
@@ -176,7 +176,7 @@ describe('FDA data tests', function() {
 
 		it('returns results for food', function(done) {
 			request(app.app)
-				.get('/fda/counts/food')
+				.get('/fda/counts?includeFood=true')
 				.set('Accept', 'application/json')
 				.expect('Content-Type', /json/)
 				.expect(200)
@@ -195,9 +195,9 @@ describe('FDA data tests', function() {
 				.end(done);
 		});
 
-		it('errors about invalid noun', function(done) {
+		it('errors about fromDate', function(done) {
 			request(app.app)
-				.get('/fda/counts/abc')
+				.get('/fda/counts?includeFood=true&fromDate=2222-01-01')
 				.set('Accept', 'application/json')
 				.expect('Content-Type', /json/)
 				.expect(200)
@@ -205,7 +205,22 @@ describe('FDA data tests', function() {
 					(res.body.result === null).should.be.true;
 					res.body.should.have.property('status');
 					res.body.status.error.should.be.true;
-					res.body.status.should.have.property('message', "'abc' is not a valid noun.");
+					res.body.status.should.have.property('message', "Invalid fromDate.");
+				})
+				.end(done);
+		});
+
+		it('errors about toDate', function(done) {
+			request(app.app)
+				.get('/fda/counts?includeFood=true&toDate=2222-01-01')
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					(res.body.result === null).should.be.true;
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.true;
+					res.body.status.should.have.property('message', "Invalid toDate.");
 				})
 				.end(done);
 		});

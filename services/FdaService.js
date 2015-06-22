@@ -152,11 +152,11 @@ function FdaService() {
 	// 		...
 	// 	}
 	// }
-	function getStateRecallCountsLocal(nouns, callback) {
+	function getStateRecallCountsLocal(params, callback) {
 
 		// Convert list of nouns to match the db product_type column
 		var dbNouns = [];
-		nouns.forEach(function(noun) {
+		params.nouns.forEach(function(noun) {
 			dbNouns.push(serviceSelf.NOUN_FDA_TO_DB[noun]);
 		});
 		
@@ -166,6 +166,9 @@ function FdaService() {
 			where: {
 				productType: {
 					in: dbNouns
+				},
+				recallInitiationDate: {
+					$between: [params.fromDate, params.toDate]
 				}
 			},
 			group: ['product_type', 'state_abbr'],
@@ -184,7 +187,7 @@ function FdaService() {
 			});
 
 			// Add noun objects to result object and init state counts
-			nouns.forEach(function(noun) {
+			params.nouns.forEach(function(noun) {
 				result.byNoun[noun] = {};
 
 				serviceSelf.statesAbbr.forEach(function (abbr) {
