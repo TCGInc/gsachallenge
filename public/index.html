@@ -4,33 +4,70 @@
 <head>
 	<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-resource.js"></script>
 	<script src="js/external/angulartics.js"></script>
 	<script src="js/external/angulartics-ga.js"></script>
-	<script src="js/app.js"></script>
-	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
 	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-
+	<script src="js/external/ui-bootstrap-0.13.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js" charset="utf-8"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.19/topojson.js"></script>
+	<script src="js/external/datamaps.usa.min.js"></script>
+	<script src="js/external/colorbrewer.js"></script>
+	<script src="js/app.js"></script>
+	<script src="js/controllers/dashboardController.js"></script>
+	<script src="js/services/utilityService.js"></script>
+	<script src="js/directives/heatmap.js"></script>
 	<script>
 		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
 		ga('create', 'UA-62980521-1', 'auto');
 	</script>
+	<link href="css/all.min.css" rel="stylesheet">
 	<title>GSA Challenge</title>
 </head>
 
-<body ng-controller="testController">
-    <h1> Hello World, 5/26 Malone </h1>
-	<h3><span class="label label-default">{{testModel}}</span></h3>
+<body ng-controller="dashboardController">
 
-	<p style='margin-top:3em'>Wisely and slow; they stumble that run fast.<br/>&nbsp;&nbsp;&nbsp; – Romeo in Romeo and Juliet</p>
+  <div class="container">
 
-	<p>another change</p>
-	
-	
-	<a ng-click="rerun()" analytics-on="click" analytics-category="Link Click" analytics-label="Rerun Label" analytics-event="Rerun Event">Re-run</a>
+	<h1 class="site-header">Federal Drug Administration Enforcement Events</h1>
+
+    <div class="row">
+      <div class="col-md-3">
+				<form ng-submit="submit(searchParams)">
+					<div class="form-group group-types">
+						<label for="typeFood" class="checkbox-inline">Food</label>
+						<input type="checkbox" name="typeFood" id="typeFood" ng-model="searchParams.eventTypes.food">
+						<label for="typeDrugs" class="checkbox-inline">Drugs</label>
+						<input type="checkbox" name="typeDrugs" id="typeDrugs" ng-model="searchParams.eventTypes.drug">
+						<label for="typeDevices" class="checkbox-inline">Devices</label>
+						<input type="checkbox" name="typeDevices" id="typeDevices" ng-model="searchParams.eventTypes.device">
+					</div>
+					<div class="form-group">
+						<label for="dateFrom">From</label>
+						<input type="date" name="dateFrom" id="dateFrom" class="form-control" ng-model="searchParams.dateFrom" datepicker-popup>
+					</div>
+					<div class="form-group">
+						<label for="dateTo">To</label>
+						<input type="date" name="dateTo" id="dateTo" class="form-control" ng-model="searchParams.dateTo" datepicker-popup>
+					</div>
+					<div class="form-group">
+						<label for="foodName">Food Name</label>
+						<input type="text" name="foodName" id="foodName" class="form-control" ng-model="searchParams.foodName">
+					</div>
+					<div class="form-group">
+						<button type="submit" class="btn btn-primary btn-block">Submit</button>
+					</div>
+				</form>
+      </div>
+      <div class="col-md-9">
+        <heatmap state-counts="stateCounts">
+     </div>
+    </div>
+
+  </div>
+
 </body>
 </html>

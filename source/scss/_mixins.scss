@@ -1,0 +1,7 @@
+@mixin hide-text{
+  background-repeat: no-repeat;
+  background-size: 100%;
+  display: inline-block;
+  overflow: hidden;
+  text-indent: -9999px;
+}

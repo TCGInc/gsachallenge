@@ -1,2 +1,4 @@
 node_modules
 app.log
+npm-debug.log
+.sass-cache/
