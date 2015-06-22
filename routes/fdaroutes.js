@@ -1,6 +1,8 @@
 'use strict';
 
 var moment = require('moment');
+var models = require('../models');
+var logger = require('../util/logger')();
 
 module.exports = function (app) {
 
@@ -9,10 +11,11 @@ module.exports = function (app) {
 
 	app.get('/fda/counts', function (req, res) {
 
-		var searchParams = {};
+		var searchParams = {
+			nouns: []
+		};
 		var errors = [];
 
-		searchParams.nouns = [];
 		if(req.query.includeFood === 'true') {
 			searchParams.nouns.push('food');
 		}
@@ -54,8 +57,12 @@ module.exports = function (app) {
 			searchParams.toDate = moment('3000-01-01', 'YYYY-MM-DD').toDate();
 		}
 
+		if(req.query.product) {
+			searchParams.product = req.query.product;
+		}
 
-		if(errors.length === 0) {
+
+		if(!errors.length) {
 			FdaService.getStateRecallCountsLocal(searchParams, function getStateRecallCountsCallback(err, result) {
 				if(err) {
 					console.error(err);
@@ -89,4 +96,73 @@ module.exports = function (app) {
 		}
 	});
 
+
+	app.get('/fda/autocomplete', function(req, res) {
+		var field = req.query.field;
+		var query = req.query.query;
+
+		var searchParams = {
+			nouns: []
+		};
+		var errors = [];
+
+		if(req.query.includeFood === 'true') {
+			searchParams.nouns.push('food');
+		}
+		if(req.query.includeDrugs === 'true') {
+			searchParams.nouns.push('drug');
+		}
+		if(req.query.includeDevices === 'true') {
+			searchParams.nouns.push('device');
+		}
+
+		// Verify field was provided and it's a recall field
+		if(field == null || !field.trim().length || models.enforcements.attributes[field] == null) {
+			errors.push('Invalid field.');
+		}
+		else {
+			searchParams.field = field;
+		}
+
+		// Verify query was provided
+		if(query == null || !query.trim().length) {
+			errors.push('Invalid query.');
+		}
+		else {
+			searchParams.query = query;
+		}
+
+
+		if(!errors.length) {
+			FdaService.getAutocompleteStrings(searchParams, function(err, result) {
+				if(err) {
+					logger.error(err);
+					res.json({
+						result: null,
+						status: {
+							error: true,
+							message: err.message
+						}
+					});
+				}
+				else {
+					res.json({
+						result: result,
+						status: {
+							error: false
+						}
+					});
+				}
+			});
+		}
+		else {
+			res.json({
+				result: null,
+				status: {
+					error: true,
+					message: errors.join("; ")
+				}
+			});
+		}
+	});
 };

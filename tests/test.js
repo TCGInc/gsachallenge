@@ -150,7 +150,7 @@ describe('Filter tests', function() {
 });
 
 describe('FDA data tests', function() {
-	describe('GET /fda/counts/:nouns', function() {
+	describe('GET /fda/counts', function() {
 		it('returns results for all nouns', function(done) {
 			request(app.app)
 				.get('/fda/counts?includeDrugs=true&includeDevices=true&includeFood=true')
@@ -221,6 +221,55 @@ describe('FDA data tests', function() {
 					res.body.should.have.property('status');
 					res.body.status.error.should.be.true;
 					res.body.status.should.have.property('message', "Invalid toDate.");
+				})
+				.end(done);
+		});
+	});
+
+
+	describe('GET /fda/autocomplete', function() {
+		it('runs without error', function(done) {
+			request(app.app)
+				.get('/fda/autocomplete?field=recallingFirm&query=abc')
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					res.body.should.have.property('result');
+					res.body.result.should.be.instanceof(Array);
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.false;
+					(res.body.status.message === undefined).should.be.true;
+				})
+				.end(done);
+		});
+
+		it('throws error about field', function(done) {
+			request(app.app)
+				.get('/fda/autocomplete?field=abc&query=abc')
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					res.body.should.have.property('result', null);
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.true;
+					res.body.status.should.have.property('message', 'Invalid field.');
+				})
+				.end(done);
+		});
+
+		it('throws error about query', function(done) {
+			request(app.app)
+				.get('/fda/autocomplete?field=recallingFirm')
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					res.body.should.have.property('result', null);
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.true;
+					res.body.status.should.have.property('message', 'Invalid query.');
 				})
 				.end(done);
 		});
