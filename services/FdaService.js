@@ -282,6 +282,92 @@ function FdaService() {
 		});
 	};
 
+	// Prep recalls to be returned in an http response
+	this.recallsToResponse = function(recalls) {
+		recalls.forEach(function(recall) {
+			delete recall.dataValues.id;
+		});
+
+		return recalls;
+	}
+
+	// Returns recalls for the given filter criteria
+	// {
+	// 	total: total records matching criteria,
+	// 	recalls: [
+	// 		{
+	// 			recall 1
+	// 		},
+	// 		{
+	// 			recall 2
+	// 		},
+	// 		...
+	// 	] 
+	// }
+	this.getRecallEvents = function(params, callback) {
+
+		// Convert list of nouns to match the db product_type column
+		var dbNouns = this.convertFdaToDbNouns(params.nouns);
+
+		var findAll = {
+			where: {
+				productType: {
+					in: dbNouns
+				},
+				recallInitiationDate: {
+					$between: [params.fromDate, params.toDate]
+				},
+				stateAbbr: models.Sequelize.fn('UPPER', params.stateAbbr)
+			}
+		};
+
+		if(params.productDescription) {
+			findAll.where.productDescription = {
+				$ilike: '%' + params.productDescription + '%'
+			};
+		}
+		if(params.reasonForRecall) {
+			findAll.where.reasonForRecall = {
+				$ilike: '%' + params.reasonForRecall + '%'
+			};
+		}
+		if(params.recallingFirm) {
+			findAll.where.recallingFirm = {
+				$ilike: '%' + params.recallingFirm + '%'
+			};
+		}
+		if(params.classification) {
+			findAll.where.classification = params.classification;
+		}
+
+		// Get count of recalls matching criteria
+		models.enforcements.count(findAll).then(function(count) {
+
+			// After getting total count, add order, limit, and offset parameters
+			findAll.order = [[models.enforcements.attributes[params.orderBy].field, params.orderDir]];
+			findAll.limit = params.limit;
+			findAll.offset = params.offset;
+
+			// Query
+			models.enforcements.findAll(findAll).then(function(recalls) {
+
+				var result = {
+					total: count,
+					recalls: serviceSelf.recallsToResponse(recalls)
+				};
+
+				callback(null, result);
+			}, function(error) {
+				logger.error(error);
+				callback(error, null);
+			});
+		}, function(error) {
+			logger.error(error);
+			callback(error, null);
+		});
+
+
+	};
 
 	this.statesAbbr = [
 		'al', 'ak', 'az', 'ar', 'ca', 'co', 'ct', 'de', 'fl', 'ga',

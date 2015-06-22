@@ -8,9 +8,7 @@ module.exports = function (app) {
 
 	var FdaService = require('../services/FdaService')();
 
-
-	app.get('/fda/counts', function (req, res) {
-
+	function processFilteringRequestParams(req) {
 		var searchParams = {
 			nouns: []
 		};
@@ -73,9 +71,19 @@ module.exports = function (app) {
 			searchParams.classification = req.query.classification;
 		}
 
+		return {
+			searchParams: searchParams,
+			errors: errors
+		};
+	}
 
-		if(!errors.length) {
-			FdaService.getStateRecallCountsLocal(searchParams, function getStateRecallCountsCallback(err, result) {
+
+	app.get('/fda/recalls/counts', function (req, res) {
+
+		var preproc = processFilteringRequestParams(req);
+
+		if(!preproc.errors.length) {
+			FdaService.getStateRecallCountsLocal(preproc.searchParams, function getStateRecallCountsCallback(err, result) {
 				if(err) {
 					console.error(err);
 					console.error(err.stack);
@@ -102,7 +110,7 @@ module.exports = function (app) {
 				result: null,
 				status: {
 					error: true,
-					message: errors.join("; ")
+					message: preproc.errors.join("; ")
 				}
 			});
 		}
@@ -173,6 +181,97 @@ module.exports = function (app) {
 				status: {
 					error: true,
 					message: errors.join("; ")
+				}
+			});
+		}
+	});
+
+	app.get('/fda/recalls', function(req, res) {
+
+		// Validate commmon parameters
+		var preproc = processFilteringRequestParams(req);
+
+		// Validate state
+		if(!req.query.stateAbbr || FdaService.statesAbbr.indexOf(req.query.stateAbbr) === -1) {
+			preproc.errors.push('Invalid stateAbbr.');
+		}
+		else {
+			preproc.searchParams.stateAbbr = req.query.stateAbbr;
+		}
+
+		// Validate limit (records per page)
+		if(!req.query.limit) {
+			preproc.errors.push('Invalid limit (0 - 100).');
+		}
+		else {
+			var limit = parseInt(req.query.limit);
+			if(isNaN(limit) || limit > 100 || limit < 0) {
+				preproc.errors.push('Invalid limit (0 - 100).');
+			}
+			else {
+				preproc.searchParams.limit = limit;
+			}
+		}
+
+		// Validate offset (skip n records)
+		if(!req.query.offset) {
+			preproc.errors.push('Invalid offset (> 0).');
+		}
+		else {
+			var offset = parseInt(req.query.offset);
+			if(isNaN(offset) || offset < 0) {
+				preproc.errors.push('Invalid offset (> 0).');
+			}
+			else {
+				preproc.searchParams.offset = offset;
+			}
+		}
+
+		// Validate orderBy
+		if(!req.query.orderBy || models.enforcements.attributes[req.query.orderBy] == null) {
+			preproc.errors.push('Invalid orderBy.');
+		}
+		else {
+			preproc.searchParams.orderBy = req.query.orderBy;
+		}
+
+		// Validate orderDir
+		if(!req.query.orderDir || (req.query.orderDir != 'asc' && req.query.orderDir != 'desc')) {
+			preproc.errors.push('Invalid orderDir.');
+		}
+		else {
+			preproc.searchParams.orderDir = req.query.orderDir;
+		}
+
+		if(!preproc.errors.length) {
+			FdaService.getRecallEvents(preproc.searchParams, function getRecallEventsCallback(err, result) {
+				if(err) {
+					console.error(err);
+					console.error(err.stack);
+					res.json({
+						result: null,
+						status: {
+							error: true,
+							message: err.message
+						}
+					});
+				}
+				else {
+					res.json({
+						result: result,
+						status: {
+							error: false
+						}
+					});
+				}
+			});
+		}
+		else {
+			res.json({
+				result: null,
+				status: {
+					error: true,
+					message: preproc.errors.join("; ")
 				}
 			});
 		}

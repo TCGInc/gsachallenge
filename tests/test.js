@@ -153,7 +153,7 @@ describe('FDA data tests', function() {
 	describe('GET /fda/counts', function() {
 		it('returns results for all nouns', function(done) {
 			request(app.app)
-				.get('/fda/counts?includeDrugs=true&includeDevices=true&includeFood=true')
+				.get('/fda/recalls/counts?includeDrugs=true&includeDevices=true&includeFood=true')
 				.set('Accept', 'application/json')
 				.expect('Content-Type', /json/)
 				.expect(200)
@@ -176,7 +176,7 @@ describe('FDA data tests', function() {
 
 		it('returns results for food', function(done) {
 			request(app.app)
-				.get('/fda/counts?includeFood=true')
+				.get('/fda/recalls/counts?includeFood=true')
 				.set('Accept', 'application/json')
 				.expect('Content-Type', /json/)
 				.expect(200)
@@ -197,7 +197,7 @@ describe('FDA data tests', function() {
 
 		it('errors about fromDate', function(done) {
 			request(app.app)
-				.get('/fda/counts?includeFood=true&fromDate=2222-01-01')
+				.get('/fda/recalls/counts?includeFood=true&fromDate=2222-01-01')
 				.set('Accept', 'application/json')
 				.expect('Content-Type', /json/)
 				.expect(200)
@@ -212,7 +212,7 @@ describe('FDA data tests', function() {
 
 		it('errors about toDate', function(done) {
 			request(app.app)
-				.get('/fda/counts?includeFood=true&toDate=2222-01-01')
+				.get('/fda/recalls/counts?includeFood=true&toDate=2222-01-01')
 				.set('Accept', 'application/json')
 				.expect('Content-Type', /json/)
 				.expect(200)
@@ -270,6 +270,85 @@ describe('FDA data tests', function() {
 					res.body.should.have.property('status');
 					res.body.status.error.should.be.true;
 					res.body.status.should.have.property('message', 'Invalid query.');
+				})
+				.end(done);
+		});
+	});
+
+	describe('GET /fda/recalls', function() {
+		it('runs without error', function(done) {
+			request(app.app)
+				.get('/fda/recalls?includeDrugs=true&stateAbbr=mn&limit=25&offset=0&orderBy=reasonForRecall&orderDir=desc')
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					res.body.should.have.property('result');
+					res.body.result.total.should.be.a.Number;
+					res.body.result.recalls.should.be.instanceof(Array);
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.false;
+					(res.body.status.message === undefined).should.be.true;
+				})
+				.end(done);
+		});
+
+		it('throws error about limit', function(done) {
+			request(app.app)
+				.get('/fda/recalls?includeDrugs=true&stateAbbr=mn&offset=0&orderBy=reasonForRecall&orderDir=desc')
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					res.body.should.have.property('result', null);
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.true;
+					res.body.status.should.have.property('message', 'Invalid limit (0 - 100).');
+				})
+				.end(done);
+		});
+
+		it('throws error about offset', function(done) {
+			request(app.app)
+				.get('/fda/recalls?includeDrugs=true&stateAbbr=mn&limit=25&&orderBy=reasonForRecall&orderDir=desc')
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					res.body.should.have.property('result', null);
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.true;
+					res.body.status.should.have.property('message', 'Invalid offset (> 0).');
+				})
+				.end(done);
+		});
+
+		it('throws error about orderBy', function(done) {
+			request(app.app)
+				.get('/fda/recalls?includeDrugs=true&stateAbbr=mn&limit=25&offset=0&orderDir=desc')
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					res.body.should.have.property('result', null);
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.true;
+					res.body.status.should.have.property('message', 'Invalid orderBy.');
+				})
+				.end(done);
+		});
+
+		it('throws error about orderDir', function(done) {
+			request(app.app)
+				.get('/fda/recalls?includeDrugs=true&stateAbbr=mn&limit=25&offset=0&orderBy=reasonForRecall')
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					res.body.should.have.property('result', null);
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.true;
+					res.body.status.should.have.property('message', 'Invalid orderDir.');
 				})
 				.end(done);
 		});
