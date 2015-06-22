@@ -3,6 +3,9 @@
 var Promise = require('bluebird');
 var request = require('request');
 var _ = require('lodash');
+var models = require('../models');
+var logger = require('../util/logger')();
+var AppError = require('../util/AppError');
 
 
 function FdaService() {
@@ -116,6 +119,98 @@ function FdaService() {
 	this.getStateRecallCounts = Promise.promisify(getStateRecallCounts);
 
 	this.getStateRecallCountsByNoun = Promise.promisify(getStateRecallCountsByNoun);
+
+	// Mapping from FDA API noun to database product_type
+	this.NOUN_DB_TO_FDA = {
+		"Drugs": "drug",
+		"Devices": "device",
+		"Food": "food"
+	};
+
+	// Mapping from database product_type to FDA API noun
+	this.NOUN_FDA_TO_DB = {
+		"drug": "Drugs",
+		"device": "Devices",
+		"food": "Food"
+	};
+
+	// Returns recalls counts associated to a list of nouns in aggregate and broken down by noun
+	// {
+	// 	aggregate: {
+	// 		'state abbreviation': count,
+	// 		...
+	// 	},
+	// 	byNoun: {
+	// 		noun1: {
+	// 			'state abbreviation': count,
+	// 			...
+	// 		},
+	// 		noun2: {
+	// 			'state abbreviation': count,
+	// 			...
+	// 		},
+	// 		...
+	// 	}
+	// }
+	function getStateRecallCountsLocal(nouns, callback) {
+
+		// Convert list of nouns to match the db product_type column
+		var dbNouns = [];
+		nouns.forEach(function(noun) {
+			dbNouns.push(serviceSelf.NOUN_FDA_TO_DB[noun]);
+		});
+		
+		// Query
+		models.enforcements.findAll({
+			attributes: [[models.Sequelize.fn('COUNT', '*'), 'count'],['product_type', 'productType'], [models.Sequelize.fn('LOWER', models.sequelize.col('state_abbr')), 'stateAbbr']],
+			where: {
+				productType: {
+					in: dbNouns
+				}
+			},
+			group: ['product_type', 'state_abbr'],
+			order: [['state_abbr'], ['product_type']]
+		}).then(function(results) {
+
+			// Init result object
+			var result = {
+				aggregate: {},
+				byNoun: {}
+			};
+
+			// Init state counts in aggregate result object 
+			serviceSelf.statesAbbr.forEach(function (abbr) {
+				addToStateCount(result.aggregate, abbr, 0);
+			});
+
+			// Add noun objects to result object and init state counts
+			nouns.forEach(function(noun) {
+				result.byNoun[noun] = {};
+
+				serviceSelf.statesAbbr.forEach(function (abbr) {
+					addToStateCount(result.byNoun[noun], abbr, 0);
+				});
+			});
+
+			// Add each database result to the aggregate and noun result lists
+			results.forEach(function(cnt) {
+				addToStateCount(result.aggregate, cnt.stateAbbr, parseInt(cnt.dataValues.count));
+
+				addToStateCount(result.byNoun[serviceSelf.NOUN_DB_TO_FDA[cnt.productType]], cnt.stateAbbr, parseInt(cnt.dataValues.count));
+			});
+
+			callback(null, result);
+		}, function(error) {
+			logger.error(error);
+			callback(error, null);
+		});
+	}
+
+	this.getStateRecallCountsLocal = Promise.promisify(getStateRecallCountsLocal);
+
+	this.isValidNoun = function(noun) {
+		return this.NOUN_FDA_TO_DB[noun] !== undefined;
+	}
 
 	this.statesAbbr = [
 		'al', 'ak', 'az', 'ar', 'ca', 'co', 'ct', 'de', 'fl', 'ga',
