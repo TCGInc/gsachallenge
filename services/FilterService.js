@@ -27,7 +27,6 @@ function FilterService() {
 		var instance = models.filter.build(props);
 
 		instance.save().then(function() {
-			console.log('here');
 			callback(null, instance);
 		}, function(error) {
 			logger.error(error);
