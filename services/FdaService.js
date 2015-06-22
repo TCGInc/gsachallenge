@@ -5,7 +5,6 @@ var request = require('request');
 var _ = require('lodash');
 var models = require('../models');
 var logger = require('../util/logger')();
-var AppError = require('../util/AppError');
 
 
 function FdaService() {
@@ -167,7 +166,7 @@ function FdaService() {
 		var dbNouns = this.convertFdaToDbNouns(params.nouns);
 
 		var findAll = {
-			attributes: [[models.Sequelize.fn('COUNT', '*'), 'count'],['product_type', 'productType'], [models.Sequelize.fn('LOWER', models.sequelize.col('state_abbr')), 'stateAbbr']],
+			attributes: [[models.Sequelize.fn('COUNT', '*'), 'count'], ['product_type', 'productType'], [models.Sequelize.fn('LOWER', models.sequelize.col('state_abbr')), 'stateAbbr']],
 			where: {
 				productType: {
 					in: dbNouns
@@ -182,10 +181,10 @@ function FdaService() {
 
 		if(params.product) {
 			findAll.where.productDescription = {
-				$like: '%'+params.product+'%'
+				$like: '%' + params.product + '%'
 			};
 		}
-		
+
 		// Query
 		models.enforcements.findAll(findAll).then(function(results) {
 
@@ -195,7 +194,7 @@ function FdaService() {
 				byNoun: {}
 			};
 
-			// Init state counts in aggregate result object 
+			// Init state counts in aggregate result object
 			serviceSelf.statesAbbr.forEach(function (abbr) {
 				addToStateCount(result.aggregate, abbr, 0);
 			});
@@ -251,7 +250,7 @@ function FdaService() {
 		};
 
 		findAll.where[params.field] = {
-			$ilike: '%'+params.query+'%'
+			$ilike: '%' + params.query + '%'
 		};
 
 		// Query

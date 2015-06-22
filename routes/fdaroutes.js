@@ -31,7 +31,7 @@ module.exports = function (app) {
 			// Ensure YYYY-MM-DD format
 			// Regex from http://www.regular-expressions.info/dates.html
 			if(!/^(19|20)\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/.test(req.query.fromDate)) {
-				errors.push('Invalid fromDate.')
+				errors.push('Invalid fromDate.');
 			}
 			else {
 				searchParams.fromDate = moment(req.query.fromDate, 'YYYY-MM-DD').toDate();
@@ -46,7 +46,7 @@ module.exports = function (app) {
 		if(req.query.toDate) {
 			// Ensure YYYY-MM-DD format
 			if(!/^(19|20)\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/.test(req.query.toDate)) {
-				errors.push('Invalid toDate.')
+				errors.push('Invalid toDate.');
 			}
 			else {
 				searchParams.toDate = moment(req.query.toDate, 'YYYY-MM-DD').toDate();

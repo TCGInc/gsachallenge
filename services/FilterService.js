@@ -47,7 +47,7 @@ function FilterService() {
 	};
 
 	this.searchFilters = function(query, callback) {
-		models.filter.findAll({where: models.Sequelize.or({name: {$ilike: '%'+query+'%'}}, {description: {$ilike: '%'+query+'%'}}), limit: 50}).then(function(filters) {
+		models.filter.findAll({where: models.Sequelize.or({name: {$ilike: '%' + query + '%'}}, {description: {$ilike: '%' + query + '%'}}), limit: 50}).then(function(filters) {
 			callback(null, filters);
 		}, function(error) {
 			logger.error(error);
