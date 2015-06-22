@@ -1,0 +1,5 @@
+--output tfile.xml
+-H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" -H "Connection: keep-alive" 
+-H "Accept-Encoding: gzip, deflate, sdch" 
+--compressed
+--url "http://www.accessdata.fda.gov/scripts/enforcement/enforce_rpt-Product-Tabs.cfm?xml&w=12312014" 
