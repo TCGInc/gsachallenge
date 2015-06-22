@@ -57,8 +57,20 @@ module.exports = function (app) {
 			searchParams.toDate = moment('3000-01-01', 'YYYY-MM-DD').toDate();
 		}
 
-		if(req.query.product) {
-			searchParams.product = req.query.product;
+		if(req.query.productDescription && req.query.productDescription.trim().length) {
+			searchParams.productDescription = req.query.productDescription;
+		}
+
+		if(req.query.reasonForRecall && req.query.reasonForRecall.trim().length) {
+			searchParams.reasonForRecall = req.query.reasonForRecall;
+		}
+
+		if(req.query.recallingFirm && req.query.recallingFirm.trim().length) {
+			searchParams.recallingFirm = req.query.recallingFirm;
+		}
+
+		if(req.query.classification && req.query.classification.trim().length) {
+			searchParams.classification = req.query.classification;
 		}
 
 

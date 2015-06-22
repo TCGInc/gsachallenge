@@ -179,10 +179,23 @@ function FdaService() {
 			order: [['state_abbr'], ['product_type']]
 		};
 
-		if(params.product) {
+		if(params.productDescription) {
 			findAll.where.productDescription = {
-				$like: '%' + params.product + '%'
+				$ilike: '%' + params.productDescription + '%'
 			};
+		}
+		if(params.reasonForRecall) {
+			findAll.where.reasonForRecall = {
+				$ilike: '%' + params.reasonForRecall + '%'
+			};
+		}
+		if(params.recallingFirm) {
+			findAll.where.recallingFirm = {
+				$ilike: '%' + params.recallingFirm + '%'
+			};
+		}
+		if(params.classification) {
+			findAll.where.classification = params.classification;
 		}
 
 		// Query
