@@ -2,7 +2,7 @@
 
 module.exports = function(sequelize, DataTypes) {
 	var Enforcement = sequelize.define('enforcements', {
-		ID: {
+		id: {
 			type: DataTypes.INTEGER,
 			primaryKey: true,
 			autoIncrement: true
