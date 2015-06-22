@@ -2,19 +2,9 @@
 
 var path = require('path');
 var express = require('express');
-var winston = require('winston');
 //var expressWinston = require('express-winston');
 var bodyParser = require('body-parser');
-
-// Logger
-var logger = new (winston.Logger)({
-	transports: [
-		new (winston.transports.Console)(),
-		new (winston.transports.File)({
-			filename: 'app.log'
-		})
-	]
-});
+var logger = require('./util/logger')();
 
 
 var app = exports.app = express();
@@ -35,6 +25,7 @@ app.use(bodyParser.json());
 
 require('./routes/testroutes.js')(app);
 require('./routes/fdaroutes.js')(app);
+require('./routes/FilterRoutes.js')(app);
 
 var server = exports.server = app.listen(process.env.PORT || 80, function () {
 
@@ -44,11 +35,3 @@ var server = exports.server = app.listen(process.env.PORT || 80, function () {
 	logger.info('Example app listening at http://%s:%s', host, port);
 
 });
-
-logger.info('Malone added simple log message');
-
-logger.info('Maone another test.....5/20');
-
-logger.info('Maone another test.....5/20 Again');
-
-logger.info('Maone another test.....5/26 Again');
