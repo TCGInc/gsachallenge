@@ -3,7 +3,7 @@ app.directive("heatmap", function(utilityService) {
 	// Configuration settings for heatmap color bands.
 	// See available options in public/js/external/colorbrewer.js
 	var colorbrewerConfig = {
-		palette: "PuBuGn", // YlOrRd, Set3
+		palette: "PuBu", // YlOrRd, Set3
 		numberOfBands: 9 // Allowable number of color bands are 3-9.
 	};
 
@@ -33,7 +33,7 @@ app.directive("heatmap", function(utilityService) {
 			var map = new Datamap({
 				element: element.children("div")[0],
 				scope: 'usa',
-        		responsive: true,
+        responsive: true,
 				fills: fills,
 			    geographyConfig: {
 			        popupTemplate: function(geo, data) {
@@ -41,7 +41,10 @@ app.directive("heatmap", function(utilityService) {
 			                    'Number of events in ' + geo.properties.name,
 			                    ': ' + data.numberOfEvents,
 			                    '</strong></div>'].join('');
-					}
+					},
+        highlightFillColor: '#d12212',
+        highlightBorderColor: 'rgba(0,0,0,0)',
+        highlightBorderWidth: 0
 		        },
 		        done: function(datamap) {
 		            datamap.svg.selectAll('.datamaps-subunit').on('click', function(geography) {
@@ -55,6 +58,11 @@ app.directive("heatmap", function(utilityService) {
       		window.addEventListener('resize', function(event){
         		map.resize();
       		});
+
+      // This is a horrible, embarassing hack. If you can figure out a better fix, please implement it!
+        setTimeout(function() {
+          map.resize();
+        }, 1000);
 
       		// Refresh the heatmap colors based on the new state counts.
       		function updateMap(stateCounts, stateFillData, map) {
@@ -84,3 +92,4 @@ app.directive("heatmap", function(utilityService) {
 		}
     }
 });
+

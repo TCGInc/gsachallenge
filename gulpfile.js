@@ -30,6 +30,10 @@ var paths = {
     src:   'node_modules/font-awesome/fonts/**.*',
     dest:  'public/fonts/'
   },
+  bsicons: {
+    src:   'node_modules/bootstrap-sass/assets/fonts/bootstrap/**.*',
+    dest:  'public/fonts/bootstrap/'
+  },
   img: {
     src:   'source/img/',
     dest:  'public/img/'
@@ -174,6 +178,11 @@ gulp.task('icons', function() { 
     .pipe(gulp.dest(paths.icons.dest));
 });
 
+gulp.task('bsicons', function() { 
+  gulp.src(paths.bsicons.src)
+    .pipe(gulp.dest(paths.bsicons.dest));
+});
+
 gulp.task('img', function() { 
   var imgall = gulp.src(paths.img.src + '*');
   var imgsvg = gulp.src(paths.img.src + '*.svg')
@@ -190,5 +199,6 @@ gulp.task('img', function() { 
 gulp.task('ux', function() {
 	gulp.watch(paths.styles.watch, ['styles']);
   gulp.watch(paths.icons.src,    ['icons']);
+  gulp.watch(paths.bsicons.src,  ['bsicons']);
   gulp.watch(paths.img.src,      ['img']);
 });
