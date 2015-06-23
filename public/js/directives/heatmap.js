@@ -17,7 +17,7 @@ app.directive("heatmap", function(utilityService) {
 
 	// Intitialize default fill values for each state.
 	var stateFillData = {};
-	angular.forEach(utilityService.stateNames, function(name, abbreviation) {
+	angular.forEach(utilityService.stateNames, function(abbreviation, name) {
 		stateFillData[abbreviation] = {
 			fillKey: "",
 			numberOfEvents: 0
@@ -40,7 +40,13 @@ app.directive("heatmap", function(utilityService) {
 			            return ['<div class="hoverinfo"><strong>',
 			                    'Number of events in ' + geo.properties.name,
 			                    ': ' + data.numberOfEvents,
-			                    '</strong></div>'].join('');			            }
+			                    '</strong></div>'].join('');
+					}
+		        },
+		        done: function(datamap) {
+		            datamap.svg.selectAll('.datamaps-subunit').on('click', function(geography) {
+		                scope.clickMap(geography.properties.name);
+		            });
 		        },
 		        data: stateFillData
 			});

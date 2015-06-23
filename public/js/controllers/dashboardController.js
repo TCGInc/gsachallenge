@@ -1,32 +1,32 @@
 app.controller("dashboardController", ["$scope", "$http", "$resource", "$log", "utilityService", "DTOptionsBuilder", "DTColumnBuilder", function($scope, $http, $resource, $log, utilityService, DTOptionsBuilder, DTColumnBuilder) {
 	"use strict";
 
+	// Build query parameter string.
+	function buildQueryString(searchParams) {
+
+		var queryParams = [];
+
+		function getDateString(rawDate) {
+			return new Date(rawDate).toISOString().substring(0, 10);
+		}
+
+		if (searchParams.eventTypeFood) queryParams.push("includeFood=true");
+		if (searchParams.eventTypeDrug) queryParams.push("includeDrugs=true");
+		if (searchParams.eventTypeDevice) queryParams.push("includeDevices=true");
+		if (searchParams.dateFrom) queryParams.push("fromDate=" + getDateString(searchParams.dateFrom));
+		if (searchParams.dateTo) queryParams.push("toDate=" + getDateString(searchParams.dateTo));
+		if (searchParams.productDescription) queryParams.push("productDescription=" + searchParams.productDescription);
+		if (searchParams.recallReason) queryParams.push("reasonForRecall=" + searchParams.recallReason);
+		if (searchParams.classificationClass1) queryParams.push("includeClass1=true");
+		if (searchParams.classificationClass2) queryParams.push("includeClass2=true");
+		if (searchParams.classificationClass3) queryParams.push("includeClass3=true");
+		if (searchParams.recallingFirm) queryParams.push("recallingFirm=" + searchParams.recallingFirm);
+
+		return queryParams.join("&");
+	}
+
 	// Query API and update map counts.
 	function updateHeatmap(searchParams) {
-
-		// Build query parameter string.
-		function buildQueryString(searchParams) {
-
-			var queryParams = [];
-
-			function getDateString(rawDate) {
-				return new Date(rawDate).toISOString().substring(0, 10);
-			}
-
-			if (searchParams.eventTypeFood) queryParams.push("includeFood=true");
-			if (searchParams.eventTypeDrug) queryParams.push("includeDrugs=true");
-			if (searchParams.eventTypeDevice) queryParams.push("includeDevices=true");
-			if (searchParams.dateFrom) queryParams.push("fromDate=" + getDateString(searchParams.dateFrom));
-			if (searchParams.dateTo) queryParams.push("toDate=" + getDateString(searchParams.dateTo));
-			if (searchParams.productDescription) queryParams.push("productDescription=" + searchParams.productDescription);
-			if (searchParams.recallReason) queryParams.push("reasonForRecall=" + searchParams.recallReason);
-			if (searchParams.classificationClass1) queryParams.push("includeClass1=true");
-			if (searchParams.classificationClass2) queryParams.push("includeClass2=true");
-			if (searchParams.classificationClass3) queryParams.push("includeClass3=true");
-			if (searchParams.recallingFirm) queryParams.push("recallingFirm=" + searchParams.recallingFirm);
-
-			return queryParams.join("&");
-		}
 
 		var queryString = buildQueryString(searchParams);
 
@@ -62,8 +62,7 @@ app.controller("dashboardController", ["$scope", "$http", "$resource", "$log", "
 		classificationClass1: true,
 		classificationClass2: true,
 		classificationClass3: true,
-		recallingFirm: "",
-		state: ""
+		recallingFirm: ""
 	};
 	$scope.stateCounts = {};
 	$scope.closeAlert = function(index) {
@@ -103,25 +102,38 @@ app.controller("dashboardController", ["$scope", "$http", "$resource", "$log", "
     	});
 	}
 
-	var detailUrl = "/fda/recalls?includeDrugs=true&stateAbbr=mn&limit=25&offset=0&orderBy=recallInitiationDate&orderDir=asc";
-	$scope.details = {};
-	$scope.details.dtOptions = DTOptionsBuilder.fromSource(detailUrl)
-		.withOption("bFilter", false)
-		.withOption("bLengthChange", false)
-		.withOption("iDisplayStart", 0)
-		.withOption("iDisplayLength", 25)
-		.withDataProp("result.recalls")
-		.withPaginationType('full_numbers');
-
-// result.total
-// status.error = true/false
-
-    $scope.details.dtColumns = [
+var queryEndpoint = "/fda/recalls?includeFood=true&includeDrugs=true&includeDevices=true&includeClass1=true&includeClass2=true&includeClass3=true&limit=25&offset=0&orderBy=recallInitiationDate&orderDir=asc&stateAbbr=tx";
+	$scope.tableOptions = DTOptionsBuilder.fromSource(queryEndpoint)
+			.withOption("bFilter", false)
+			.withOption("bLengthChange", false)
+			.withOption("iDisplayStart", 0)
+			.withOption("iDisplayLength", 25)
+			.withDataProp("result.recalls")
+			.withPaginationType('full_numbers');
+	$scope.tableColumns = [
         DTColumnBuilder.newColumn('productType').withTitle('Type'),
         DTColumnBuilder.newColumn('recallingFirm').withTitle('Recalling Firm'),
         DTColumnBuilder.newColumn('reasonForRecall').withTitle('Reason for Recall'),
         DTColumnBuilder.newColumn('productDescription').withTitle('Description'),
         DTColumnBuilder.newColumn('recallInitiationDate').withTitle('Recall Date'),
     ];
+    $scope.tableInstance = {};
+    
+    $scope.clickMap = function(stateName) {
+
+    	var queryString = buildQueryString($scope.searchParams);
+
+    	var queryEndpoint = "/fda/recalls?" + queryString;
+    	queryEndpoint += "&limit=25&offset=0&orderBy=recallInitiationDate&orderDir=asc";
+    	if (stateName) {
+    		queryEndpoint +=  "&stateAbbr=" + utilityService.stateNames[stateName].toLowerCase();
+    	}
+
+		$scope.tableInstance.changeData(queryEndpoint);
+
+
+	// result.total
+	// status.error = true/false
+    }
 
 }]);
