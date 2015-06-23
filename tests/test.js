@@ -353,6 +353,54 @@ describe('FDA data tests', function() {
 				.end(done);
 		});
 	});
+
+	describe('GET /fda/recalls/:noun/:id', function() {
+		it('returns the recall', function(done) {
+			request(app.app)
+				.get('/fda/recalls/drug/65125')
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					res.body.should.have.property('result');
+					res.body.result.should.have.property('event_id', '65125');
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.false;
+					(res.body.status.message === undefined).should.be.true;
+				})
+				.end(done);
+		});
+
+		it('returns nothing', function(done) {
+			request(app.app)
+				.get('/fda/recalls/drug/99999999999999')
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					res.body.should.have.property('result', null);
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.false;
+					(res.body.status.message === undefined).should.be.true;
+				})
+				.end(done);
+		});
+
+		it('throws error about noun', function(done) {
+			request(app.app)
+				.get('/fda/recalls/invalidnoun/65125')
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					res.body.should.have.property('result', null);
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.true;
+					res.body.status.should.have.property('message', "Invalid noun 'invalidnoun'.");
+				})
+				.end(done);
+		});
+	});
 });
 
 

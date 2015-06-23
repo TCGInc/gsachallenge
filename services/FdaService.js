@@ -244,7 +244,7 @@ function FdaService() {
 	};
 
 	this.getAutocompleteStrings = function(params, callback) {
-
+console.log("PARRRAMMS: " + JSON.stringify(params));
 		// Get column name corresponding to field name
 		var columnName = models.enforcements.attributes[params.field].field;
 
@@ -369,8 +369,27 @@ function FdaService() {
 			logger.error(error);
 			callback(error, null);
 		});
+	};
 
+	this.getRecallEvent = function(noun, id, callback) {
+		var options = {
+			url: 'https://api.fda.gov/' + noun + '/enforcement.json?search=event_id:'+id,
+			json: true
+		};
 
+		request(options, function (err, res, body) {
+
+			if (!err && res.statusCode === 200) {
+				if(body.results.length) {
+					callback(null, body.results[0]);
+				}
+				else {
+					callback(null, null);
+				}
+			} else {
+				callback(err, null);
+			}
+		});
 	};
 
 	this.statesAbbr = [

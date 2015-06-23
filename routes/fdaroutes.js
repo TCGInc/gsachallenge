@@ -3,11 +3,37 @@
 var moment = require('moment');
 var models = require('../models');
 var logger = require('../util/logger')();
+var AppResponse = require('../util/AppResponse');
 
 module.exports = function (app) {
 
 	var FdaService = require('../services/FdaService')();
 
+	// Callback which sends a the result object or error as json
+	function getSendResponseCallback(res) {
+		return function commonCallback(err, result) {
+			if(err) {
+				res.json(new AppResponse(null, true, err.message));
+			}
+			else {
+				res.json(new AppResponse(result, false, null));
+			}
+		};
+	}
+
+	// Validates a request (via closure) and sends an error if the validation fails or calls an action closure on success
+	function validateAndRespond(req, res, validations, action) {
+		var preproc = validations(req);
+
+		if(!preproc.errors.length) {
+			action(preproc);
+		}
+		else {
+			res.json(new AppResponse(null, true, preproc.errors.join("; ")));
+		}
+	}
+
+	// Processes the common recall filtering criteria shared by the recalls and recall counts endpoints
 	function processFilteringRequestParams(req) {
 		var searchParams = {
 			nouns: [],
@@ -84,203 +110,139 @@ module.exports = function (app) {
 		};
 	}
 
-
+	// Return counts of recalls on a state by state basis
 	app.get('/fda/recalls/counts', function (req, res) {
-
-		var preproc = processFilteringRequestParams(req);
-
-		if(!preproc.errors.length) {
-			FdaService.getStateRecallCountsLocal(preproc.searchParams, function getStateRecallCountsCallback(err, result) {
-				if(err) {
-					console.error(err);
-					console.error(err.stack);
-					res.json({
-						result: null,
-						status: {
-							error: true,
-							message: err.message
-						}
-					});
-				}
-				else {
-					res.json({
-						result: result,
-						status: {
-							error: false
-						}
-					});
-				}
-			});
-		}
-		else {
-			res.json({
-				result: null,
-				status: {
-					error: true,
-					message: preproc.errors.join("; ")
-				}
-			});
-		}
+		validateAndRespond(req, res, processFilteringRequestParams, function(preproc) {
+			FdaService.getStateRecallCountsLocal(preproc.searchParams, getSendResponseCallback(res));
+		});
 	});
 
-
+	// Return autocomplete suggestions for a given field
 	app.get('/fda/autocomplete', function(req, res) {
-		var field = req.query.field;
-		var query = req.query.query;
-
-		var searchParams = {
-			nouns: []
-		};
-		var errors = [];
-
-		if(req.query.includeFood === 'true') {
-			searchParams.nouns.push('food');
-		}
-		if(req.query.includeDrugs === 'true') {
-			searchParams.nouns.push('drug');
-		}
-		if(req.query.includeDevices === 'true') {
-			searchParams.nouns.push('device');
-		}
-
-		// Verify field was provided and it's a recall field
-		if(field == null || !field.trim().length || models.enforcements.attributes[field] == null) {
-			errors.push('Invalid field.');
-		}
-		else {
-			searchParams.field = field;
-		}
-
-		// Verify query was provided
-		if(query == null || !query.trim().length) {
-			errors.push('Invalid query.');
-		}
-		else {
-			searchParams.query = query;
-		}
-
-
-		if(!errors.length) {
-			FdaService.getAutocompleteStrings(searchParams, function(err, result) {
-				if(err) {
-					logger.error(err);
-					res.json({
-						result: null,
-						status: {
-							error: true,
-							message: err.message
-						}
-					});
+		validateAndRespond(req, res, function() {
+			var preproc = {
+				errors: [],
+				searchParams: {
+					nouns: []
 				}
-				else {
-					res.json({
-						result: result,
-						status: {
-							error: false
-						}
-					});
-				}
-			});
-		}
-		else {
-			res.json({
-				result: null,
-				status: {
-					error: true,
-					message: errors.join("; ")
-				}
-			});
-		}
+			};
+
+			var field = req.query.field;
+			var query = req.query.query;
+
+			if(req.query.includeFood === 'true') {
+				preproc.searchParams.nouns.push('food');
+			}
+			if(req.query.includeDrugs === 'true') {
+				preproc.searchParams.nouns.push('drug');
+			}
+			if(req.query.includeDevices === 'true') {
+				preproc.searchParams.nouns.push('device');
+			}
+
+			// Verify field was provided and it's a recall field
+			if(field == null || !field.trim().length || models.enforcements.attributes[field] == null) {
+				preproc.errors.push('Invalid field.');
+			}
+			else {
+				preproc.searchParams.field = field;
+			}
+
+			// Verify query was provided
+			if(query == null || !query.trim().length) {
+				preproc.errors.push('Invalid query.');
+			}
+			else {
+				preproc.searchParams.query = query;
+			}
+
+			return preproc;
+		}, function(preproc) {
+			FdaService.getAutocompleteStrings(preproc.searchParams, getSendResponseCallback(res));
+		});
 	});
 
+	// Return paginated recalls matching a given criteria
 	app.get('/fda/recalls', function(req, res) {
+		validateAndRespond(req, res, function() {
+			// Validate commmon parameters
+			var preproc = processFilteringRequestParams(req);
 
-		// Validate commmon parameters
-		var preproc = processFilteringRequestParams(req);
+			// Validate state
+			if(!req.query.stateAbbr || FdaService.statesAbbr.indexOf(req.query.stateAbbr) === -1) {
+				preproc.errors.push('Invalid stateAbbr.');
+			}
+			else {
+				preproc.searchParams.stateAbbr = req.query.stateAbbr;
+			}
 
-		// Validate state
-		if(!req.query.stateAbbr || FdaService.statesAbbr.indexOf(req.query.stateAbbr) === -1) {
-			preproc.errors.push('Invalid stateAbbr.');
-		}
-		else {
-			preproc.searchParams.stateAbbr = req.query.stateAbbr;
-		}
-
-		// Validate limit (records per page)
-		if(!req.query.limit) {
-			preproc.errors.push('Invalid limit (0 - 100).');
-		}
-		else {
-			var limit = parseInt(req.query.limit);
-			if(isNaN(limit) || limit > 100 || limit < 0) {
+			// Validate limit (records per page)
+			if(!req.query.limit) {
 				preproc.errors.push('Invalid limit (0 - 100).');
 			}
 			else {
-				preproc.searchParams.limit = limit;
+				var limit = parseInt(req.query.limit);
+				if(isNaN(limit) || limit > 100 || limit < 0) {
+					preproc.errors.push('Invalid limit (0 - 100).');
+				}
+				else {
+					preproc.searchParams.limit = limit;
+				}
 			}
-		}
 
-		// Validate offset (skip n records)
-		if(!req.query.offset) {
-			preproc.errors.push('Invalid offset (> 0).');
-		}
-		else {
-			var offset = parseInt(req.query.offset);
-			if(isNaN(offset) || offset < 0) {
+			// Validate offset (skip n records)
+			if(!req.query.offset) {
 				preproc.errors.push('Invalid offset (> 0).');
 			}
 			else {
-				preproc.searchParams.offset = offset;
-			}
-		}
-
-		// Validate orderBy
-		if(!req.query.orderBy || models.enforcements.attributes[req.query.orderBy] == null) {
-			preproc.errors.push('Invalid orderBy.');
-		}
-		else {
-			preproc.searchParams.orderBy = req.query.orderBy;
-		}
-
-		// Validate orderDir
-		if(!req.query.orderDir || (req.query.orderDir != 'asc' && req.query.orderDir != 'desc')) {
-			preproc.errors.push('Invalid orderDir.');
-		}
-		else {
-			preproc.searchParams.orderDir = req.query.orderDir;
-		}
-
-		if(!preproc.errors.length) {
-			FdaService.getRecallEvents(preproc.searchParams, function getRecallEventsCallback(err, result) {
-				if(err) {
-					console.error(err);
-					console.error(err.stack);
-					res.json({
-						result: null,
-						status: {
-							error: true,
-							message: err.message
-						}
-					});
+				var offset = parseInt(req.query.offset);
+				if(isNaN(offset) || offset < 0) {
+					preproc.errors.push('Invalid offset (> 0).');
 				}
 				else {
-					res.json({
-						result: result,
-						status: {
-							error: false
-						}
-					});
+					preproc.searchParams.offset = offset;
 				}
-			});
-		}
-		else {
-			res.json({
-				result: null,
-				status: {
-					error: true,
-					message: preproc.errors.join("; ")
-				}
-			});
-		}
+			}
+
+			// Validate orderBy
+			if(!req.query.orderBy || models.enforcements.attributes[req.query.orderBy] == null) {
+				preproc.errors.push('Invalid orderBy.');
+			}
+			else {
+				preproc.searchParams.orderBy = req.query.orderBy;
+			}
+
+			// Validate orderDir
+			if(!req.query.orderDir || (req.query.orderDir != 'asc' && req.query.orderDir != 'desc')) {
+				preproc.errors.push('Invalid orderDir.');
+			}
+			else {
+				preproc.searchParams.orderDir = req.query.orderDir;
+			}
+
+			return preproc;
+		}, function(preproc) {
+			FdaService.getRecallEvents(preproc.searchParams, getSendResponseCallback(res));
+		});
+
 	});
+
+	// Return a specific recall by noun and id
+	app.get('/fda/recalls/:noun/:id', function(req, res) {
+		validateAndRespond(req, res, function() {
+			var preproc = {
+				errors: []
+			};
+
+			if(!FdaService.isValidNoun(req.params.noun)) {
+				preproc.errors.push("Invalid noun '" + req.params.noun + "'.");
+			}
+
+			return preproc;
+		}, function(preproc) {
+			FdaService.getRecallEvent(req.params.noun, req.params.id, getSendResponseCallback(res));
+		});
+	});
+
+	
 };
