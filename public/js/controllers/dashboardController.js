@@ -62,7 +62,8 @@ app.controller("dashboardController", ["$scope", "$http", "$resource", "$log", "
 		classificationClass1: true,
 		classificationClass2: true,
 		classificationClass3: true,
-		recallingFirm: ""
+		recallingFirm: "",
+		stateName: ""
 	};
 	$scope.stateCounts = {};
 	$scope.closeAlert = function(index) {
@@ -102,14 +103,20 @@ app.controller("dashboardController", ["$scope", "$http", "$resource", "$log", "
     	});
 	}
 
-var queryEndpoint = "/fda/recalls?includeFood=true&includeDrugs=true&includeDevices=true&includeClass1=true&includeClass2=true&includeClass3=true&limit=25&offset=0&orderBy=recallInitiationDate&orderDir=asc&stateAbbr=tx";
-	$scope.tableOptions = DTOptionsBuilder.fromSource(queryEndpoint)
-			.withOption("bFilter", false)
-			.withOption("bLengthChange", false)
-			.withOption("iDisplayStart", 0)
-			.withOption("iDisplayLength", 25)
-			.withDataProp("result.recalls")
-			.withPaginationType('full_numbers');
+	$scope.tableOptions = DTOptionsBuilder.fromSource("")
+		.withDataProp("result.recalls")
+		.withPaginationType('full_numbers')
+		.withFnServerData(function(sSource, aoData, fnCallback, oSettings) {
+    		var queryEndpoint = "/fda/recalls?" + buildQueryString($scope.searchParams);
+    		queryEndpoint += "&offset=0&limit=100&orderBy=recallInitiationDate&orderDir=asc";
+    		queryEndpoint +=  "&stateAbbr=" + utilityService.stateNames[$scope.searchParams.stateName].toLowerCase();
+			oSettings.jqXHR = $.ajax({
+				'dataType': 'json',
+				'type': 'GET',
+				'url': queryEndpoint,
+				'success': fnCallback
+			});
+		});
 	$scope.tableColumns = [
         DTColumnBuilder.newColumn('productType').withTitle('Type'),
         DTColumnBuilder.newColumn('recallingFirm').withTitle('Recalling Firm'),
@@ -120,20 +127,8 @@ var queryEndpoint = "/fda/recalls?includeFood=true&includeDrugs=true&includeDevi
     $scope.tableInstance = {};
     
     $scope.clickMap = function(stateName) {
-
-    	var queryString = buildQueryString($scope.searchParams);
-
-    	var queryEndpoint = "/fda/recalls?" + queryString;
-    	queryEndpoint += "&limit=25&offset=0&orderBy=recallInitiationDate&orderDir=asc";
-    	if (stateName) {
-    		queryEndpoint +=  "&stateAbbr=" + utilityService.stateNames[stateName].toLowerCase();
-    	}
-
-		$scope.tableInstance.changeData(queryEndpoint);
-
-
-	// result.total
-	// status.error = true/false
+    	$scope.searchParams.stateName = stateName;
+		$scope.tableInstance.changeData("");
     }
 
 }]);
