@@ -196,6 +196,24 @@ describe('Filter tests', function() {
 
 	});
 
+	describe('GET /filters/search', function() {
+		it('runs without error', function(done) {
+			request(app.app)
+				.get('/filters/search?q=test')
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					res.body.should.have.property('result');
+					res.body.result.should.be.instanceof(Array);
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.false;
+					(res.body.status.message === undefined).should.be.true;
+				})
+				.end(done);
+		});
+	});
+
 });
 
 describe('FDA data tests', function() {
