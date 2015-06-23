@@ -28,7 +28,7 @@ function FilterService() {
 		if(!filter) {
 			return filter;
 		}
-		
+
 		var result = filter.dataValues;
 
 		if(result.fromDate) {
@@ -83,6 +83,9 @@ function FilterService() {
 
 	this.searchFilters = function(query, callback) {
 		models.filter.findAll({where: models.Sequelize.or({name: {$ilike: '%' + query + '%'}}, {description: {$ilike: '%' + query + '%'}}), limit: 50}).then(function(filters) {
+			filters.forEach(function(filter, i) {
+				filters[i] = serviceSelf.convertToResponse(filter);
+			});
 			callback(null, filters);
 		}, function(error) {
 			logger.error(error);
