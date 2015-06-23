@@ -24,10 +24,17 @@ function FilterService() {
 	};
 
 	this.addFilter = function(props, callback) {
+		// Turn empty strings in the map into nulls
+		for(var p in props) {
+			if(typeof props[p] == 'string' && props[p].trim() == '') {
+				props[p] = null;
+			}
+		}
+
 		var instance = models.filter.build(props);
 
 		instance.save().then(function() {
-			callback(null, instance);
+			callback(null, props);
 		}, function(error) {
 			logger.error(error);
 			if(error.name === 'SequelizeUniqueConstraintError') {
