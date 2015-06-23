@@ -7,16 +7,16 @@
 --
 --
 --
-DROP VIEW v_state_enforcements;
-DROP TABLE fda_enforcement_states;
+DROP VIEW IF EXISTS v_state_enforcements;
+DROP TABLE IF EXISTS fda_enforcement_states;
 
-DROP TABLE states;
+DROP TABLE IF EXISTS states;
 
-DROP INDEX product_type_index;
+DROP INDEX IF EXISTS product_type_index;
 
-DROP INDEX recall_number_index;
+DROP INDEX IF EXISTS recall_number_index;
 
-DROP TABLE public.fda_enforcement_events;
+DROP TABLE IF EXISTS fda_enforcement_events;
 
 CREATE TABLE public.fda_enforcement_events
 (
