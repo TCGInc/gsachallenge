@@ -5,7 +5,6 @@ var request = require('request');
 var _ = require('lodash');
 var models = require('../models');
 var logger = require('../util/logger')();
-var AppError = require('../util/AppError');
 
 
 function FdaService() {
@@ -134,6 +133,15 @@ function FdaService() {
 		"food": "Food"
 	};
 
+	this.convertFdaToDbNouns = function(nouns) {
+		var dbNouns = [];
+		nouns.forEach(function(noun) {
+			dbNouns.push(serviceSelf.NOUN_FDA_TO_DB[noun]);
+		});
+
+		return dbNouns;
+	};
+
 	// Returns recalls counts associated to a list of nouns in aggregate and broken down by noun
 	// {
 	// 	aggregate: {
@@ -155,25 +163,45 @@ function FdaService() {
 	function getStateRecallCountsLocal(params, callback) {
 
 		// Convert list of nouns to match the db product_type column
-		var dbNouns = [];
-		params.nouns.forEach(function(noun) {
-			dbNouns.push(serviceSelf.NOUN_FDA_TO_DB[noun]);
-		});
-		
-		// Query
-		models.enforcements.findAll({
-			attributes: [[models.Sequelize.fn('COUNT', '*'), 'count'],['product_type', 'productType'], [models.Sequelize.fn('LOWER', models.sequelize.col('state_abbr')), 'stateAbbr']],
+		var dbNouns = this.convertFdaToDbNouns(params.nouns);
+
+		var findAll = {
+			attributes: [[models.Sequelize.fn('COUNT', '*'), 'count'], ['product_type', 'productType'], [models.Sequelize.fn('LOWER', models.sequelize.col('state_abbr')), 'stateAbbr']],
 			where: {
 				productType: {
 					in: dbNouns
 				},
 				recallInitiationDate: {
 					$between: [params.fromDate, params.toDate]
-				}
+				},
 			},
 			group: ['product_type', 'state_abbr'],
 			order: [['state_abbr'], ['product_type']]
-		}).then(function(results) {
+		};
+
+		if(params.productDescription) {
+			findAll.where.productDescription = {
+				$ilike: '%' + params.productDescription + '%'
+			};
+		}
+		if(params.reasonForRecall) {
+			findAll.where.reasonForRecall = {
+				$ilike: '%' + params.reasonForRecall + '%'
+			};
+		}
+		if(params.recallingFirm) {
+			findAll.where.recallingFirm = {
+				$ilike: '%' + params.recallingFirm + '%'
+			};
+		}
+		if(params.classifications.length) {
+			findAll.where.classification = {
+				in: params.classifications
+			}
+		}
+
+		// Query
+		models.enforcements.findAll(findAll).then(function(results) {
 
 			// Init result object
 			var result = {
@@ -181,7 +209,7 @@ function FdaService() {
 				byNoun: {}
 			};
 
-			// Init state counts in aggregate result object 
+			// Init state counts in aggregate result object
 			serviceSelf.statesAbbr.forEach(function (abbr) {
 				addToStateCount(result.aggregate, abbr, 0);
 			});
@@ -213,7 +241,137 @@ function FdaService() {
 
 	this.isValidNoun = function(noun) {
 		return this.NOUN_FDA_TO_DB[noun] !== undefined;
+	};
+
+	this.getAutocompleteStrings = function(params, callback) {
+
+		// Get column name corresponding to field name
+		var columnName = models.enforcements.attributes[params.field].field;
+
+		// Convert list of nouns to match the db product_type column
+		var dbNouns = this.convertFdaToDbNouns(params.nouns);
+
+		// Query params
+		var findAll = {
+			attributes: [[columnName, params.field]],
+			where: {
+				productType: {
+					in: dbNouns
+				}
+			},
+			group: [columnName],
+			order: models.Sequelize.fn('lower', models.Sequelize.col(columnName)),
+			limit: 50
+		};
+
+		findAll.where[params.field] = {
+			$ilike: '%' + params.query + '%'
+		};
+
+		// Query
+		models.enforcements.findAll(findAll).then(function(products) {
+			var result = [];
+
+			// Make string array from results
+			products.forEach(function(product) {
+				result.push(product[params.field]);
+			});
+
+			callback(null, result);
+		}, function(error) {
+			logger.error(error);
+			callback(error, null);
+		});
+	};
+
+	// Prep recalls to be returned in an http response
+	this.recallsToResponse = function(recalls) {
+		recalls.forEach(function(recall) {
+			delete recall.dataValues.id;
+		});
+
+		return recalls;
 	}
+
+	// Returns recalls for the given filter criteria
+	// {
+	// 	total: total records matching criteria,
+	// 	recalls: [
+	// 		{
+	// 			recall 1
+	// 		},
+	// 		{
+	// 			recall 2
+	// 		},
+	// 		...
+	// 	] 
+	// }
+	this.getRecallEvents = function(params, callback) {
+
+		// Convert list of nouns to match the db product_type column
+		var dbNouns = this.convertFdaToDbNouns(params.nouns);
+
+		var findAll = {
+			where: {
+				productType: {
+					in: dbNouns
+				},
+				recallInitiationDate: {
+					$between: [params.fromDate, params.toDate]
+				},
+				stateAbbr: models.Sequelize.fn('UPPER', params.stateAbbr)
+			}
+		};
+
+		if(params.productDescription) {
+			findAll.where.productDescription = {
+				$ilike: '%' + params.productDescription + '%'
+			};
+		}
+		if(params.reasonForRecall) {
+			findAll.where.reasonForRecall = {
+				$ilike: '%' + params.reasonForRecall + '%'
+			};
+		}
+		if(params.recallingFirm) {
+			findAll.where.recallingFirm = {
+				$ilike: '%' + params.recallingFirm + '%'
+			};
+		}
+		if(params.classifications.length) {
+			findAll.where.classification = {
+				in: params.classifications
+			}
+		}
+
+		// Get count of recalls matching criteria
+		models.enforcements.count(findAll).then(function(count) {
+
+			// After getting total count, add order, limit, and offset parameters
+			findAll.order = [[models.enforcements.attributes[params.orderBy].field, params.orderDir]];
+			findAll.limit = params.limit;
+			findAll.offset = params.offset;
+
+			// Query
+			models.enforcements.findAll(findAll).then(function(recalls) {
+
+				var result = {
+					total: count,
+					recalls: serviceSelf.recallsToResponse(recalls)
+				};
+
+				callback(null, result);
+			}, function(error) {
+				logger.error(error);
+				callback(error, null);
+			});
+		}, function(error) {
+			logger.error(error);
+			callback(error, null);
+		});
+
+
+	};
 
 	this.statesAbbr = [
 		'al', 'ak', 'az', 'ar', 'ca', 'co', 'ct', 'de', 'fl', 'ga',

@@ -2,7 +2,7 @@
 
 module.exports = function(sequelize, DataTypes) {
 	var Enforcement = sequelize.define('enforcements', {
-		ID: {
+		id: {
 			type: DataTypes.INTEGER,
 			primaryKey: true,
 			autoIncrement: true
@@ -14,6 +14,18 @@ module.exports = function(sequelize, DataTypes) {
 		productType: {
 			type: DataTypes.STRING,
 			field: 'product_type'
+		},
+		reasonForRecall: {
+			type: DataTypes.STRING,
+			field: 'reason_for_recall'
+		},
+		recallingFirm: {
+			type: DataTypes.STRING,
+			field: 'recalling_firm'
+		},
+		productDescription: {
+			type: DataTypes.STRING,
+			field: 'product_description'
 		},
 		recallInitiationDate: {
 			type: DataTypes.DATEONLY,
