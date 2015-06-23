@@ -244,7 +244,7 @@ function FdaService() {
 	};
 
 	this.getAutocompleteStrings = function(params, callback) {
-console.log("PARRRAMMS: " + JSON.stringify(params));
+
 		// Get column name corresponding to field name
 		var columnName = models.enforcements.attributes[params.field].field;
 
