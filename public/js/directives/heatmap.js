@@ -3,7 +3,7 @@ app.directive("heatmap", function(utilityService) {
 	// Configuration settings for heatmap color bands.
 	// See available options in public/js/external/colorbrewer.js
 	var colorbrewerConfig = {
-		palette: "YlOrRd",
+		palette: "PuBuGn", // YlOrRd, Set3
 		numberOfBands: 9 // Allowable number of color bands are 3-9.
 	};
 
@@ -44,7 +44,6 @@ app.directive("heatmap", function(utilityService) {
 		        },
 		        data: stateFillData
 			});
-			map.legend();
 
 			// Resize heatmap when window size changes.
       		window.addEventListener('resize', function(event){

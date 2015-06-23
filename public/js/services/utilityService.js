@@ -53,6 +53,28 @@ app.service("utilityService", [function() {
 			WV: "West Virginia",
 			WI: "Wisconsin",
 			WY: "Wyoming"
+		},
+
+		addAlert(scope, type, message) {
+			// type choices: "danger" (red), "success" (green), "info" (blue), "warning" (yellow)
+
+			if (!scope.hasOwnProperty("alerts")) {
+				scope.alerts = [];
+			}
+
+			scope.alerts.push({
+				type: type,
+				msg: message}
+			);
+		},
+
+		closeAlert(scope, index) {
+			scope.alerts.splice(index, 1);
+		},
+
+		closeAllAlerts(scope) {
+			scope.alerts = [];
 		}
+
 	};
 }]);
