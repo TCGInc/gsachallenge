@@ -165,7 +165,7 @@ describe('Filter tests', function() {
 
 		it('returns the filter', function(done) {
 			request(app.app)
-				.get('/filters/'+testId)
+				.get('/filters/' + testId)
 				.set('Accept', 'application/json')
 				.expect('Content-Type', /json/)
 				.expect(200)

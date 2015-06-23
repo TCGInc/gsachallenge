@@ -173,7 +173,7 @@ function FdaService() {
 				},
 				recallInitiationDate: {
 					$between: [params.fromDate, params.toDate]
-				},
+				}
 			},
 			group: ['product_type', 'state_abbr'],
 			order: [['state_abbr'], ['product_type']]
@@ -197,7 +197,7 @@ function FdaService() {
 		if(params.classifications.length) {
 			findAll.where.classification = {
 				in: params.classifications
-			}
+			};
 		}
 
 		// Query
@@ -291,7 +291,7 @@ function FdaService() {
 		});
 
 		return recalls;
-	}
+	};
 
 	// Returns recalls for the given filter criteria
 	// {
@@ -304,7 +304,7 @@ function FdaService() {
 	// 			recall 2
 	// 		},
 	// 		...
-	// 	] 
+	// 	]
 	// }
 	this.getRecallEvents = function(params, callback) {
 
@@ -341,7 +341,7 @@ function FdaService() {
 		if(params.classifications.length) {
 			findAll.where.classification = {
 				in: params.classifications
-			}
+			};
 		}
 
 		// Get count of recalls matching criteria
@@ -373,7 +373,7 @@ function FdaService() {
 
 	this.getRecallEvent = function(noun, id, callback) {
 		var options = {
-			url: 'https://api.fda.gov/' + noun + '/enforcement.json?search=event_id:'+id,
+			url: 'https://api.fda.gov/' + noun + '/enforcement.json?search=event_id:' + id,
 			json: true
 		};
 

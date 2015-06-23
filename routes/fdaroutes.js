@@ -2,7 +2,6 @@
 
 var moment = require('moment');
 var models = require('../models');
-var logger = require('../util/logger')();
 var AppResponse = require('../util/AppResponse');
 
 module.exports = function (app) {
@@ -213,7 +212,7 @@ module.exports = function (app) {
 			}
 
 			// Validate orderDir
-			if(!req.query.orderDir || (req.query.orderDir != 'asc' && req.query.orderDir != 'desc')) {
+			if(!req.query.orderDir || (req.query.orderDir !== 'asc' && req.query.orderDir !== 'desc')) {
 				preproc.errors.push('Invalid orderDir.');
 			}
 			else {
@@ -239,10 +238,8 @@ module.exports = function (app) {
 			}
 
 			return preproc;
-		}, function(preproc) {
+		}, function() {
 			FdaService.getRecallEvent(req.params.noun, req.params.id, getSendResponseCallback(res));
 		});
 	});
-
-	
 };
