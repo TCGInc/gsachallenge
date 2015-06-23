@@ -1,5 +1,6 @@
 'use strict';
 
+var moment = require('moment');
 var models = require('../models');
 var logger = require('../util/logger')();
 var AppError = require('../util/AppError');
@@ -7,7 +8,7 @@ var AppError = require('../util/AppError');
 
 function FilterService() {
 
-	//var serviceSelf = this;
+	var serviceSelf = this;
 
 	this.isUniqueName = function(name, callback) {
 		models.filter.find({name: name}).then(function(filter) {
@@ -23,6 +24,24 @@ function FilterService() {
 		});
 	};
 
+	this.convertToResponse = function(filter) {
+		if(!filter) {
+			return filter;
+		}
+		
+		var result = filter.dataValues;
+
+		if(result.fromDate) {
+			result.fromDate = moment(result.fromDate).format('YYYY-MM-DD');
+		}
+
+		if(result.toDate) {
+			result.toDate = moment(result.toDate).format('YYYY-MM-DD');
+		}
+
+		return result;
+	}
+
 	this.addFilter = function(props, callback) {
 		// Turn empty strings in the map into nulls
 		for(var p in props) {
@@ -33,8 +52,8 @@ function FilterService() {
 
 		var instance = models.filter.build(props);
 
-		instance.save().then(function() {
-			callback(null, props);
+		instance.save().then(function(saved) {
+			callback(null, serviceSelf.convertToResponse(saved));
 		}, function(error) {
 			logger.error(error);
 			if(error.name === 'SequelizeUniqueConstraintError') {
@@ -44,9 +63,18 @@ function FilterService() {
 		});
 	};
 
+	this.getFilterById = function(id, callback) {
+		models.filter.find({where: {id: id}}).then(function(filter) {
+			callback(null, serviceSelf.convertToResponse(filter));
+		}, function(error) {
+			logger.error(error);
+			callback(error, null);
+		});
+	};
+
 	this.getFilterByName = function(name, callback) {
 		models.filter.find({where: {name: name}}).then(function(filter) {
-			callback(null, filter);
+			callback(null, serviceSelf.convertToResponse(filter));
 		}, function(error) {
 			logger.error(error);
 			callback(error, null);

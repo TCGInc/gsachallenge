@@ -5,6 +5,7 @@
 var request = require('supertest');
 var should = require('should');
 
+var Promise = require('bluebird');
 var app = require('../index');
 var models = require('../models');
 
@@ -141,6 +142,54 @@ describe('Filter tests', function() {
 					(res.body.status === null).should.be.false;
 					res.body.status.error.should.be.true;
 					res.body.status.should.have.property('message', 'At least one of includeFood, includeDrugs, or includeDevices must be true.');
+				})
+				.end(done);
+		});
+
+	});
+
+	describe('GET /filters/:id', function() {
+
+		var testId = -1;
+
+		// Get id of known filter
+		before(function(done) {
+			models.filter.find({where: {name: 'test'}}).then(function(filter) {
+				testId = filter.id;
+
+				done();
+			}, function() {
+				done();
+			});
+		});
+
+		it('returns the filter', function(done) {
+			request(app.app)
+				.get('/filters/'+testId)
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					res.body.should.have.property('result');
+					res.body.result.should.have.property('id', testId);
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.false;
+					(res.body.status.message === undefined).should.be.true;
+				})
+				.end(done);
+		});
+
+		it('returns nothing', function(done) {
+			request(app.app)
+				.get('/filters/999999')
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					res.body.should.have.property('result', null);
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.false;
+					(res.body.status.message === undefined).should.be.true;
 				})
 				.end(done);
 		});

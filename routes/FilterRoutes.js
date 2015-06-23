@@ -33,6 +33,10 @@ module.exports = function (app) {
 		}
 	});
 
+	app.get('/filters/:id', function(req, res) {
+		FilterService.getFilterById(req.params.id, getSendResponseCallback(res));
+	});
+
 	app.post('/filters', function(req, res) {
 		// Validate parameters
 		var errors = [];
@@ -62,14 +66,7 @@ module.exports = function (app) {
 		}
 
 		// Perform insert
-		FilterService.addFilter(req.body, function(err) {
-			if(err) {
-				res.json(new AppResponse(null, true, err.message));
-			}
-			else {
-				res.json(new AppResponse(req.body, false, null));
-			}
-		});
+		FilterService.addFilter(req.body, getSendResponseCallback(res));
 	});
 
 };
