@@ -112,7 +112,7 @@ module.exports = function (app) {
 	// Return counts of recalls on a state by state basis
 	app.get('/fda/recalls/counts', function (req, res) {
 		validateAndRespond(req, res, processFilteringRequestParams, function(preproc) {
-			FdaService.getStateRecallCountsLocal(preproc.searchParams, getSendResponseCallback(res));
+			FdaService.getStateRecallCounts(preproc.searchParams, getSendResponseCallback(res));
 		});
 	});
 

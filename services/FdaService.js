@@ -1,8 +1,6 @@
 'use strict';
 
-var Promise = require('bluebird');
 var request = require('request');
-var _ = require('lodash');
 var models = require('../models');
 var logger = require('../util/logger')();
 
@@ -18,106 +16,6 @@ function FdaService() {
 			map[state] += count;
 		}
 	}
-
-	// Normalizes the FDA term counts by combining the full state name counts with the abbreviation counts
-	// Also increments each state count by the number of 'nationwide' occurances
-	function normalizeStates(counts) {
-		var stateCounts = {};
-		var nationwideCount = 0;
-
-		counts.forEach(function (term) {
-			if (serviceSelf.statesAbbr.indexOf(term.term) > -1) {
-				addToStateCount(stateCounts, term.term, term.count);
-			} else if (serviceSelf.statesMap[term.term]) {
-				addToStateCount(stateCounts, serviceSelf.statesMap[term.term], term.count);
-			} else if (term.term === 'nationwide') {
-				nationwideCount = term.count;
-			}
-		});
-
-		serviceSelf.statesAbbr.forEach(function (abbr) {
-			addToStateCount(stateCounts, abbr, nationwideCount);
-		});
-
-		return stateCounts;
-	}
-
-	// Returns a map of recalls associated to that noun broken down by state (key = state, value = count)
-	// {
-	// 	'state abbreviation': count,
-	// 	...
-	// }
-	function getStateRecallCountsByNoun(noun, callback) {
-		var options = {
-			url: 'https://api.fda.gov/' + noun + '/enforcement.json?count=distribution_pattern&limit=1000',
-			json: true
-		};
-
-		request(options, function (err, res, body) {
-
-			if (!err && res.statusCode === 200) {
-
-				var stateCounts = normalizeStates(body.results);
-
-				callback(null, stateCounts);
-			} else {
-				//err.message = 'The request to the FDA API failed';
-				callback(err, null);
-			}
-		});
-	}
-
-	// Returns recalls counts associated to a list of nouns in aggregate and broken down by noun
-	// {
-	// 	aggregate: {
-	// 		'state abbreviation': count,
-	// 		...
-	// 	},
-	// 	byNoun: {
-	// 		noun1: {
-	// 			'state abbreviation': count,
-	// 			...
-	// 		},
-	// 		noun2: {
-	// 			'state abbreviation': count,
-	// 			...
-	// 		},
-	// 		...
-	// 	}
-	// }
-	function getStateRecallCounts(nouns, callback) {
-		var promises = [];
-
-		nouns.forEach(function (noun) {
-			promises.push(serviceSelf.getStateRecallCountsByNoun(noun));
-		});
-
-		Promise.all(promises).then(function (counts) {
-
-			var result = {
-				aggregate: {},
-				byNoun: {}
-			};
-
-			nouns.forEach(function (noun, idx) {
-				result.byNoun[noun] = counts[idx];
-
-				// add the individual noun counts into the aggregate
-				_.merge(result.aggregate, counts[idx], function (a, b) {
-					return (a || 0) + (b || 0);
-				});
-			});
-
-			callback(null, result);
-
-		}, function (error) {
-			callback(error, null);
-		});
-	}
-
-	this.getStateRecallCounts = Promise.promisify(getStateRecallCounts);
-
-	this.getStateRecallCountsByNoun = Promise.promisify(getStateRecallCountsByNoun);
 
 	// Mapping from FDA API noun to database product_type
 	this.NOUN_DB_TO_FDA = {
@@ -160,7 +58,7 @@ function FdaService() {
 	// 		...
 	// 	}
 	// }
-	function getStateRecallCountsLocal(params, callback) {
+	this.getStateRecallCounts = function(params, callback) {
 
 		// Convert list of nouns to match the db product_type column
 		var dbNouns = this.convertFdaToDbNouns(params.nouns);
@@ -235,9 +133,7 @@ function FdaService() {
 			logger.error(error);
 			callback(error, null);
 		});
-	}
-
-	this.getStateRecallCountsLocal = Promise.promisify(getStateRecallCountsLocal);
+	};
 
 	this.isValidNoun = function(noun) {
 		return this.NOUN_FDA_TO_DB[noun] !== undefined;
