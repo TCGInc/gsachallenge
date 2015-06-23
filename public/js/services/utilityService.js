@@ -74,6 +74,27 @@ app.service("utilityService", [function() {
 
 		closeAllAlerts(scope) {
 			scope.alerts = [];
+		},
+
+		addModalAlert(scope, type, message) {
+			// type choices: "danger" (red), "success" (green), "info" (blue), "warning" (yellow)
+
+			if (!scope.hasOwnProperty("alerts")) {
+				scope.modalAlerts = [];
+			}
+
+			scope.modalAlerts.push({
+				type: type,
+				msg: message}
+			);
+		},
+
+		closeModalAlert(scope, index) {
+			scope.modalAlerts.splice(index, 1);
+		},
+
+		closeAllModalAlerts(scope) {
+			scope.modalAlerts = [];
 		}
 
 	};
