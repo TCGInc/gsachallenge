@@ -1,0 +1,55 @@
+# Use Ubutu 12.04
+FROM ubuntu:12.04
+
+MAINTAINER Robert W. Buccigrossi, Ph.D -- TCG
+
+# Generate and set locale to US.UTF-8
+RUN locale-gen en_US.UTF-8  
+ENV LANG en_US.UTF-8  
+ENV LANGUAGE en_US:en  
+ENV LC_ALL en_US.UTF-8
+
+# Get latest version of core ubuntu
+RUN apt-get update
+RUN apt-get upgrade
+
+# Install Postgres 9.4
+# Add the Postgres repository
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+# Get wget (needed for key)
+RUN apt-get -y install wget
+# Install Postgres key
+RUN wget --quiet -O - --no-check-certificate https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+# Get packages
+RUN apt-get update
+# Install postgresql 
+RUN apt-get -y install postgresql-9.4
+
+# Init the postgres database
+# Replace connection configuration:
+
+RUN echo "local all postgres	     	peer" > /etc/postgresql/9.4/main/pg_hba.conf
+RUN echo "local all all	                md5" >> /etc/postgresql/9.4/main/pg_hba.conf
+RUN echo "host  all all	  127.0.0.1/32  md5" >> /etc/postgresql/9.4/main/pg_hba.conf
+RUN echo "host  all all	  ::1/128       md5" >> /etc/postgresql/9.4/main/pg_hba.conf
+# Switch to postgres user
+USER postgres
+# Init database as utf8
+RUN locale-gen en_US.UTF-8 &&\
+    pg_dropcluster --stop 9.4 main &&\
+    pg_createcluster --locale=en_US.UtF-8 --start 9.4 main
+# Now create the gsac database and user
+RUN    /etc/init.d/postgresql start &&\
+    psql --command "CREATE USER gsac WITH SUPERUSER PASSWORD 'gsac123';" &&\
+    createdb -O gsac gsac
+
+# Switch back
+USER root
+
+# Install node
+RUN wget http://nodejs.org/dist/v0.10.38/node-v0.10.38.tar.gz
+RUN tar -zxf node-v0.10.38.tar.gz
+# Get compilation tools
+RUN apt-get -y install build-essential
+RUN cd /node-v0.10.38 && ./configure && make install
+
