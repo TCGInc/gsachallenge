@@ -14,9 +14,10 @@
 		</div>
     </div>
     <div class="modal-footer">
-        <button class="btn btn-primary" ng-click="ok()">OK</button>
-        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+        <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+        <button class="btn btn-primary" ng-click="ok()">Save</button>
     </div>
 </script>
 
-<button class="btn btn-primary" ng-click="openModal()">Save this search</button>
+<label>Save this Search:</label>
+<span class="save_icon" ng-click="openModal()">Save</span>
