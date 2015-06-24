@@ -203,56 +203,44 @@ function FdaService() {
 	// 	]
 	// }
 	this.getRecallEvents = function(params, callback) {
+		// Using raw queries here as the ORM doesn't appear to support the use of postgres' ANY()
 
 		// Convert list of nouns to match the db product_type column
 		var dbNouns = this.convertFdaToDbNouns(params.nouns);
+		params.productType = dbNouns;
 
-		var findAll = {
-			where: {
-				productType: {
-					in: dbNouns
-				},
-				recallInitiationDate: {
-					$between: [params.fromDate, params.toDate]
-				},
-				stateAbbr: models.Sequelize.fn('UPPER', params.stateAbbr)
-			}
-		};
+		var raw = 'FROM v_states_enforcements WHERE product_type = ANY(:productType) AND recall_initiation_date between :fromDate AND :toDate AND (';
+		params.stateAbbr.forEach(function(state) {
+			raw += "'" + state + "' = ANY(states) OR ";
+		});
+		raw = raw.slice(0, -3);
+		raw += ') ';
 
 		if(params.productDescription) {
-			findAll.where.productDescription = {
-				$ilike: '%' + params.productDescription + '%'
-			};
+			params.productDescription = '%' + params.productDescription + '%';
+			raw += 'AND product_description ilike :productDescription ';
 		}
 		if(params.reasonForRecall) {
-			findAll.where.reasonForRecall = {
-				$ilike: '%' + params.reasonForRecall + '%'
-			};
+			params.reasonForRecall = '%' + params.reasonForRecall + '%';
+			raw += 'AND reason_for_recall ilike :reasonForRecall ';
 		}
 		if(params.recallingFirm) {
-			findAll.where.recallingFirm = {
-				$ilike: '%' + params.recallingFirm + '%'
-			};
+			params.recallingFirm = '%' + params.recallingFirm + '%';
+			raw += 'AND recalling_firm ilike :recallingFirm ';
 		}
 		if(params.classifications.length) {
-			findAll.where.classification = {
-				in: params.classifications
-			};
+			raw += 'AND classification = ANY(:classifications) ';
 		}
 
 		// Get count of recalls matching criteria
-		models.enforcements.count(findAll).then(function(count) {
+		models.sequelize.query('SELECT COUNT(*) AS count ' + raw, {replacements: params, type: models.sequelize.QueryTypes.SELECT}).then(function(count) {
+		
+			raw += 'ORDER BY ' + models.enforcements.attributes[params.orderBy].field + ' LIMIT :limit OFFSET :offset';
 
-			// After getting total count, add order, limit, and offset parameters
-			findAll.order = [[models.enforcements.attributes[params.orderBy].field, params.orderDir]];
-			findAll.limit = params.limit;
-			findAll.offset = params.offset;
-
-			// Query
-			models.enforcements.findAll(findAll).then(function(recalls) {
+			models.sequelize.query('SELECT * ' + raw, {replacements: params, model: models.enforcements}).then(function(recalls) {
 
 				var result = {
-					total: count,
+					total: parseInt(count[0].count),
 					recalls: serviceSelf.recallsToResponse(recalls)
 				};
 

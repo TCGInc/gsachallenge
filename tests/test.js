@@ -65,46 +65,6 @@ describe('Filter tests', function() {
 				.end(done);
 		});
 
-		it('errors about fromDate', function(done) {
-			request(app.app)
-				.post('/filters')
-				.send({
-					name: 'zzzzzzzzzzzzz',
-					toDate: '2015-06-19',
-					includeDrugs: true
-				})
-				.set('Accept', 'application/json')
-				.expect('Content-Type', /json/)
-				.expect(200)
-				.expect(function(res) {
-					(res.body.result === null).should.be.true;
-					(res.body.status === null).should.be.false;
-					res.body.status.error.should.be.true;
-					res.body.status.should.have.property('message', 'Invalid fromDate.');
-				})
-				.end(done);
-		});
-
-		it('errors about toDate', function(done) {
-			request(app.app)
-				.post('/filters')
-				.send({
-					name: 'zzzzzzzzzzzzz',
-					fromDate: '2015-06-19',
-					includeDrugs: true
-				})
-				.set('Accept', 'application/json')
-				.expect('Content-Type', /json/)
-				.expect(200)
-				.expect(function(res) {
-					(res.body.result === null).should.be.true;
-					(res.body.status === null).should.be.false;
-					res.body.status.error.should.be.true;
-					res.body.status.should.have.property('message', 'Invalid toDate.');
-				})
-				.end(done);
-		});
-
 		it('errors about date order', function(done) {
 			request(app.app)
 				.post('/filters')
