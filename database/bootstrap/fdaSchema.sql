@@ -136,7 +136,7 @@ ALTER TABLE fda_enforcement_states
 CREATE INDEX states_id_idx
   ON fda_enforcement_states(states_id);
 
---One view
+--core view
 create or replace view v_state_enforcements
 as
 select a.*, State_Abbr, State_Name 
@@ -144,7 +144,18 @@ from
 fda_enforcement_events a, fda_enforcement_states b, states c
 where a.id = b.fda_enforcement_EVENTS_id and b.states_id=c.id;
 
-<<<<<<< HEAD
+
+--unmapped view
+create or replace view v_unmapped_events
+as
+select a.*
+from
+fda_enforcement_events a
+where not exists (select 'a' from fda_enforcement_states b where b.fda_enforcement_events_id=a.id);
+
+
+
+
 --States
 
 INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Alabama','AL','Y');
@@ -198,5 +209,5 @@ INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Washington','WA'
 INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('West Virginia','WV','N');
 INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Wisconsin','WI','N');
 INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Wyoming','WY','N');
-=======
->>>>>>> 1a1c312d69ffadb7167c40bef5bcb3ddeefec9ff
+
+
