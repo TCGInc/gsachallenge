@@ -1,4 +1,41 @@
-.datamaps-legend {
-  left: 50% !important;
-  transform: translate(-50%, 0);
+/*
+    Currently have colors hard-coded for legend. If we're going to allow
+    users to select color schemes, need to move this into JavaScript.
+*/
+
+.map-leg {
+  background: linear-gradient(to right,
+    #fff7fb 0%,
+    #fff7fb 12.5%,
+    #ece7f2 12.5%,
+    #ece7f2 25%,
+    #d0d1e6 25%,
+    #d0d1e6 37.5%,
+    #a6bddb 37.5%,
+    #a6bddb 50%,
+    #74a9cf 50%,
+    #74a9cf 62.5%,
+    #3690c0 62.5%,
+    #3690c0 75%,
+    #0570b0 75%,
+    #0570b0 87.5%,
+    #045a8d 87.5%,
+    #045a8d 100%,
+    #023858 100%);
+  border: 1px solid black;
+  bottom: -15px;
+  font-size: 12px;
+  left: 0;
+  line-height: 1;
+  padding: 5px;
+  position: absolute;
+  right: 0;
+  .leg-less {
+    color: black;
+    float: left;
+  }
+  .leg-more {
+    color: white;
+    float: right;
+  }
 }

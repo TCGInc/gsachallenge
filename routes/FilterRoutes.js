@@ -1,80 +1,55 @@
 'use strict';
 
 var moment = require('moment');
+var AppResponse = require('../util/AppResponse');
 
 module.exports = function (app) {
 
 	var FilterService = require('../services/FilterService')();
+
+	function getSendResponseCallback(res) {
+		return function commonCallback(err, result) {
+			if(err) {
+				res.json(new AppResponse(null, true, err.message));
+			}
+			else {
+				res.json(new AppResponse(result, false, null));
+			}
+		};
+	}
 
 	app.get('/filters/search', function (req, res) {
 		var query = req.query.q;
 		var name = req.query.name;
 
 		if(query) {
-			FilterService.searchFilters(query, function(err, filters) {
-				if(err) {
-					res.json({
-						result: null,
-						status: {
-							error: true,
-							message: err.message
-						}
-					});
-				}
-				else {
-					res.json({
-						result: filters,
-						status: {
-							error: false
-						}
-					});
-				}
-			});
+			FilterService.searchFilters(query, getSendResponseCallback(res));
 		}
 		else if(name) {
-			FilterService.getFilterByName(name, function(err, filter) {
-				if(err) {
-					res.json({
-						result: null,
-						status: {
-							error: true,
-							message: err.message
-						}
-					});
-				}
-				else {
-					res.json({
-						result: filter,
-						status: {
-							error: false
-						}
-					});
-				}
-			});
+			FilterService.getFilterByName(name, getSendResponseCallback(res));
 		}
 		else {
-			res.json({
-				result: null,
-				status: {
-					error: false
-				}
-			});
+			res.json(new AppResponse(null, false, null));
 		}
+	});
+
+	app.get('/filters/:id', function(req, res) {
+		FilterService.getFilterById(req.params.id, getSendResponseCallback(res));
 	});
 
 	app.post('/filters', function(req, res) {
 		// Validate parameters
 		var errors = [];
 
-		if(req.body.fromDate == null) {
+		if(req.body.fromDate == null || !/^(19|20)\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/.test(req.body.fromDate)) {
 			errors.push('Invalid fromDate.');
 		}
-		else if(req.body.toDate == null) {
+		else if(req.body.toDate == null || !/^(19|20)\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/.test(req.body.toDate)) {
 			errors.push('Invalid toDate.');
 		}
 		else {
-			var m1 = moment(req.body.fromDate);
-			var m2 = moment(req.body.toDate);
+			var m1 = moment(req.body.fromDate, 'YYYY-MM-DD');
+			var m2 = moment(req.body.toDate, 'YYYY-MM-DD');
 
 			if(m2.isBefore(m1)) {
 				errors.push('fromDate is before toDate.');
@@ -87,35 +62,11 @@ module.exports = function (app) {
 
 		// Return validation errors
 		if(errors.length) {
-			return res.json({
-				result: null,
-				status: {
-					error: true,
-					message: errors.join('; ')
-				}
-			});
+			return res.json(new AppResponse(null, true, errors.join('; ')));
 		}
 
 		// Perform insert
-		FilterService.addFilter(req.body, function(err) {
-			if(err) {
-				res.json({
-					result: null,
-					status: {
-						error: true,
-						message: err.message
-					}
-				});
-			}
-			else {
-				res.json({
-					result: req.body,
-					status: {
-						error: false
-					}
-				});
-			}
-		});
+		FilterService.addFilter(req.body, getSendResponseCallback(res));
 	});
 
 };

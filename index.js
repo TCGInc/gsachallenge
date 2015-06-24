@@ -23,8 +23,7 @@ app.use(bodyParser.json());
 // Use express-winston for access logs
 //app.use(expressWinston.logger({transports: [logger]}));
 
-require('./routes/testroutes.js')(app);
-require('./routes/fdaroutes.js')(app);
+require('./routes/FdaRoutes.js')(app);
 require('./routes/FilterRoutes.js')(app);
 
 var server = exports.server = app.listen(process.env.PORT || 80, function () {
@@ -32,6 +31,6 @@ var server = exports.server = app.listen(process.env.PORT || 80, function () {
 	var host = server.address().address;
 	var port = server.address().port;
 
-	logger.info('Example app listening at http://%s:%s', host, port);
+	logger.info('FDA Recall Explorer listening at http://%s:%s', host, port);
 
 });

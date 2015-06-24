@@ -5,6 +5,7 @@
 var request = require('supertest');
 var should = require('should');
 
+var Promise = require('bluebird');
 var app = require('../index');
 var models = require('../models');
 
@@ -145,6 +146,72 @@ describe('Filter tests', function() {
 				.end(done);
 		});
 
+	});
+
+	describe('GET /filters/:id', function() {
+
+		var testId = -1;
+
+		// Get id of known filter
+		before(function(done) {
+			models.filter.find({where: {name: 'test'}}).then(function(filter) {
+				testId = filter.id;
+
+				done();
+			}, function() {
+				done();
+			});
+		});
+
+		it('returns the filter', function(done) {
+			request(app.app)
+				.get('/filters/' + testId)
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					res.body.should.have.property('result');
+					res.body.result.should.have.property('id', testId);
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.false;
+					(res.body.status.message === undefined).should.be.true;
+				})
+				.end(done);
+		});
+
+		it('returns nothing', function(done) {
+			request(app.app)
+				.get('/filters/999999')
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					res.body.should.have.property('result', null);
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.false;
+					(res.body.status.message === undefined).should.be.true;
+				})
+				.end(done);
+		});
+
+	});
+
+	describe('GET /filters/search', function() {
+		it('runs without error', function(done) {
+			request(app.app)
+				.get('/filters/search?q=test')
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					res.body.should.have.property('result');
+					res.body.result.should.be.instanceof(Array);
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.false;
+					(res.body.status.message === undefined).should.be.true;
+				})
+				.end(done);
+		});
 	});
 
 });
@@ -349,6 +416,54 @@ describe('FDA data tests', function() {
 					res.body.should.have.property('status');
 					res.body.status.error.should.be.true;
 					res.body.status.should.have.property('message', 'Invalid orderDir.');
+				})
+				.end(done);
+		});
+	});
+
+	describe('GET /fda/recalls/:noun/:id', function() {
+		it('returns the recall', function(done) {
+			request(app.app)
+				.get('/fda/recalls/drug/65125')
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					res.body.should.have.property('result');
+					res.body.result.should.have.property('event_id', '65125');
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.false;
+					(res.body.status.message === undefined).should.be.true;
+				})
+				.end(done);
+		});
+
+		it('returns nothing', function(done) {
+			request(app.app)
+				.get('/fda/recalls/drug/99999999999999')
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					res.body.should.have.property('result', null);
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.false;
+					(res.body.status.message === undefined).should.be.true;
+				})
+				.end(done);
+		});
+
+		it('throws error about noun', function(done) {
+			request(app.app)
+				.get('/fda/recalls/invalidnoun/65125')
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					res.body.should.have.property('result', null);
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.true;
+					res.body.status.should.have.property('message', "Invalid noun 'invalidnoun'.");
 				})
 				.end(done);
 		});

@@ -3,7 +3,7 @@ app.directive("heatmap", function(utilityService) {
 	// Configuration settings for heatmap color bands.
 	// See available options in public/js/external/colorbrewer.js
 	var colorbrewerConfig = {
-		palette: "YlOrRd",
+		palette: "PuBu", // YlOrRd, Set3
 		numberOfBands: 9 // Allowable number of color bands are 3-9.
 	};
 
@@ -17,7 +17,7 @@ app.directive("heatmap", function(utilityService) {
 
 	// Intitialize default fill values for each state.
 	var stateFillData = {};
-	angular.forEach(utilityService.stateNames, function(name, abbreviation) {
+	angular.forEach(utilityService.stateNames, function(abbreviation, name) {
 		stateFillData[abbreviation] = {
 			fillKey: "",
 			numberOfEvents: 0
@@ -33,23 +33,36 @@ app.directive("heatmap", function(utilityService) {
 			var map = new Datamap({
 				element: element.children("div")[0],
 				scope: 'usa',
-        		responsive: true,
+        responsive: true,
 				fills: fills,
 			    geographyConfig: {
 			        popupTemplate: function(geo, data) {
 			            return ['<div class="hoverinfo"><strong>',
 			                    'Number of events in ' + geo.properties.name,
 			                    ': ' + data.numberOfEvents,
-			                    '</strong></div>'].join('');			            }
+			                    '</strong></div>'].join('');
+					},
+        highlightFillColor: '#d12212',
+        highlightBorderColor: 'rgba(0,0,0,0)',
+        highlightBorderWidth: 0
+		        },
+		        done: function(datamap) {
+		            datamap.svg.selectAll('.datamaps-subunit').on('click', function(geography) {
+		                scope.clickMap(geography.properties.name);
+		            });
 		        },
 		        data: stateFillData
 			});
-			map.legend();
 
 			// Resize heatmap when window size changes.
       		window.addEventListener('resize', function(event){
         		map.resize();
       		});
+
+      // This is a horrible, embarassing hack. If you can figure out a better fix, please implement it!
+        setTimeout(function() {
+          map.resize();
+        }, 1000);
 
       		// Refresh the heatmap colors based on the new state counts.
       		function updateMap(stateCounts, stateFillData, map) {
@@ -79,3 +92,4 @@ app.directive("heatmap", function(utilityService) {
 		}
     }
 });
+

@@ -8,29 +8,105 @@
   color: white;
 }
 
+*, *:before, *:after {
+  box-sizing: border-box;
+  text-rendering: optimizelegibility;
+}
+
 html {
   box-sizing: border-box;
   height: 100%;
   position: relative;
 }
 
-*, *:before, *:after {
-  box-sizing: border-box;
-  text-rendering: optimizelegibility;
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-family-headers;
+  font-weight: 800;
+}
+
+.form-wrapper {
+  background-color: $gray-lightest;
+  padding: 20px;
+  label {
+    color: $gray-dark;
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    margin: 5px 0 0;
+    &.checkbox-inline {
+      display: inline-block;
+      font-size: 13px;
+      font-weight: 400;
+      padding-left: 5px;
+      &:nth-child(2) {
+        padding-left: 0;
+      }
+      &+ input {
+        margin-left: 5px;
+      }
+    }
+    &.label-block {
+      display: block;
+      margin-bottom: 5px;
+    }
+    .fa {
+      color: $brand-primary;
+      cursor: pointer;
+      float: right;
+      &:active,
+      &:focus,
+      &:hover {
+        color: $brand-danger;
+      }
+    }
+  }
+  .form-group:last-child {
+    margin: 25px 0 0;
+  }
+}
+
+.popover {
+  max-width: 350px;
+  width: 350px;
 }
 
 .site-header {
-  font-size: 24px;
+  background-color: $brand-primary;
+  color: white;
   margin-bottom: 30px;
-  text-align: center;
+  padding: 30px 0;
+  h1 {
+    @include hide-text;
+    background-image: url(../img/fda.svg);
+    height: 50px;
+    margin: 0;
+    .no-svg & {
+      background-image: url(../img/fda.png);
+    }
+  }
+  h2 {
+    color: white;
+    font-size: 24px;
+    margin: 20px 0 0;
+  }
+  p {
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 5px 0 0;
+    @media (min-width: $screen-sm) {
+      font-size: 18px;
+    }
+  }
+  a {
+    color: white;
+    border-bottom: 1px solid white;
+    &:active,
+    &:focus,
+    &:hover {
+      border-bottom: 1px solid $gray-light;
+      color: $gray-light;
+      text-decoration: none;
+    }
+  }
 }
-
-.checkbox-inline {
-  font-weight: bold;
-  &:first-child {
-    padding-left: 0;
-  }
-  &+ input {
-    margin-left: 5px;
-  }
-} 
