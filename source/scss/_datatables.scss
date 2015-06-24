@@ -1,0 +1,49 @@
+table.dataTable {
+  border-top: 1px solid #111;
+  thead {
+    th {
+      background-image: none !important;
+      padding-left: 10px;
+      position: relative;
+    }
+  }
+  tbody {
+    td {
+      cursor: pointer;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      vertical-align: top;
+    }
+    .open-row td {
+      overflow: auto;
+      text-overflow: initial;
+      white-space: normal;
+    }
+  }
+}
+
+.dataTables_wrapper {
+  .dataTables_length {
+    float: right;
+    padding-top: 0.755em;
+  }
+  .dataTables_paginate {
+    float: none;
+    text-align: center;
+    .paginate_button {
+      display: none;
+      padding: 0 0 0 1px;
+      &.first,
+      &.previous,
+      &.next,
+      &.last {
+        display: inline-block;
+      }
+      @media (min-width: $screen-sm) {
+        display: inline-block;
+      }
+    }
+  }
+}

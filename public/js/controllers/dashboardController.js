@@ -106,6 +106,17 @@ app.controller("dashboardController", ["$scope", "$http", "$resource", "$log", "
 	$scope.tableOptions = DTOptionsBuilder.fromSource("")
 		.withDataProp("result.recalls")
 		.withPaginationType('full_numbers')
+    .withOption('responsive', true)
+    .withOption('bFilter', false)
+    .withOption('dom', '<"top"il>rt<"bottom"p><"clear">')
+    .withOption('rowCallback', function( nRow, aData, iDisplayIndex ) {
+      $('td', nRow).bind('click', function() {
+        $scope.$apply(function() {
+          $(nRow).toggleClass('open-row');
+        });
+      });
+      return nRow;
+    })
 		.withFnServerData(function(sSource, aoData, fnCallback, oSettings) {
     		var queryEndpoint = "/fda/recalls?" + buildQueryString($scope.searchParams);
     		queryEndpoint += "&offset=0&limit=100&orderBy=recallInitiationDate&orderDir=asc";
