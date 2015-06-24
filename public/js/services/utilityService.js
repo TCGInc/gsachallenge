@@ -55,46 +55,24 @@ app.service("utilityService", [function() {
 			"Wyoming": "WY"
 		},
 
-		addAlert(scope, type, message) {
+		parseDateString: function(rawDate) {
+			return rawDate ? new Date(rawDate).toISOString().substring(0, 10) : "1900-01-01";
+		},
+
+		addAlert: function(alerts, type, message) {
 			// type choices: "danger" (red), "success" (green), "info" (blue), "warning" (yellow)
-
-			if (!scope.hasOwnProperty("alerts")) {
-				scope.alerts = [];
-			}
-
-			scope.alerts.push({
+			alerts.push({
 				type: type,
 				msg: message}
 			);
 		},
 
-		closeAlert(scope, index) {
-			scope.alerts.splice(index, 1);
+		closeAlert: function(alerts, index) {
+			alerts.splice(index, 1);
 		},
 
-		closeAllAlerts(scope) {
-			scope.alerts = [];
-		},
-
-		addModalAlert(scope, type, message) {
-			// type choices: "danger" (red), "success" (green), "info" (blue), "warning" (yellow)
-
-			if (!scope.hasOwnProperty("alerts")) {
-				scope.modalAlerts = [];
-			}
-
-			scope.modalAlerts.push({
-				type: type,
-				msg: message}
-			);
-		},
-
-		closeModalAlert(scope, index) {
-			scope.modalAlerts.splice(index, 1);
-		},
-
-		closeAllModalAlerts(scope) {
-			scope.modalAlerts = [];
+		closeAllAlerts: function(alerts) {
+			alerts = [];
 		}
 
 	};

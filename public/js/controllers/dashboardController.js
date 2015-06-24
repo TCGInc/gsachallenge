@@ -1,20 +1,84 @@
-app.controller("dashboardController", ["$scope", "$http", "$resource", "$log", "utilityService", "DTOptionsBuilder", "DTColumnBuilder", function($scope, $http, $resource, $log, utilityService, DTOptionsBuilder, DTColumnBuilder) {
+app.controller("dashboardController", ["$location", "$scope", "$http", "$resource", "$log", "utilityService", "DTOptionsBuilder", "DTColumnBuilder", function($location, $scope, $http, $resource, $log, utilityService, DTOptionsBuilder, DTColumnBuilder) {
 	"use strict";
+
+	// Initialize $scope.
+	$scope.searchParams = {
+		eventTypeFood: true,
+		eventTypeDrug: true,
+		eventTypeDevice: true,
+		dateFrom: "",
+		dateTo: "",
+		productDescription: "",
+		recallReason: "",
+		classificationClass1: true,
+		classificationClass2: true,
+		classificationClass3: true,
+		recallingFirm: "",
+		stateName: ""
+	};
+	$scope.savedSearch = {
+		id: 0,
+		name: "",
+		description: ""
+	}
+	$scope.alerts = [];
+	$scope.stateCounts = {};
+	$scope.closeAlert = function(index) {
+		utilityService.closeAlert($scope.alerts, index);
+	}
+
+	// Discover from URL if a saved search should be quried and displayed.
+	var searchResult = $location.absUrl().match(/search=(\d+)/);
+	if (searchResult && searchResult.length > 1) {
+		try {
+			$http.get("/filters/" + searchResult[1]).
+				success(function(data, status, headers, config) {
+					if (data.status.error) {
+						throw data.status.message;
+					}
+
+					var getDate = d3.time.format("%Y-%m-%d");
+
+					$scope.searchParams = {
+						eventTypeFood: data.result.includeFood,
+						eventTypeDrug: data.result.includeDrugs,
+						eventTypeDevice: data.result.includeDevices,
+						dateFrom: data.result.fromDate == "1900-01-01" ? "" : getDate.parse(data.result.fromDate),
+						dateTo: data.result.toDate == "1900-01-01" ? "" : getDate.parse(data.result.toDate),
+						productDescription: data.result.productDescription,
+						recallReason: data.result.reasonForRecall,
+						classificationClass1:data.result.includeClass1,
+						classificationClass2: data.result.includeClass2,
+						classificationClass3: data.result.includeClass3,
+						recallingFirm: data.result.recallingFirm,
+						stateName: ""
+					};
+					$scope.savedSearch = {
+						id: data.result.id,
+						name: data.result.name,
+						description: data.result.description
+					}
+				}).
+				error(function(data, status, headers, config) {
+					throw JSON.stringify(data) + JSON.stringify(status);
+				})
+		}
+		catch(errorMessage) {
+			$log.error(errorMessage);
+			utilityService.addAlert($scope.alerts, "warning", "No saved search was found for this search ID.");
+		}
+	}
 
 	// Build query parameter string.
 	function buildQueryString(searchParams) {
 
 		var queryParams = [];
 
-		function getDateString(rawDate) {
-			return new Date(rawDate).toISOString().substring(0, 10);
-		}
-
 		if (searchParams.eventTypeFood) queryParams.push("includeFood=true");
 		if (searchParams.eventTypeDrug) queryParams.push("includeDrugs=true");
 		if (searchParams.eventTypeDevice) queryParams.push("includeDevices=true");
-		if (searchParams.dateFrom) queryParams.push("fromDate=" + getDateString(searchParams.dateFrom));
-		if (searchParams.dateTo) queryParams.push("toDate=" + getDateString(searchParams.dateTo));
+		if (searchParams.dateFrom) queryParams.push("fromDate=" + utilityService.parseDateString(searchParams.dateFrom));
+		if (searchParams.dateTo) queryParams.push("toDate=" + utilityService.parseDateString(searchParams.dateTo));
 		if (searchParams.productDescription) queryParams.push("productDescription=" + searchParams.productDescription);
 		if (searchParams.recallReason) queryParams.push("reasonForRecall=" + searchParams.recallReason);
 		if (searchParams.classificationClass1) queryParams.push("includeClass1=true");
@@ -32,7 +96,7 @@ app.controller("dashboardController", ["$scope", "$http", "$resource", "$log", "
 
 		// No change in the heatmap if all form elements are blank.
 		if (!queryString) {
-			utilityService.addAlert($scope, "warning", "Please make entries into the search form to run a search.");
+			utilityService.addAlert($scope.alerts, "warning", "Please make entries into the search form to run a search.");
 			return;
 		}
 
@@ -40,34 +104,16 @@ app.controller("dashboardController", ["$scope", "$http", "$resource", "$log", "
 
 		var counts = StateCounts.get(function() {
 			if (counts.status.error) {
-				utilityService.addAlert($scope, "danger", "There was a problem with your search.");
+				if (counts.status.message != "Invalid fromDate." && counts.status.message != "Invalid toDate.") {
+					utilityService.addAlert($scope.alerts, "danger", "There was a problem with your search.");
+				}
     			$log.error(JSON.stringify(counts.status));
 			}
 			else {
-				utilityService.closeAllAlerts($scope);
+				$scope.alerts = [];
 				$scope.stateCounts = counts.result.aggregate;
 			}
 		});
-	}
-
-	// Initialize $scope.
-	$scope.searchParams = {
-		eventTypeFood: true,
-		eventTypeDrug: true,
-		eventTypeDevice: true,
-		dateFrom: "",
-		dateTo: "",
-		productDescription: "",
-		recallReason: "",
-		classificationClass1: true,
-		classificationClass2: true,
-		classificationClass3: true,
-		recallingFirm: "",
-		stateName: ""
-	};
-	$scope.stateCounts = {};
-	$scope.closeAlert = function(index) {
-		utilityService.closeAlert($scope, index);
 	}
 
 	// Refresh the heatmap when the user changes a search parameter.
@@ -84,7 +130,7 @@ app.controller("dashboardController", ["$scope", "$http", "$resource", "$log", "
 		if ($scope.searchParams.eventTypeDevice) queryString += "&includeDevices=true";
 
 		return $http.get(queryString).then(function(response) {
-			utilityService.closeAllAlerts($scope);
+			$scope.alerts = [];
 			var trimmedResult = response.data.result.map(function(result) {
 				// Trim long result records to better fit into the autocomplete dropdown.
 				if (result.length > 50) {
@@ -98,26 +144,27 @@ app.controller("dashboardController", ["$scope", "$http", "$resource", "$log", "
       		return trimmedResult;
     	},
     	function(error) {
-    		utilityService.addAlert($scope, "danger", "There was a problem with your search.");
+    		utilityService.addAlert($scope.alerts, "danger", "There was a problem with your lookup.");
     		$log.error(JSON.stringify(error));
     	});
 	}
 
+	// Configure datatable.
 	$scope.tableOptions = DTOptionsBuilder.fromSource("")
 		.withDataProp("result.recalls")
 		.withPaginationType('full_numbers')
-    .withOption('responsive', true)
-    .withOption('bFilter', false)
-    .withOption('dom', '<"top"il>rt<"bottom"p><"clear">')
-    .withOption('rowCallback', function( nRow, aData, iDisplayIndex ) {
-      $('td', nRow).bind('click', function() {
-        $scope.$apply(function() {
-          $(nRow).toggleClass('open-row');
-        });
-      });
-      $('.table-wrapper').show();
-      return nRow;
-    })
+	    .withOption('responsive', true)
+	    .withOption('bFilter', false)
+	    .withOption('dom', '<"top"il>rt<"bottom"p><"clear">')
+	    .withOption('rowCallback', function(nRow, aData, iDisplayIndex) {
+	    	$('td', nRow).bind('click', function() {
+	    		$scope.$apply(function() {
+					$(nRow).toggleClass('open-row');
+				});
+	    	});
+			$('.table-wrapper').show();
+			return nRow;
+	    })
 		.withFnServerData(function(sSource, aoData, fnCallback, oSettings) {
     		var queryEndpoint = "/fda/recalls?" + buildQueryString($scope.searchParams);
     		queryEndpoint += "&offset=0&limit=100&orderBy=recallInitiationDate&orderDir=asc";
@@ -137,8 +184,9 @@ app.controller("dashboardController", ["$scope", "$http", "$resource", "$log", "
         DTColumnBuilder.newColumn('recallInitiationDate').withTitle('Recall Date'),
     ];
     $scope.tableInstance = {};
-    
-    $scope.clickMap = function(stateName) {
+
+	// Handler for heatmap directive when a state is clicked.
+	$scope.clickMap = function(stateName) {
     	$scope.searchParams.stateName = stateName;
 		$scope.tableInstance.changeData("");
     }

@@ -1,0 +1,22 @@
+<script type="text/ng-template" id="saveSearchModalContent.html">
+    <div class="modal-header">
+        <h4 class="modal-title">Enter a name and description to remember this search.</h4>
+    </div>
+    <alert ng-repeat="alert in modalAlerts" type="{{alert.type}}" close="closeModalAlert($index)">{{alert.msg}}</alert>
+    <div class="modal-body">
+		<div class="form-group">
+			<label for="saveSearchName">Name</label>
+			<input type="text" name="saveSearchName" id="saveSearchName" class="form-control" ng-model="saveSearchName">
+		</div>
+		<div class="form-group">
+			<label for="saveSearchDescription">Description</label>
+			<input type="text" name="saveSearchDescription" id="saveSearchDescription" class="form-control" ng-model="saveSearchDescription">
+		</div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="ok()">OK</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+
+<button class="btn btn-primary" ng-click="openModal()">Save this search</button>
