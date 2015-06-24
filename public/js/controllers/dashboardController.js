@@ -157,6 +157,10 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 	    .withOption('bFilter', false)
 	    .withOption('dom', '<"top"il>rt<"bottom"p><"clear">')
 	    .withOption('rowCallback', function(nRow, aData, iDisplayIndex) {
+			if (aData.recallInitiationDate) {
+				var parts = aData.recallInitiationDate.substring(0,10).split("-");
+				$('td:eq(4)', nRow).text(parts[1] + "/" + parts[2] + "/" + parts[0]);
+			}
 	    	$('td', nRow).bind('click', function() {
 	    		$scope.$apply(function() {
 					$(nRow).toggleClass('open-row');
