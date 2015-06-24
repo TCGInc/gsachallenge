@@ -29,11 +29,13 @@ h1, h2, h3, h4, h5, h6 {
   padding: 20px;
   label {
     color: $gray-dark;
+    display: block;
     font-size: 14px;
     font-weight: 700;
     line-height: 1;
     margin: 5px 0 0;
     &.checkbox-inline {
+      display: inline-block;
       font-size: 13px;
       font-weight: 400;
       padding-left: 5px;
@@ -48,10 +50,25 @@ h1, h2, h3, h4, h5, h6 {
       display: block;
       margin-bottom: 5px;
     }
+    .fa {
+      color: $brand-primary;
+      cursor: pointer;
+      float: right;
+      &:active,
+      &:focus,
+      &:hover {
+        color: $brand-danger;
+      }
+    }
   }
   .form-group:last-child {
-    margin-bottom: 0;
+    margin: 25px 0 0;
   }
+}
+
+.popover {
+  max-width: 350px;
+  width: 350px;
 }
 
 .site-header {
@@ -64,6 +81,9 @@ h1, h2, h3, h4, h5, h6 {
     background-image: url(../img/fda.svg);
     height: 50px;
     margin: 0;
+    .no-svg & {
+      background-image: url(../img/fda.png);
+    }
   }
   h2 {
     color: white;
@@ -89,8 +109,4 @@ h1, h2, h3, h4, h5, h6 {
       text-decoration: none;
     }
   }
-}
-
-.table-wrapper {
-  margin-top: 30px;
 }

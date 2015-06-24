@@ -115,6 +115,7 @@ app.controller("dashboardController", ["$scope", "$http", "$resource", "$log", "
           $(nRow).toggleClass('open-row');
         });
       });
+      $('.table-wrapper').show();
       return nRow;
     })
 		.withFnServerData(function(sSource, aoData, fnCallback, oSettings) {
