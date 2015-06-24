@@ -33,9 +33,11 @@ app.directive("heatmap", function(utilityService) {
 			var map = new Datamap({
 				element: element.children("div")[0],
 				scope: 'usa',
-        		responsive: true,
-				fills: fills,
+        	responsive: true,
+        	fills: fills,
 			    geographyConfig: {
+						borderWidth: 1,
+	        	borderColor: 'rgba(0,0,0,.5)',
 			        popupTemplate: function(geo, data) {
 			            return ['<div class="hoverinfo"><strong>',
 			                    'Number of events in ' + geo.properties.name,
@@ -44,7 +46,7 @@ app.directive("heatmap", function(utilityService) {
 					},
 			        highlightFillColor: '#d12212',
 			        highlightBorderColor: 'rgba(0,0,0,0)',
-			        highlightBorderWidth: 0
+			        highlightBorderWidth: 1
 		        },
 		        done: function(datamap) {
 		            datamap.svg.selectAll('.datamaps-subunit').on('click', function(geography) {
@@ -53,6 +55,8 @@ app.directive("heatmap", function(utilityService) {
 		        },
 		        data: stateFillData
 			});
+
+			map.labels();
 
 			// Resize heatmap when window size changes.
       		window.addEventListener('resize', function(event){

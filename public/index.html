@@ -2,6 +2,12 @@
 
 <html class="no-js" ng-app="gsaChallenge">
 <head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta property="og:title" content="FDA Recall Enforcement Events">
+	<meta property="og:description" content="I wanted to share these FDA recalls:">
+	<meta property="og:site_name" content="FDA Recall Enforcement Events">
 	<script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.js"></script>
 	<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.js"></script>
@@ -39,7 +45,7 @@
 	<link href="//cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet">
 	<link href="//cdn.datatables.net/responsive/1.0.6/css/dataTables.responsive.css" rel="stylesheet">
 	<link href="css/all.min.css" rel="stylesheet">
-	<title>GSA Challenge</title>
+	<title>FDA Recall Enforcement Events</title>
 </head>
 
 <body ng-controller="dashboardController">
@@ -60,7 +66,7 @@
 			<div class="col-md-4 col-lg-3">
 				<div class="form-wrapper">
 					<div class="form-group group-types">
-						<label class="label-block"><i class="fa fa-question-circle" data-toggle="popover" data-placement="bottom" data-container="body" data-toggle="popover" data-placement="top" title="Product Types" data-content="<p><strong>Food:</strong> Food producers recall their products from the marketplace when the products are mislabeled or when the food may present a health hazard to consumers because the food is contaminated or has caused a foodborne illness outbreak.</p><p><strong>Drugs:</strong> Recalls are actions taken by a firm to remove a product from the market. Recalls may be conducted on a firm's own initiative, by FDA request, or by FDA order under statutory authority. See Definitions of Market Withdrawals and Class I, II, and III recalls. All recalls (Class I, II, and III) can be found in the FDA Enforcement Report.</p><p><strong>Devices:</strong> FDA posts consumer information about the most serious medical device recalls. These products are on the list because there is a reasonable chance that they could cause serious health problems or death.</p>"></i>Product Type</label>
+						<label class="label-block"><i class="fa fa-question-circle" data-toggle="popover" data-placement="bottom" data-container="body" data-toggle="popover" data-placement="top" title="Product Types" data-content="<p><strong>Food:</strong> Food producers recall their products from the marketplace when the products are mislabeled or when the food may present a health hazard to consumers because the food is contaminated or has caused a foodborne illness outbreak.</p><p><strong>Drugs:</strong> Recalls are actions taken by a firm to remove a product from the market. Recalls may be conducted on a firm's own initiative, by FDA request, or by FDA order under statutory authority.</p><p><strong>Devices:</strong> FDA posts consumer information about the most serious medical device recalls. These products are on the list because there is a reasonable chance that they could cause serious health problems or death.</p>"></i>Product Type</label>
 						<label for="typeFood" class="checkbox-inline">Food</label>
 						<input type="checkbox" name="typeFood" id="typeFood" ng-model="searchParams.eventTypeFood">
 						<label for="typeDrugs" class="checkbox-inline">Drugs</label>
@@ -117,13 +123,12 @@
 						</div>
 						<div class="col-sm-8 col-md-8 clearfix">
 							<label>Share this Search:</label>
-							<span class='st st_email_large' displayText='Email'></span>
-							<span class='st st_facebook_large' displayText='Facebook'></span>
-							<span class='st st_twitter_large' displayText='Tweet'></span>
-							<span class='st st_linkedin_large' displayText='LinkedIn'></span>
-							<span class='st st_pinterest_large' displayText='Pinterest'></span>
-							<span class='st st_tumblr_large' displayText='Tumblr'></span>
-							<span class='st st_sharethis_large' displayText='ShareThis'></span>
+              <span class="st st_email_large" displayText="Email"></span>
+              <span class="st st_facebook_large" displayText="Facebook"></span>
+              <span class="st st_twitter_large" displayText="Tweet"></span>
+              <span class="st st_tumblr_large" displayText="Tumblr"></span>
+              <span class="st st_reddit_large" displayText="Reddit"></span>
+              <span class="st st_sharethis_large" displayText="ShareThis"></span>
 						</div>
 					</div>
 				</div>
