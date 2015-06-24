@@ -1,4 +1,4 @@
-﻿
+
 --
 --
 --  
@@ -83,6 +83,7 @@ CREATE TABLE public.states
    id serial, 
 	State_Name text,
 	State_Abbr text,	
+	Whole_Foods text,
    CONSTRAINT state_pk PRIMARY KEY (id)
 ) 
 WITH (
@@ -103,7 +104,10 @@ CREATE INDEX state_abbr_index
   USING btree
   (State_Abbr COLLATE pg_catalog.default);
 
-
+CREATE INDEX state_whole_foods_index
+  ON states
+  USING btree
+  (Whole_Foods COLLATE pg_catalog.default);
 
 
 CREATE TABLE public.fda_enforcement_states
@@ -132,7 +136,7 @@ ALTER TABLE fda_enforcement_states
 CREATE INDEX states_id_idx
   ON fda_enforcement_states(states_id);
 
---One view
+--core view
 create or replace view v_state_enforcements
 as
 select a.*, State_Abbr, State_Name 
@@ -141,54 +145,69 @@ fda_enforcement_events a, fda_enforcement_states b, states c
 where a.id = b.fda_enforcement_EVENTS_id and b.states_id=c.id;
 
 
---LOAD THE STATES
-INSERT INTO states(State_Name, State_Abbr) values ('Alabama','AL');
-INSERT INTO states(State_Name, State_Abbr) values ('Alaska','AK');
-INSERT INTO states(State_Name, State_Abbr) values ('Arizona','AZ');
-INSERT INTO states(State_Name, State_Abbr) values ('Arkansas','AR');
-INSERT INTO states(State_Name, State_Abbr) values ('California','CA');
-INSERT INTO states(State_Name, State_Abbr) values ('Colorado','CO');
-INSERT INTO states(State_Name, State_Abbr) values ('Connecticut','CT');
-INSERT INTO states(State_Name, State_Abbr) values ('Delaware','DE');
-INSERT INTO states(State_Name, State_Abbr) values ('Florida','FL');
-INSERT INTO states(State_Name, State_Abbr) values ('Georgia','GA');
-INSERT INTO states(State_Name, State_Abbr) values ('Hawaii','HI');
-INSERT INTO states(State_Name, State_Abbr) values ('Idaho','ID');
-INSERT INTO states(State_Name, State_Abbr) values ('Illinois','IL');
-INSERT INTO states(State_Name, State_Abbr) values ('Indiana','IN');
-INSERT INTO states(State_Name, State_Abbr) values ('Iowa','IA');
-INSERT INTO states(State_Name, State_Abbr) values ('Kansas','KS');
-INSERT INTO states(State_Name, State_Abbr) values ('Kentucky','KY');
-INSERT INTO states(State_Name, State_Abbr) values ('Louisiana','LA');
-INSERT INTO states(State_Name, State_Abbr) values ('Maine','ME');
-INSERT INTO states(State_Name, State_Abbr) values ('Maryland','MD');
-INSERT INTO states(State_Name, State_Abbr) values ('Massachusetts','MA');
-INSERT INTO states(State_Name, State_Abbr) values ('Michigan','MI');
-INSERT INTO states(State_Name, State_Abbr) values ('Minnesota','MN');
-INSERT INTO states(State_Name, State_Abbr) values ('Mississippi','MS');
-INSERT INTO states(State_Name, State_Abbr) values ('Missouri','MO');
-INSERT INTO states(State_Name, State_Abbr) values ('Montana','MT');
-INSERT INTO states(State_Name, State_Abbr) values ('Nebraska','NE');
-INSERT INTO states(State_Name, State_Abbr) values ('Nevada','NV');
-INSERT INTO states(State_Name, State_Abbr) values ('New Hampshire','NH');
-INSERT INTO states(State_Name, State_Abbr) values ('New Jersey','NJ');
-INSERT INTO states(State_Name, State_Abbr) values ('New Mexico','NM');
-INSERT INTO states(State_Name, State_Abbr) values ('New York','NY');
-INSERT INTO states(State_Name, State_Abbr) values ('North Carolina','NC');
-INSERT INTO states(State_Name, State_Abbr) values ('North Dakota','ND');
-INSERT INTO states(State_Name, State_Abbr) values ('Ohio','OH');
-INSERT INTO states(State_Name, State_Abbr) values ('Oklahoma','OK');
-INSERT INTO states(State_Name, State_Abbr) values ('Oregon','OR');
-INSERT INTO states(State_Name, State_Abbr) values ('Pennsylvania','PA');
-INSERT INTO states(State_Name, State_Abbr) values ('Rhode Island','RI');
-INSERT INTO states(State_Name, State_Abbr) values ('South Carolina','SC');
-INSERT INTO states(State_Name, State_Abbr) values ('South Dakota','SD');
-INSERT INTO states(State_Name, State_Abbr) values ('Tennessee','TN');
-INSERT INTO states(State_Name, State_Abbr) values ('Texas','TX');
-INSERT INTO states(State_Name, State_Abbr) values ('Utah','UT');
-INSERT INTO states(State_Name, State_Abbr) values ('Vermont','VT');
-INSERT INTO states(State_Name, State_Abbr) values ('Virginia','VA');
-INSERT INTO states(State_Name, State_Abbr) values ('Washington','WA');
-INSERT INTO states(State_Name, State_Abbr) values ('West Virginia','WV');
-INSERT INTO states(State_Name, State_Abbr) values ('Wisconsin','WI');
-INSERT INTO states(State_Name, State_Abbr) values ('Wyoming','WY');
+--unmapped view
+create or replace view v_unmapped_events
+as
+select a.*
+from
+fda_enforcement_events a
+where not exists (select 'a' from fda_enforcement_states b where b.fda_enforcement_events_id=a.id);
+
+
+
+
+--States
+
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Alabama','AL','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Alaska','AK','N');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Arizona','AZ','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Arkansas','AR','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('California','CA','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Colorado','CO','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Connecticut','CT','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('District of Columbia','DC','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Delaware','DE','N');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Florida','FL','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Georgia','GA','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Hawaii','HI','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Idaho','ID','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Illinois','IL','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Indiana','IN','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Iowa','IA','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Kansas','KS','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Kentucky','KY','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Louisiana','LA','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Maine','ME','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Maryland','MD','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Massachusetts','MA','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Michigan','MI','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Minnesota','MN','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Mississippi','MS','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Missouri','MO','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Montana','MT','N');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Nebraska','NE','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Nevada','NV','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('New Hampshire','NH','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('New Jersey','NJ','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('New Mexico','NM','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('New York','NY','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('North Carolina','NC','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('North Dakota','ND','N');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Ohio','OH','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Oklahoma','OK','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Oregon','OR','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Pennsylvania','PA','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Rhode Island','RI','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('South Carolina','SC','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('South Dakota','SD','N');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Tennessee','TN','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Texas','TX','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Utah','UT','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Vermont','VT','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Virginia','VA','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Washington','WA','Y');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('West Virginia','WV','N');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Wisconsin','WI','N');
+INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Wyoming','WY','N');
+
+

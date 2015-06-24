@@ -3,7 +3,7 @@ app.directive("heatmap", function(utilityService) {
 	// Configuration settings for heatmap color bands.
 	// See available options in public/js/external/colorbrewer.js
 	var colorbrewerConfig = {
-		palette: "PuBuGn", // YlOrRd, Set3
+		palette: "PuBu",
 		numberOfBands: 9 // Allowable number of color bands are 3-9.
 	};
 
@@ -34,14 +34,19 @@ app.directive("heatmap", function(utilityService) {
 				element: element.children("div")[0],
 				scope: 'usa',
         		responsive: true,
-				fills: fills,
+        		fills: fills,
 			    geographyConfig: {
+					borderWidth: 1,
+	        		borderColor: 'rgba(0,0,0,.5)',
 			        popupTemplate: function(geo, data) {
 			            return ['<div class="hoverinfo"><strong>',
 			                    'Number of events in ' + geo.properties.name,
 			                    ': ' + data.numberOfEvents,
 			                    '</strong></div>'].join('');
-					}
+					},
+			        highlightFillColor: '#d12212',
+			        highlightBorderColor: 'rgba(0,0,0,0)',
+			        highlightBorderWidth: 1
 		        },
 		        done: function(datamap) {
 		            datamap.svg.selectAll('.datamaps-subunit').on('click', function(geography) {
@@ -51,10 +56,15 @@ app.directive("heatmap", function(utilityService) {
 		        data: stateFillData
 			});
 
+			map.labels();
+
 			// Resize heatmap when window size changes.
       		window.addEventListener('resize', function(event){
         		map.resize();
       		});
+
+			// Ensure map is correct size at page load.
+			setTimeout(function() {	map.resize(); }, 1000);
 
       		// Refresh the heatmap colors based on the new state counts.
       		function updateMap(stateCounts, stateFillData, map) {
@@ -68,7 +78,7 @@ app.directive("heatmap", function(utilityService) {
 
 				angular.forEach(stateCounts, function(count, state) {
 					stateFillData[state.toUpperCase()] = {
-						fillKey: getFillKey(count),
+						fillKey: count ? getFillKey(count) : "band 0",
 						numberOfEvents: count
 					};
 				});
@@ -84,3 +94,4 @@ app.directive("heatmap", function(utilityService) {
 		}
     }
 });
+

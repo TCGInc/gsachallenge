@@ -1,0 +1,91 @@
+table.dataTable {
+  border-top: 1px solid #111;
+  font-size: 14px;
+  max-width: 100% !important;
+  table-layout: fixed;
+  @media (min-width: $screen-sm) {
+    font-size: 16px;
+  }
+  thead {
+    th {
+      background-image: none !important;
+      line-height: 1;
+      padding: 30px 10px 10px 10px !important;
+      position: relative;
+      @media (min-width: $screen-sm) {
+        padding: 10px 30px 10px 10px !important;
+      }
+      &:after {
+        position: absolute !important;
+        right: calc(50% - 8px) !important;
+        @media (min-width: $screen-sm) {
+          right: 8px !important;
+          top: calc(50% - 8px) !important;
+        }
+      }
+      &:first-child {
+        width: 10% !important;
+      }
+      &:nth-child(2) {
+        width: 20% !important;
+      }
+      &:nth-child(3) {
+        width: 25% !important;
+      }
+      &:nth-child(4) {
+        width: 25% !important;
+      }
+      &:last-child {
+        width: 10% !important;
+      }
+    }
+  }
+  tbody {
+    td {
+      cursor: pointer;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      vertical-align: top;
+    }
+    .open-row td {
+      overflow: auto;
+      text-overflow: initial;
+      white-space: normal;
+    }
+  }
+}
+
+.dataTables_wrapper {
+  .dataTables_length {
+    float: none;
+    margin: 5px 0 10px;
+    text-align: center;
+    @media (min-width: $screen-sm) {
+      float: right;
+      margin: 0;
+      padding-top: 0.755em;
+    }
+  }
+  .dataTables_paginate {
+    float: none;
+    text-align: center;
+    .paginate_button {
+      display: none;
+      padding: 0 0 0 1px;
+      &.first,
+      &.previous,
+      &.next,
+      &.last {
+        display: inline-block;
+      }
+      @media (min-width: $screen-sm) {
+        display: inline-block;
+      }
+    }
+  }
+}
+
+.table-wrapper {
+  display: none;
+}
