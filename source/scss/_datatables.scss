@@ -26,8 +26,10 @@ table.dataTable {
 
 .dataTables_wrapper {
   .dataTables_length {
-    float: right;
-    padding-top: 0.755em;
+    @media (min-width: $screen-sm) {
+      float: right;
+      padding-top: 0.755em;
+    }
   }
   .dataTables_paginate {
     float: none;
