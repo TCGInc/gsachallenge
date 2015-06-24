@@ -153,7 +153,6 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 	$scope.tableOptions = DTOptionsBuilder.fromSource("")
 		.withDataProp("result.recalls")
 		.withPaginationType('full_numbers')
-	    .withOption('responsive', true)
 	    .withOption('bFilter', false)
 	    .withOption('dom', '<"top"il>rt<"bottom"p><"clear">')
 	    .withOption('rowCallback', function(nRow, aData, iDisplayIndex) {
