@@ -33,11 +33,11 @@ app.directive("heatmap", function(utilityService) {
 			var map = new Datamap({
 				element: element.children("div")[0],
 				scope: 'usa',
-        	responsive: true,
-        	fills: fills,
+        		responsive: true,
+        		fills: fills,
 			    geographyConfig: {
-						borderWidth: 1,
-	        	borderColor: 'rgba(0,0,0,.5)',
+					borderWidth: 1,
+	        		borderColor: 'rgba(0,0,0,.5)',
 			        popupTemplate: function(geo, data) {
 			            return ['<div class="hoverinfo"><strong>',
 			                    'Number of events in ' + geo.properties.name,

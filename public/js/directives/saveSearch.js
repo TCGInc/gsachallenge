@@ -6,7 +6,7 @@ app.directive("saveSearch", function($modal) {
 			scope.openModal = function() {
 			    $modal.open({
 					animation: true,
-					templateUrl: "saveSearchModalContent.html",
+					templateUrl: "saveSearch.html",
 					controller: "saveSearchModalInstanceController",
 					scope: scope
 			    });
@@ -26,8 +26,8 @@ app.controller("saveSearchModalInstanceController", function ($scope, $http, $lo
 
 		$scope.modalAlerts = [];
 
-		if (!$scope.saveSearchName || !$scope.saveSearchDescription) {
-			utilityService.addAlert($scope.modalAlerts, "danger", "Please enter both a name and a description.");
+		if (!$scope.saveSearchName) {
+			utilityService.addAlert($scope.modalAlerts, "danger", "Please enter a name before saving.");
 			return;
 		}
 

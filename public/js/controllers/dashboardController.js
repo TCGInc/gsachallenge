@@ -96,7 +96,6 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 
 		// No change in the heatmap if all form elements are blank.
 		if (!queryString) {
-			utilityService.addAlert($scope.alerts, "warning", "Please make entries into the search form to run a search.");
 			return;
 		}
 
@@ -185,6 +184,8 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
         DTColumnBuilder.newColumn('reasonForRecall').withTitle('Reason for Recall'),
         DTColumnBuilder.newColumn('productDescription').withTitle('Description'),
         DTColumnBuilder.newColumn('recallInitiationDate').withTitle('Recall Date'),
+        DTColumnBuilder.newColumn('stateAbbr').withTitle('State')
+
     ];
     $scope.tableInstance = {};
 
