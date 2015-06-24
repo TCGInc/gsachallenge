@@ -1,7 +1,8 @@
 <!doctype html>
 
-<html ng-app="gsaChallenge">
+<html class="no-js" ng-app="gsaChallenge">
 <head>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.js"></script>
 	<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-resource.js"></script>
@@ -14,6 +15,7 @@
 	<script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.19/topojson.js"></script>
 	<script src="//cdn.datatables.net/1.10.7/js/jquery.dataTables.js" charset="utf8"></script>
 	<script src="//cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+	<script src="//cdn.datatables.net/responsive/1.0.6/js/dataTables.responsive.js"></script>
 	<script src="js/external/angular-datatables.min.js"></script>
 	<script src="js/external/datamaps.usa.min.js"></script>
 	<script src="js/external/colorbrewer.js"></script>
@@ -30,11 +32,12 @@
 		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 		ga('create', 'UA-62980521-1', 'auto');
 	</script>
-	<link href="//cdn.datatables.net/1.10.7/css/jquery.dataTables.css" rel="stylesheet">
-	<link href="//cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet">
 	<script type="text/javascript">var switchTo5x=true;</script>
 	<script type="text/javascript" src="http://w.sharethis.com/button/buttons.js"></script>
 	<script type="text/javascript">stLight.options({publisher: "4ef9f5b9-9668-447f-b472-f33076dd3177", doNotHash: false, doNotCopy: false, hashAddressBar: false});</script>
+	<link href="//cdn.datatables.net/1.10.7/css/jquery.dataTables.css" rel="stylesheet">
+	<link href="//cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet">
+	<link href="//cdn.datatables.net/responsive/1.0.6/css/dataTables.responsive.css" rel="stylesheet">
 	<link href="css/all.min.css" rel="stylesheet">
 	<title>GSA Challenge</title>
 </head>
@@ -57,7 +60,7 @@
 			<div class="col-md-4 col-lg-3">
 				<div class="form-wrapper">
 					<div class="form-group group-types">
-						<label class="label-block">Product Type</label>
+						<label class="label-block"><i class="fa fa-question-circle" data-toggle="popover" data-placement="bottom" data-container="body" data-toggle="popover" data-placement="top" title="Product Types" data-content="<p><strong>Food:</strong> Food producers recall their products from the marketplace when the products are mislabeled or when the food may present a health hazard to consumers because the food is contaminated or has caused a foodborne illness outbreak.</p><p><strong>Drugs:</strong> Recalls are actions taken by a firm to remove a product from the market. Recalls may be conducted on a firm's own initiative, by FDA request, or by FDA order under statutory authority. See Definitions of Market Withdrawals and Class I, II, and III recalls. All recalls (Class I, II, and III) can be found in the FDA Enforcement Report.</p><p><strong>Devices:</strong> FDA posts consumer information about the most serious medical device recalls. These products are on the list because there is a reasonable chance that they could cause serious health problems or death.</p>"></i>Product Type</label>
 						<label for="typeFood" class="checkbox-inline">Food</label>
 						<input type="checkbox" name="typeFood" id="typeFood" ng-model="searchParams.eventTypeFood">
 						<label for="typeDrugs" class="checkbox-inline">Drugs</label>
@@ -66,7 +69,7 @@
 						<input type="checkbox" name="typeDevices" id="typeDevices" ng-model="searchParams.eventTypeDevice">
 					</div>
 					<div class="form-group">
-						<label for="dateFrom">Start Date</label>
+						<label for="dateFrom">Start Date<i class="fa fa-question-circle" data-toggle="popover" data-placement="top" data-container="body" data-toggle="popover" data-placement="top" title="Date Range" data-content="Search by the date the product was recalled."></i></label>
 						<input type="date" name="dateFrom" id="dateFrom" class="form-control" ng-model="searchParams.dateFrom" datepicker-popup>
 					</div>
 					<div class="form-group">
@@ -74,19 +77,19 @@
 						<input type="date" name="dateTo" id="dateTo" class="form-control" ng-model="searchParams.dateTo" datepicker-popup>
 					</div>
 					<div class="form-group">
-						<label for="productDescription">Product Description</label>
+						<label for="productDescription"><i class="fa fa-question-circle" data-toggle="popover" data-placement="top" data-container="body" data-toggle="popover" data-placement="top" title="Product Description" data-content="Search by the description of the recalled product."></i>Product Description</label>
 						<input type="text" name="productDescription" id="productDescription" class="form-control" ng-model="searchParams.productDescription" typeahead="item for item in autocomplete('productDescription', $viewValue)" typeahead-min-length="3" typeahead-wait-ms="500">
 					</div>
 					<div class="form-group">
-						<label for="recallReason">Reason for Recall</label>
+						<label for="recallReason"><i class="fa fa-question-circle" data-toggle="popover" data-placement="top" data-container="body" data-toggle="popover" data-placement="top" title="Reason for Recall" data-content="Search by the reason the product was recalled."></i>Reason for Recall</label>
 						<input type="text" name="recallReason" id="recallReason" class="form-control" ng-model="searchParams.recallReason" typeahead="item for item in autocomplete('reasonForRecall', $viewValue)" typeahead-min-length="3" typeahead-wait-ms="500">
 					</div>
 					<div class="form-group">
-						<label for="recallingFirm">Recalling Firm</label>
+						<label for="recallingFirm"><i class="fa fa-question-circle" data-toggle="popover" data-placement="top" data-container="body" data-toggle="popover" data-placement="top" title="Recalling Firm" data-content="Search by the name of the company that produced the recalled product."></i>Recalling Firm</label>
 						<input type="text" name="recallingFirm" id="recallingFirm" class="form-control" ng-model="searchParams.recallingFirm" typeahead="item for item in autocomplete('recallingFirm', $viewValue)" typeahead-min-length="3" typeahead-wait-ms="500">
 					</div>
 					<div class="form-group group-types">
-						<label class="label-block">Severity Class</label>
+						<label class="label-block"><i class="fa fa-question-circle" data-toggle="popover" data-placement="top" data-container="body" data-toggle="popover" data-placement="top" title="Severity Classes" data-content="<p><strong>Class I recall:</strong> a situation in which there is a reasonable probability that the use of or exposure to a violative product will cause serious adverse health consequences or death.</p><p><strong>Class II recall:</strong> a situation in which use of or exposure to a violative product may cause temporary or medically reversible adverse health consequences or where the probability of serious adverse health consequences is remote.</p><p><strong>Class III recall:</strong> a situation in which use of or exposure to a violative product is not likely to cause adverse health consequences.</p>"></i>Severity Class</label>
 						<label for="classificationClass1" class="checkbox-inline">I</label>
 						<input type="checkbox" name="classificationClass1" id="classificationClass1" ng-model="searchParams.classificationClass1">
 						<label for="classificationClass2" class="checkbox-inline">II</label>
