@@ -23,21 +23,6 @@ table.dataTable {
           top: calc(50% - 8px) !important;
         }
       }
-      &:first-child {
-        width: 10% !important;
-      }
-      &:nth-child(2) {
-        width: 20% !important;
-      }
-      &:nth-child(3) {
-        width: 25% !important;
-      }
-      &:nth-child(4) {
-        width: 25% !important;
-      }
-      &:last-child {
-        width: 10% !important;
-      }
     }
   }
   tbody {
@@ -52,6 +37,68 @@ table.dataTable {
       overflow: auto;
       text-overflow: initial;
       white-space: normal;
+    }
+  }
+  th, td {
+    &.col-type {
+      display: none !important;
+    }
+    &.col-firm {
+      width: 25% !important;
+    }
+    &.col-reason {
+      width: 25% !important;
+    }
+    &.col-desc {
+      width: 25% !important;
+    }
+    &.col-date {
+      width: 25% !important;
+    }
+    &.col-state {
+      display: none !important;
+    }
+    @media (min-width: $screen-sm) {
+      &.col-type {
+        display: table-cell !important;
+        width: 15% !important;
+      }
+      &.col-firm {
+        width: 15% !important;
+      }
+      &.col-reason {
+        width: 20% !important;
+      }
+      &.col-desc {
+        width: 20% !important;
+      }
+      &.col-date {
+        width: 15% !important;
+      }
+      &.col-state {
+        display: table-cell !important;
+        width: 15% !important;
+      }
+    }
+    @media (min-width: $screen-md) {
+      &.col-type {
+        width: 10% !important;
+      }
+      &.col-firm {
+        width: 20% !important;
+      }
+      &.col-reason {
+        width: 20% !important;
+      }
+      &.col-desc {
+        width: 20% !important;
+      }
+      &.col-date {
+        width: 20% !important;
+      }
+      &.col-state {
+        width: 10% !important;
+      }
     }
   }
 }

@@ -179,12 +179,12 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 			});
 		});
 	$scope.tableColumns = [
-        DTColumnBuilder.newColumn('productType').withTitle('Type'),
-        DTColumnBuilder.newColumn('recallingFirm').withTitle('Recalling Firm'),
-        DTColumnBuilder.newColumn('reasonForRecall').withTitle('Reason for Recall'),
-        DTColumnBuilder.newColumn('productDescription').withTitle('Description'),
-        DTColumnBuilder.newColumn('recallInitiationDate').withTitle('Recall Date'),
-        DTColumnBuilder.newColumn('stateAbbr').withTitle('State')
+        DTColumnBuilder.newColumn('productType').withTitle('Type').withClass('col-type'),
+        DTColumnBuilder.newColumn('recallingFirm').withTitle('Recalling Firm').withClass('col-firm'),
+        DTColumnBuilder.newColumn('reasonForRecall').withTitle('Reason for Recall').withClass('col-reason'),
+        DTColumnBuilder.newColumn('productDescription').withTitle('Product Description').withClass('col-desc'),
+        DTColumnBuilder.newColumn('recallInitiationDate').withTitle('Recall Date').withClass('col-date'),
+        DTColumnBuilder.newColumn('stateAbbr').withTitle('State').withClass('col-state')
 
     ];
     $scope.tableInstance = {};
