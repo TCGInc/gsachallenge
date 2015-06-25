@@ -20,6 +20,8 @@ public/ - static resources served by node (html, js, css, etc)
 routes/ - express endpoints for backend rest api
 tests/ - unit tests using mocha/karma
 bin/ - executable scripts for managing server processes
+docs/ - documentation and evidence
+docker/ - Containerization scripts
 
 
 Development Commands
