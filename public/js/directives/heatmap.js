@@ -34,7 +34,7 @@ app.directive("heatmap", function(utilityService) {
 		link: function(scope, element, attrs) {
 
 			// Declare getFillKey() function variable here for use across link functions.
-			// Function returns fill color band label and created in updateMap(). 
+			// Function returns fill color band label and created in updateMap().
 			var getFillKey;
 
 			// Initialize heatmap.
@@ -47,13 +47,13 @@ app.directive("heatmap", function(utilityService) {
 					borderWidth: 1,
 	        		borderColor: 'rgba(0,0,0,.5)',
 			        popupTemplate: function(geo, data) {
-			            return ['<div class="hoverinfo"><strong>',
-			                    'Number of events in ' + geo.properties.name,
-			                    ': ' + data.numberOfEvents,
+			            return ['<div class="hoverinfo"><em>',
+			                    data.numberOfEvents + '</em>',
+			                    'events in <strong>' + geo.properties.name,
 			                    '</strong></div>'].join('');
 					},
 			        highlightFillColor: highlightFillColor,
-			        highlightBorderColor: 'rgba(0,0,0,0)',
+			        highlightBorderColor: 'rgba(0,0,0,.5)',
 			        highlightBorderWidth: 1
 		        },
 		        done: function(datamap) {
