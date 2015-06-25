@@ -158,8 +158,9 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 	});
 
 	// Refresh the list of highlighted states, which will then refresh the heatmap.
-	function refreshHighlightedStates(stateAbbr) {
-		$scope.$apply(function() {
+	function refreshHighlightedStates(stateAbbr, withApply) {
+
+		function refresh() {
 			if (!stateAbbr) {
 				// Clear all highlights from states if no stateAbbr given.
 				$scope.highlightedStates = [];
@@ -173,12 +174,19 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 					$scope.highlightedStates.splice(index, 1);
 				}
 			}
-		});
+		}
+
+		if (!withApply) {
+			refresh();
+		}
+		else {
+			$scope.$apply(refresh);
+		}
 	}
 
 	// Handler for heatmap directive when a state is clicked.
 	$scope.mapClicked = function(stateAbbr) {
-		refreshHighlightedStates(stateAbbr);
+		refreshHighlightedStates(stateAbbr, true);
 		refreshDetailsTable();
     }
 
