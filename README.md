@@ -111,7 +111,7 @@ Interactive map application is an n-tier environment:
 ### How to get started (Docker) ###
 
 A Docker container is a fast way to get your own copy of the FDA Recall
-interactive map up and running. To do this:
+Interactive Map up and running. To do this:
 
  * Please install docker for your environment:
    https://docs.docker.com/installation/
@@ -138,7 +138,67 @@ interactive map up and running. To do this:
    Recall interactive map at http://localhost:8888/
 
 ### How to get started (manually) ###
-* TODO
+
+Installing the FDA Recall Interactive Map from scratch is a bit more
+involved than building a Docker container. The following instructions
+assume an Ubuntu 12.04 LTS system (though it could be run on any
+environment that supports Postgres 9.4 and Node):
+
+ * Get the latest source from github:
+
+        git clone https://github.com/TCGInc/gsachallenge.git
+
+ * Install PostgreSQL 9.4 (or later). As root:
+
+        # Add the Postgres repository and install the key
+        echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+	wget --quiet -O - --no-check-certificate https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+        # install the packages
+        apt-get update
+        apt-get -y install postgresql-9.4
+
+ * Create the gsac user and database (update the authentication as
+   needed):
+
+        su - postgres
+        /etc/init.d/postgresql start
+        psql --command "CREATE USER gsac WITH SUPERUSER PASSWORD 'gsac123';"
+        createdb -O gsac gsac
+        exit
+
+ * Import the database. The simplest method is to import the database
+   from the github project (alternatively you can re-import and clean
+   the openFDA data following the instructions in
+   gsachallenge/database/bootstrap/README.txt):
+
+        gunzip -c gsachallenge/docker/gsac.sql.gz | PGPASSWORD=gsac123 psql -U gsac
+
+ * Install node and NPM (version 0.10 was necessary for Karma/Mocha):
+        
+        # Install node
+        wget http://nodejs.org/dist/v0.10.38/node-v0.10.38.tar.gz
+        tar -zxf node-v0.10.38.tar.gz
+        # Get compilation tools
+        apt-get -y install build-essential
+        # Compile node
+        cd node-v0.10.38 && ./configure && make install
+        cd ..
+        # Grab and install NPM
+        wget --no-check-certificate https://www.npmjs.org/install.sh && sh ./install.sh
+
+ * Install node package dependencies:
+
+        cd gsachallenge
+        npm install
+        cd ..
+
+ * Run node
+
+        cd gsachallenge
+        node index.js
+
+At this point you should be able to access the application at
+http://localhost/ .
 
 ### Public domain ###
 
