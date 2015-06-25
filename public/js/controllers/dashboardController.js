@@ -1,31 +1,60 @@
 app.controller("dashboardController", ["$location", "$scope", "$http", "$resource", "$log", "utilityService", "DTOptionsBuilder", "DTColumnBuilder", function($location, $scope, $http, $resource, $log, utilityService, DTOptionsBuilder, DTColumnBuilder) {
 	"use strict";
 
+	function initializeSearchParameters() {
+		$scope.searchParams = {
+			eventTypeFood: true,
+			eventTypeDrug: true,
+			eventTypeDevice: true,
+			dateFrom: "",
+			dateTo: "",
+			productDescription: "",
+			recallReason: "",
+			classificationClass1: true,
+			classificationClass2: true,
+			classificationClass3: true,
+			recallingFirm: ""
+		};		
+	}
+
 	// Initialize $scope.
-	$scope.searchParams = {
-		eventTypeFood: true,
-		eventTypeDrug: true,
-		eventTypeDevice: true,
-		dateFrom: "",
-		dateTo: "",
-		productDescription: "",
-		recallReason: "",
-		classificationClass1: true,
-		classificationClass2: true,
-		classificationClass3: true,
-		recallingFirm: ""
-	};
+	initializeSearchParameters();
+	$scope.highlightedStates = [];
+	$scope.stateCounts = {};
+	$scope.alerts = [];
 	$scope.savedSearch = {
 		id: 0,
 		name: "",
 		description: ""
 	}
-	$scope.alerts = [];
-	$scope.stateCounts = {};
-	$scope.highlightedStates = [];
 	$scope.closeAlert = function(index) {
 		utilityService.closeAlert($scope.alerts, index);
 	}
+
+	// Clear search parameters to their default values.
+	$scope.clearFilters = function() {
+		// Determine if search parameters and heatmap are not in their initial state.
+		var p = $scope.searchParams;
+		var $searchIsDirty = !p.eventTypeFood || !p.eventTypeDrug || !p.eventTypeDevice || p.dateFrom ||
+			p.dateTo || p.productDescription || p.recallReason || p.recallingFirm ||
+			!p.classificationClass1 || !p.classificationClass2 || !p.classificationClass3;
+		var $mapIsDirty = $scope.highlightedStates.length > 0;
+
+		if ($mapIsDirty) {
+			$scope.highlightedStates = [];
+			if ($scope.hasOwnProperty("tableInstance") && $scope.tableInstance.hasOwnProperty("DataTable")) {
+				$scope.tableInstance.DataTable.clear().draw();
+			}
+		}
+
+		if ($searchIsDirty) {
+			initializeSearchParameters();
+		}
+
+		if (!$searchIsDirty && $mapIsDirty) {
+			updateHeatmap($scope.searchParams);
+		}
+	};
 
 	// Discover from URL if a saved search should be quried and displayed.
 	var searchResult = $location.absUrl().match(/search=(\d+)/);
