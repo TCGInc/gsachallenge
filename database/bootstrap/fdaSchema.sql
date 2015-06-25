@@ -136,13 +136,23 @@ ALTER TABLE fda_enforcement_states
 CREATE INDEX states_id_idx
   ON fda_enforcement_states(states_id);
 
---core view
+--core views
 create or replace view v_state_enforcements
 as
 select a.*, State_Abbr, State_Name 
 from
 fda_enforcement_events a, fda_enforcement_states b, states c
 where a.id = b.fda_enforcement_EVENTS_id and b.states_id=c.id;
+
+
+CREATE OR REPLACE VIEW v_states_enforcements AS 
+ SELECT a.*,
+    array_agg(c.state_abbr) as states
+   FROM fda_enforcement_events a,
+    fda_enforcement_states b,
+    states c
+  WHERE a.id = b.fda_enforcement_events_id AND b.states_id = c.id
+  GROUP BY a.id;
 
 
 --unmapped view
