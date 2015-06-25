@@ -174,7 +174,16 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 				'dataType': 'json',
 				'type': 'GET',
 				'url': queryEndpoint,
-				'success': fnCallback
+				'success': function(data, status, headers, config) {
+					if (data.status.error) {
+						$log.error("Error retrieving recall data: " + data.status.message);
+						return;
+					}
+					fnCallback(data, status, headers, config);
+				},
+				'error': function(data, status, headers, config) {
+					$log.error(JSON.stringify(data) + JSON.stringify(status));
+				}
 			});
 		});
 	$scope.tableColumns = [

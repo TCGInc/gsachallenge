@@ -18,7 +18,6 @@ app.directive("heatmap", function(utilityService) {
 		fills["band " + i] = colorbrewer[colorbrewerConfig.palette][colorbrewerConfig.numberOfBands][i];
 	}
 	fills["highlighted"] = highlightFillColor;
-	var getFillKey;
 
 	// Intitialize default fill values for each state.
 	var stateFillData = {};
@@ -33,6 +32,10 @@ app.directive("heatmap", function(utilityService) {
 		restrict: "E",
 		template: '<div></div>',
 		link: function(scope, element, attrs) {
+
+			// Declare getFillKey() function variable here for use across link functions.
+			// Function returns fill color band label and created in updateMap(). 
+			var getFillKey;
 
 			// Initialize heatmap.
 			var map = new Datamap({
