@@ -1,5 +1,15 @@
 Utility queries:
 
+select states_id, fda_enforcement_events_id, count(states_id) from fda_enforcement_states
+group by states_id, fda_enforcement_events_id
+having count(states_id) > 1
+order by 3 desc
+
+
+delete from fda_enforcement_states where fda_enforcement_events_id in
+                              (select id from fda_enforcement_events WHERE report_date='2015-05-20');
+delete from fda_enforcement_events WHERE report_date='2015-05-20';
+
 
 
 select a.ID, b.ID from STATES a, FDA_ENFORCEMENT_EVENTS b 

@@ -31,8 +31,9 @@ $sqlStr ="insert into FDA_ENFORCEMENT_STATES (STATES_ID,FDA_ENFORCEMENT_EVENTS_I
   #simple nation wide
   $sqlStr = "insert into FDA_ENFORCEMENT_STATES (STATES_ID,FDA_ENFORCEMENT_EVENTS_ID)
 	     (select a.ID, b.ID from STATES a, FDA_ENFORCEMENT_EVENTS b 
-		     where 
-		     LOWER(b.distribution_pattern) like '%nationwide%'
+		     where
+		      not exists (select 'a' from fda_enforcement_states c where c.fda_enforcement_events_id=b.id)
+		     and LOWER(b.distribution_pattern) like '%nationwide%'
 		     and b.distribution_pattern not like '%except%' 
 		       and b.recall_number='".$recallNumber."');";
         $dbh->do($sqlStr);
@@ -41,7 +42,8 @@ $sqlStr ="insert into FDA_ENFORCEMENT_STATES (STATES_ID,FDA_ENFORCEMENT_EVENTS_I
   $sqlStr = "insert into FDA_ENFORCEMENT_STATES (STATES_ID,FDA_ENFORCEMENT_EVENTS_ID)
 	     (select a.ID, b.ID from STATES a, FDA_ENFORCEMENT_EVENTS b  
 		     where 
-		     LOWER(b.distribution_pattern)  like '%worldwide%'
+		      not exists (select 'a' from fda_enforcement_states c where c.fda_enforcement_events_id=b.id)
+		     and LOWER(b.distribution_pattern)  like '%worldwide%'
 		     and b.distribution_pattern not like '%except%' 
 		    and b.recall_number='".$recallNumber."');";
         $dbh->do($sqlStr);

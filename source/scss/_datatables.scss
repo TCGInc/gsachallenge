@@ -1,16 +1,33 @@
 table.dataTable {
   border-top: 1px solid #111;
+  font-size: 14px;
+  max-width: 100% !important;
+  table-layout: fixed;
+  @media (min-width: $screen-sm) {
+    font-size: 16px;
+  }
   thead {
     th {
       background-image: none !important;
-      padding-left: 10px;
+      line-height: 1;
+      padding: 30px 10px 10px 10px !important;
       position: relative;
+      @media (min-width: $screen-sm) {
+        padding: 10px 30px 10px 10px !important;
+      }
+      &:after {
+        position: absolute !important;
+        right: calc(50% - 8px) !important;
+        @media (min-width: $screen-sm) {
+          right: 8px !important;
+          top: calc(50% - 8px) !important;
+        }
+      }
     }
   }
   tbody {
     td {
       cursor: pointer;
-      max-width: 200px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -22,12 +39,78 @@ table.dataTable {
       white-space: normal;
     }
   }
+  th, td {
+    &.col-type {
+      display: none !important;
+    }
+    &.col-firm {
+      width: 25% !important;
+    }
+    &.col-reason {
+      width: 25% !important;
+    }
+    &.col-desc {
+      width: 25% !important;
+    }
+    &.col-date {
+      width: 25% !important;
+    }
+    &.col-state {
+      display: none !important;
+    }
+    @media (min-width: $screen-sm) {
+      &.col-type {
+        display: table-cell !important;
+        width: 15% !important;
+      }
+      &.col-firm {
+        width: 15% !important;
+      }
+      &.col-reason {
+        width: 20% !important;
+      }
+      &.col-desc {
+        width: 20% !important;
+      }
+      &.col-date {
+        width: 15% !important;
+      }
+      &.col-state {
+        display: table-cell !important;
+        width: 15% !important;
+      }
+    }
+    @media (min-width: $screen-md) {
+      &.col-type {
+        width: 10% !important;
+      }
+      &.col-firm {
+        width: 20% !important;
+      }
+      &.col-reason {
+        width: 20% !important;
+      }
+      &.col-desc {
+        width: 20% !important;
+      }
+      &.col-date {
+        width: 20% !important;
+      }
+      &.col-state {
+        width: 10% !important;
+      }
+    }
+  }
 }
 
 .dataTables_wrapper {
   .dataTables_length {
+    float: none;
+    margin: 5px 0 10px;
+    text-align: center;
     @media (min-width: $screen-sm) {
       float: right;
+      margin: 0;
       padding-top: 0.755em;
     }
   }
@@ -52,5 +135,4 @@ table.dataTable {
 
 .table-wrapper {
   display: none;
-  margin-top: 30px;
 }

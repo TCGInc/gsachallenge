@@ -1,24 +1,19 @@
-﻿
 --
 --
---  
---  sudo apt-get install libdbd-pg-perl
---  sudo apt-get install libxml-simple-perl
+--  Schema for housing fda enforcement events with normalized state mapping
 --
 --
 --
 DROP VIEW IF EXISTS v_unmapped_events;
 DROP VIEW IF EXISTS v_state_enforcements;
+DROP VIEW IF EXISTS v_states_enforcements;
+
 DROP TABLE IF EXISTS fda_enforcement_states;
-
 DROP TABLE IF EXISTS states;
-
-DROP INDEX IF EXISTS product_type_index;
-
-DROP INDEX IF EXISTS recall_number_index;
-
 DROP TABLE IF EXISTS fda_enforcement_events;
 
+
+--DDL creates
 CREATE TABLE public.fda_enforcement_events
 (
    id serial, 
@@ -137,13 +132,23 @@ ALTER TABLE fda_enforcement_states
 CREATE INDEX states_id_idx
   ON fda_enforcement_states(states_id);
 
---core view
+--core views
 create or replace view v_state_enforcements
 as
 select a.*, State_Abbr, State_Name 
 from
 fda_enforcement_events a, fda_enforcement_states b, states c
 where a.id = b.fda_enforcement_EVENTS_id and b.states_id=c.id;
+
+
+CREATE OR REPLACE VIEW v_states_enforcements AS 
+ SELECT a.*,
+    array_agg(c.state_abbr) as states
+   FROM fda_enforcement_events a,
+    fda_enforcement_states b,
+    states c
+  WHERE a.id = b.fda_enforcement_events_id AND b.states_id = c.id
+  GROUP BY a.id;
 
 
 --unmapped view
@@ -157,8 +162,7 @@ where not exists (select 'a' from fda_enforcement_states b where b.fda_enforceme
 
 
 
---States
-
+--DML States
 INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Alabama','AL','Y');
 INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Alaska','AK','N');
 INSERT INTO states(State_Name, State_Abbr,Whole_Foods) values ('Arizona','AZ','Y');

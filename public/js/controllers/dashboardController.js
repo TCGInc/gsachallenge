@@ -1,31 +1,60 @@
 app.controller("dashboardController", ["$location", "$scope", "$http", "$resource", "$log", "utilityService", "DTOptionsBuilder", "DTColumnBuilder", function($location, $scope, $http, $resource, $log, utilityService, DTOptionsBuilder, DTColumnBuilder) {
 	"use strict";
 
+	function initializeSearchParameters() {
+		$scope.searchParams = {
+			eventTypeFood: true,
+			eventTypeDrug: true,
+			eventTypeDevice: true,
+			dateFrom: "",
+			dateTo: "",
+			productDescription: "",
+			recallReason: "",
+			classificationClass1: true,
+			classificationClass2: true,
+			classificationClass3: true,
+			recallingFirm: ""
+		};		
+	}
+
 	// Initialize $scope.
-	$scope.searchParams = {
-		eventTypeFood: true,
-		eventTypeDrug: true,
-		eventTypeDevice: true,
-		dateFrom: "",
-		dateTo: "",
-		productDescription: "",
-		recallReason: "",
-		classificationClass1: true,
-		classificationClass2: true,
-		classificationClass3: true,
-		recallingFirm: "",
-		stateName: ""
-	};
+	initializeSearchParameters();
+	$scope.highlightedStates = [];
+	$scope.stateCounts = {};
+	$scope.alerts = [];
 	$scope.savedSearch = {
 		id: 0,
 		name: "",
 		description: ""
 	}
-	$scope.alerts = [];
-	$scope.stateCounts = {};
 	$scope.closeAlert = function(index) {
 		utilityService.closeAlert($scope.alerts, index);
 	}
+
+	// Clear search parameters to their default values.
+	$scope.clearFilters = function() {
+		// Determine if search parameters and heatmap are not in their initial state.
+		var p = $scope.searchParams;
+		var $searchIsDirty = !p.eventTypeFood || !p.eventTypeDrug || !p.eventTypeDevice || p.dateFrom ||
+			p.dateTo || p.productDescription || p.recallReason || p.recallingFirm ||
+			!p.classificationClass1 || !p.classificationClass2 || !p.classificationClass3;
+		var $mapIsDirty = $scope.highlightedStates.length > 0;
+
+		if ($mapIsDirty) {
+			$scope.highlightedStates = [];
+			if ($scope.hasOwnProperty("tableInstance") && $scope.tableInstance.hasOwnProperty("DataTable")) {
+				$scope.tableInstance.DataTable.clear().draw();
+			}
+		}
+
+		if ($searchIsDirty) {
+			initializeSearchParameters();
+		}
+
+		if (!$searchIsDirty && $mapIsDirty) {
+			updateHeatmap($scope.searchParams);
+		}
+	};
 
 	// Discover from URL if a saved search should be quried and displayed.
 	var searchResult = $location.absUrl().match(/search=(\d+)/);
@@ -43,15 +72,14 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 						eventTypeFood: data.result.includeFood,
 						eventTypeDrug: data.result.includeDrugs,
 						eventTypeDevice: data.result.includeDevices,
-						dateFrom: data.result.fromDate == "1900-01-01" ? "" : getDate.parse(data.result.fromDate),
-						dateTo: data.result.toDate == "1900-01-01" ? "" : getDate.parse(data.result.toDate),
+						dateFrom: data.result.fromDate ? getDate.parse(data.result.fromDate) : "",
+						dateTo: data.result.toDate ? getDate.parse(data.result.toDate) : "",
 						productDescription: data.result.productDescription,
 						recallReason: data.result.reasonForRecall,
 						classificationClass1:data.result.includeClass1,
 						classificationClass2: data.result.includeClass2,
 						classificationClass3: data.result.includeClass3,
-						recallingFirm: data.result.recallingFirm,
-						stateName: ""
+						recallingFirm: data.result.recallingFirm
 					};
 					$scope.savedSearch = {
 						id: data.result.id,
@@ -96,7 +124,6 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 
 		// No change in the heatmap if all form elements are blank.
 		if (!queryString) {
-			utilityService.addAlert($scope.alerts, "warning", "Please make entries into the search form to run a search.");
 			return;
 		}
 
@@ -153,12 +180,11 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 	$scope.tableOptions = DTOptionsBuilder.fromSource("")
 		.withDataProp("result.recalls")
 		.withPaginationType('full_numbers')
-	    .withOption('responsive', true)
 	    .withOption('bFilter', false)
 	    .withOption('dom', '<"top"il>rt<"bottom"p><"clear">')
 	    .withOption('rowCallback', function(nRow, aData, iDisplayIndex) {
-			if (aData.recallInitiationDate) {
-				var parts = aData.recallInitiationDate.substring(0,10).split("-");
+			if (aData.recall_initiation_date) {
+				var parts = aData.recall_initiation_date.substring(0,10).split("-");
 				$('td:eq(4)', nRow).text(parts[1] + "/" + parts[2] + "/" + parts[0]);
 			}
 	    	$('td', nRow).bind('click', function() {
@@ -172,27 +198,42 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 		.withFnServerData(function(sSource, aoData, fnCallback, oSettings) {
     		var queryEndpoint = "/fda/recalls?" + buildQueryString($scope.searchParams);
     		queryEndpoint += "&offset=0&limit=100&orderBy=recallInitiationDate&orderDir=asc";
-    		queryEndpoint +=  "&stateAbbr=" + utilityService.stateNames[$scope.searchParams.stateName].toLowerCase();
+    		queryEndpoint +=  "&stateAbbr=" + $scope.highlightedStates.join(",");
 			oSettings.jqXHR = $.ajax({
 				'dataType': 'json',
 				'type': 'GET',
 				'url': queryEndpoint,
-				'success': fnCallback
+				'success': function(data, status, headers, config) {
+					if (data.status.error) {
+						$log.error("Error retrieving recall data: " + data.status.message);
+						return;
+					}
+					fnCallback(data, status, headers, config);
+				},
+				'error': function(data, status, headers, config) {
+					$log.error(JSON.stringify(data) + JSON.stringify(status));
+				}
 			});
 		});
 	$scope.tableColumns = [
-        DTColumnBuilder.newColumn('productType').withTitle('Type'),
-        DTColumnBuilder.newColumn('recallingFirm').withTitle('Recalling Firm'),
-        DTColumnBuilder.newColumn('reasonForRecall').withTitle('Reason for Recall'),
-        DTColumnBuilder.newColumn('productDescription').withTitle('Description'),
-        DTColumnBuilder.newColumn('recallInitiationDate').withTitle('Recall Date'),
+        DTColumnBuilder.newColumn('product_type').withTitle('Type').withClass('col-type'),
+        DTColumnBuilder.newColumn('recalling_firm').withTitle('Recalling Firm').withClass('col-firm'),
+        DTColumnBuilder.newColumn('reason_for_recall').withTitle('Reason for Recall').withClass('col-reason'),
+        DTColumnBuilder.newColumn('product_description').withTitle('Product Description').withClass('col-desc'),
+        DTColumnBuilder.newColumn('recall_initiation_date').withTitle('Recall Date').withClass('col-date'),
+        DTColumnBuilder.newColumn('states').withTitle('States').withClass('col-state')
+
     ];
     $scope.tableInstance = {};
 
 	// Handler for heatmap directive when a state is clicked.
-	$scope.clickMap = function(stateName) {
-    	$scope.searchParams.stateName = stateName;
-		$scope.tableInstance.changeData("");
+	$scope.clickMap = function(stateAbbr) {
+		if ($scope.highlightedStates.length > 0) {
+			$scope.tableInstance.changeData("");
+		}
+		else {
+			$scope.tableInstance.DataTable.clear().draw();
+		}
     }
 
 }]);

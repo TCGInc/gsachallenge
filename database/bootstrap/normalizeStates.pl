@@ -39,7 +39,8 @@ while(my $row =  $s->fetchrow_hashref()) {
   $sqlStr = "insert into FDA_ENFORCEMENT_STATES (STATES_ID,FDA_ENFORCEMENT_EVENTS_ID)
 	     (select a.ID, b.ID from STATES a, FDA_ENFORCEMENT_EVENTS b 
 		     where 
-		     LOWER(b.distribution_pattern) like '%nationwide%'
+		     not exists (select 'a' from fda_enforcement_states c where c.fda_enforcement_events_id=b.id)
+		     and LOWER(b.distribution_pattern) like '%nationwide%'
 		     and b.distribution_pattern not like '%except%' 
 		      and b.report_date='$repDate');";  
         $dbh->do($sqlStr);
@@ -47,8 +48,9 @@ while(my $row =  $s->fetchrow_hashref()) {
   #simple worldwide
   $sqlStr = "insert into FDA_ENFORCEMENT_STATES (STATES_ID,FDA_ENFORCEMENT_EVENTS_ID)
 	     (select a.ID, b.ID from STATES a, FDA_ENFORCEMENT_EVENTS b  
-		     where 
-		     LOWER(b.distribution_pattern)  like '%worldwide%'
+		     where  
+		     not exists (select 'a' from fda_enforcement_states c where c.fda_enforcement_events_id=b.id)
+		     and LOWER(b.distribution_pattern)  like '%worldwide%'
 		     and b.distribution_pattern not like '%except%' 
 		     and b.report_date='$repDate');";  
         $dbh->do($sqlStr);

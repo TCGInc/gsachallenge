@@ -41,13 +41,16 @@ module.exports = function (app) {
 		// Validate parameters
 		var errors = [];
 
-		if(req.body.fromDate == null || !/^(19|20)\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/.test(req.body.fromDate)) {
+		var goodDates = true;
+		if(req.body.fromDate && !/^(19|20)\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/.test(req.body.fromDate)) {
 			errors.push('Invalid fromDate.');
+			goodDates = false;
 		}
-		else if(req.body.toDate == null || !/^(19|20)\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/.test(req.body.toDate)) {
+		if(req.body.toDate && !/^(19|20)\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/.test(req.body.toDate)) {
 			errors.push('Invalid toDate.');
+			goodDates = false;
 		}
-		else {
+		if(goodDates && req.body.fromDate && req.body.toDate) {
 			var m1 = moment(req.body.fromDate, 'YYYY-MM-DD');
 			var m2 = moment(req.body.toDate, 'YYYY-MM-DD');
 
