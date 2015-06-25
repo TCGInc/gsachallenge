@@ -1,6 +1,32 @@
+.datamap path {
+  cursor: pointer;
+}
+
+.hoverinfo {
+  background-color: $gray-lightest !important;
+  border-radius: $border-radius-small !important;
+  border: none !important;
+  box-shadow: 0 0 2px rgba(black,.5) !important;
+  color: $gray-dark !important;
+  font-family: $font-family-sans-serif !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+  padding: 10px !important;
+  text-align: center !important;
+  em {
+    color: $brand-primary !important;
+    display: block !important;
+    font-family: $font-family-headers !important;
+    font-size: 36px !important;
+    font-style: normal !important;
+    font-weight: 800 !important;
+    margin-bottom: 12px !important;
+  }
+}
+
 /*
     Currently have colors hard-coded for legend. If we're going to allow
-    users to select color schemes, need to move this into JavaScript.
+    users to select color schemes, we need to move this into JavaScript.
 */
 
 .map-leg {
