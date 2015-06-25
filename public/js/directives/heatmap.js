@@ -139,7 +139,7 @@ app.directive("heatmap", function(utilityService) {
 				if (Object.keys(scope[attrs.stateCounts]).length > 0) {
 					updateMap(scope[attrs.stateCounts], highlightedStates);
 				}
-			});
+			}, true);
 
 		}
     }
