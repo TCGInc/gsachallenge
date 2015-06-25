@@ -18,24 +18,30 @@
 #--  sudo apt-get install libxml-simple-perl
 #--  sudo apt-get install libjson-pp-perl
 #--  sudo apt-get install libdatetime-perl  
+#--  CURL
 #######################################################################################
     
 General Instructions:
 
 0.  ensure your environment has the PERL apt-get packages and CURL installed
 
-1.  pull repo and navigate to  /database/bootstrap/
+1.  One time, run the fdaSchema.sql for db gsac
 
-2.  run:  perl fdaApiDataLoaderfromDateFile.pl
+2.  pull repo and navigate to  /database/bootstrap/
+
+3.  run:  perl fdaApiDataLoaderfromDateFile.pl
            
-     -this will run for about 30 minutes.  
+     -this will run for about 20 minutes.  
      -note, this file reads "fdaApiDates.txt" for target event report_date
 DONE     
 
      
+
 Notes:
 
+
 Rerunning 2 will effectively refresh data for each date.
+
 
 Auto Refresh Setup:  Run CRON job for fdaApiDataLoader.pl with NO parameters                     
 
