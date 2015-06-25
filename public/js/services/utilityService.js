@@ -11,6 +11,7 @@ app.service("utilityService", [function() {
 			"Colorado": "co",
 			"Connecticut": "ct",
 			"Delaware": "de",
+			"District of Columbia": "dc",
 			"Florida": "fl",
 			"Georgia": "ga",
 			"Hawaii": "hi",
