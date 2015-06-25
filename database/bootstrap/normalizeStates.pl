@@ -1,5 +1,12 @@
 #!/usr/bin/perl
-#--  sudo apt-get install libdbd-pg-perl
+######################################################################################
+#
+#  modifies DB by clearing ALL existing Event to State reference
+#  and creating new one.
+#
+#Requires:
+#--  sudo apt-get install libdbd-pg-perl 
+#######################################################################################
 use strict;
 use DBI;
 my $sqlStr = "";
@@ -8,6 +15,7 @@ my $repDate = "";
 my $dbh = DBI->connect('dbi:Pg:dbname=gsac;host=localhost','gsac','gsac123',{AutoCommit=>1,RaiseError=>1,PrintError=>0});
 #clear out old
 $dbh->do("delete from fda_enforcement_states;");
+
 my $s = $dbh->prepare("select distinct(report_date)rd from fda_enforcement_events");
 $s->execute;
 while(my $row =  $s->fetchrow_hashref()) {  

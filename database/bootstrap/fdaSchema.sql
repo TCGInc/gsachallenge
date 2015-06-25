@@ -1,4 +1,4 @@
-
+﻿
 --
 --
 --  
@@ -7,6 +7,7 @@
 --
 --
 --
+DROP VIEW IF EXISTS v_unmapped_events;
 DROP VIEW IF EXISTS v_state_enforcements;
 DROP TABLE IF EXISTS fda_enforcement_states;
 
