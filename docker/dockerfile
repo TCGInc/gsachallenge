@@ -26,18 +26,17 @@ RUN apt-get update
 RUN apt-get -y install postgresql-9.4
 
 # Init the postgres database
-# Replace connection configuration:
-
-RUN echo "local all postgres	     	peer" > /etc/postgresql/9.4/main/pg_hba.conf
-RUN echo "local all all	                md5" >> /etc/postgresql/9.4/main/pg_hba.conf
-RUN echo "host  all all	  127.0.0.1/32  md5" >> /etc/postgresql/9.4/main/pg_hba.conf
-RUN echo "host  all all	  ::1/128       md5" >> /etc/postgresql/9.4/main/pg_hba.conf
 # Switch to postgres user
 USER postgres
 # Init database as utf8
 RUN locale-gen en_US.UTF-8 &&\
     pg_dropcluster --stop 9.4 main &&\
     pg_createcluster --locale=en_US.UtF-8 --start 9.4 main
+# Replace connection configuration:
+RUN echo "local all postgres	     	peer" > /etc/postgresql/9.4/main/pg_hba.conf
+RUN echo "local all all	                md5" >> /etc/postgresql/9.4/main/pg_hba.conf
+RUN echo "host  all all	  127.0.0.1/32  md5" >> /etc/postgresql/9.4/main/pg_hba.conf
+RUN echo "host  all all	  ::1/128       md5" >> /etc/postgresql/9.4/main/pg_hba.conf
 # Now create the gsac database and user
 RUN    /etc/init.d/postgresql start &&\
     psql --command "CREATE USER gsac WITH SUPERUSER PASSWORD 'gsac123';" &&\
@@ -51,5 +50,28 @@ RUN wget http://nodejs.org/dist/v0.10.38/node-v0.10.38.tar.gz
 RUN tar -zxf node-v0.10.38.tar.gz
 # Get compilation tools
 RUN apt-get -y install build-essential
+# Compile node
 RUN cd /node-v0.10.38 && ./configure && make install
+# Grab and install NPM
+RUN apt-get -y install curl
+RUN wget --no-check-certificate https://www.npmjs.org/install.sh && sh ./install.sh
 
+# Install the database
+COPY gsac.sql.gz /
+RUN /etc/init.d/postgresql start &&\
+    gunzip -c gsac.sql.gz | PGPASSWORD=gsac123 psql -U gsac
+
+# Copy NODE application
+ADD gsac.tar .
+# Install dependencies
+RUN cd /gsac; npm install
+
+# Copy start script
+COPY image_scripts/start_gsac.sh .
+RUN chmod 755 start_gsac.sh
+
+# Now expose and start the server
+EXPOSE 80
+CMD /start_gsac.sh
+
+ 

@@ -63,11 +63,7 @@ console.log(postData);
 		}
 		catch(errorMessage) {
 			$log.error(errorMessage);
-			$scope.modalAlerts.push({
-				type: "danger",
-				msg: "There is a system problem and your search was not saved."}
-			);
-			// utilityService.addAlert($scope.modalAlerts, "danger", "There is a system problem and your search was not saved.");
+			utilityService.addAlert($scope.modalAlerts, "danger", "There is a system problem and your search was not saved.");
 		}
 	};
 
