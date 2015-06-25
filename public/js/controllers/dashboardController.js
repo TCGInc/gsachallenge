@@ -183,9 +183,11 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
     }
 
 	// Configure state details table.
-	$scope.tableOptions = DTOptionsBuilder.fromSource("")
-		.withDataProp("result.recalls")
+	$scope.tableOptions = DTOptionsBuilder.newOptions()
+		.withDataProp("data")
 		.withPaginationType('full_numbers')
+		.withOption('processing', true)
+		.withOption('serverSide', true)
 	    .withOption('bFilter', false)
 	    .withOption('dom', '<"top"il>rt<"bottom"p><"clear">')
 	    .withOption('rowCallback', function(nRow, aData, iDisplayIndex) {
@@ -202,31 +204,32 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 			return nRow;
 	    })
 		.withFnServerData(function(sSource, aoData, fnCallback, oSettings) {
-    		var queryEndpoint = "/fda/recalls?" + buildQueryString($scope.searchParams);
-    		queryEndpoint += "&offset=0&limit=100&orderBy=recallInitiationDate&orderDir=asc";
-    		queryEndpoint +=  "&stateAbbr=" + $scope.highlightedStates.join(",");
-			oSettings.jqXHR = $.ajax({
-				'dataType': 'json',
-				'type': 'GET',
-				'url': queryEndpoint,
-				'success': function(data, status, headers, config) {
-					if (data.status.error) {
-						$log.error("Error retrieving recall data: " + data.status.message);
-						return;
-					}
-// console.log("--", oSettings);
-// console.log(data);
-					// oSettings._iRecordsDisplay = data.result.total;
-					// oSettings._iRecordsTotal = data.result.total;
-					fnCallback(data, status, headers, config);
-				},
-				'error': function(data, status, headers, config) {
-					$log.error(JSON.stringify(data) + JSON.stringify(status));
-				}
+			// Re-orient params so they're easier to use
+			var ajaxParams = {};
+			angular.forEach(aoData, function(elem, idx) {
+				ajaxParams[elem.name] = elem.value;
 			});
+
+			var queryEndpoint = "/fda/recalls?" + buildQueryString($scope.searchParams);
+			queryEndpoint += "&offset="+ajaxParams.start+"&limit="+ajaxParams.length+"&orderBy="+toCamel(ajaxParams.columns[ajaxParams.order[0].column].data)+"&orderDir="+ajaxParams.order[0].dir;
+    		queryEndpoint +=  "&stateAbbr=" + $scope.highlightedStates.join(",");
+
+    		// Get recalls
+    		$http.get(queryEndpoint).success(function(data, status, headers, config) {
+
+    			// Structure recalls in DataTables format
+    			var res = {
+    				draw: aoData.draw,
+    				recordsTotal: data.result.total,
+    				recordsFiltered: data.result.total,
+    				data: data.result.recalls
+    			}
+
+    			fnCallback(res);
+    		});
 		});
 	$scope.tableColumns = [
-        DTColumnBuilder.newColumn('product_type').withTitle('Type').withClass('col-type'),
+        DTColumnBuilder.newColumn('product_type').withTitle('Type').withClass('col-type').withOption('tv1', 'testestest'),
         DTColumnBuilder.newColumn('recalling_firm').withTitle('Recalling Firm').withClass('col-firm'),
         DTColumnBuilder.newColumn('reason_for_recall').withTitle('Reason for Recall').withClass('col-reason'),
         DTColumnBuilder.newColumn('product_description').withTitle('Product Description').withClass('col-desc'),
@@ -271,6 +274,10 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
     		utilityService.addAlert($scope.alerts, "danger", "There was a problem with your lookup.");
     		$log.error(JSON.stringify(error));
     	});
+	}
+
+	function toCamel(str) {
+		return str.replace(/(_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});
 	}
 
 }]);
