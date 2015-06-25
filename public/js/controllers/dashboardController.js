@@ -52,9 +52,16 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 		}
 
 		if (!$searchIsDirty && $mapIsDirty) {
-			updateHeatmap($scope.searchParams);
+			refreshHeatmap($scope.searchParams);
 		}
 	};
+
+	// ng-click handler to remove a state from the details table.
+	$scope.removeHighlightedState = function(index) {
+		$scope.highlightedStates.splice(index, 1);
+		refreshHeatmap($scope.searchParams);
+		refreshDetailsTable();
+	}
 
 	// Discover from URL if a saved search should be quried and displayed.
 	var searchResult = $location.absUrl().match(/search=(\d+)/);
@@ -118,7 +125,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 	}
 
 	// Query API and update map counts.
-	function updateHeatmap(searchParams) {
+	function refreshHeatmap(searchParams) {
 
 		var queryString = buildQueryString(searchParams);
 
@@ -145,7 +152,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 
 	// Refresh the heatmap when the user changes a search parameter.
 	$scope.$watchCollection("searchParams", function(searchParams) {
-		updateHeatmap(searchParams);
+		refreshHeatmap(searchParams);
 	});
 
 	// Query the server for lists to send to the autocomplete search form elements.
@@ -222,18 +229,22 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
         DTColumnBuilder.newColumn('product_description').withTitle('Product Description').withClass('col-desc'),
         DTColumnBuilder.newColumn('recall_initiation_date').withTitle('Recall Date').withClass('col-date'),
         DTColumnBuilder.newColumn('states').withTitle('States').withClass('col-state')
-
     ];
     $scope.tableInstance = {};
 
 	// Handler for heatmap directive when a state is clicked.
 	$scope.clickMap = function(stateAbbr) {
+		refreshDetailsTable();
+    }
+
+	// Refresh the datatable.
+	function refreshDetailsTable() {
 		if ($scope.highlightedStates.length > 0) {
 			$scope.tableInstance.changeData("");
 		}
 		else {
 			$scope.tableInstance.DataTable.clear().draw();
 		}
-    }
+	}
 
 }]);

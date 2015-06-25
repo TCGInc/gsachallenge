@@ -87,6 +87,9 @@ app.directive("heatmap", function(utilityService) {
 							updateMap(scope[attrs.stateCounts], scope[attrs.highlightedStates]);
 						}
 
+						// Notify $scope of changes.
+						scope.$apply();
+
 						// Fire off the click-map-callback.
 		                scope[attrs.clickMapCallback](utilityService.stateNames[geography.properties.name]);
 		            });
