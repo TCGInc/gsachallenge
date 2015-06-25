@@ -3,11 +3,11 @@ FDA Recall Interactive Map: http://18fchallenge.tcg.com/
 gsachallenge - TCG's GSA ADS 18F Challenge Submission
 =====================================================
 
-Our GSA Agile Delivery Services submission allows users to search and
-navigate the openFDA drug, service, and food enforcement data
-(available at http://open.fda.gov) by location, type, date, product
-description, and recall reason. This application provides two key
-services:
+Our GSA Agile Delivery Services submission, the FDA Recall Interactive
+Map, allows users to search and navigate the openFDA drug, service,
+and food enforcement data (available at http://open.fda.gov) by
+location, type, date, product description, and recall reason. This
+application provides two key services:
 
  1. procedures to analyze and clean the free-text location data for
     search, and
@@ -109,7 +109,33 @@ Interactive map application is an n-tier environment:
 * TODO
 
 ### How to get started (Docker) ###
-* TODO
+
+A Docker container is a fast way to get your own copy of the FDA Recall
+interactive map up and running. To do this:
+
+ * Please install docker for your environment:
+   https://docs.docker.com/installation/
+ * Checkout or download a full copy of the project's source code from
+   github: https://github.com/TCGInc/gsachallenge
+
+        git clone https://github.com/TCGInc/gsachallenge.git
+
+ * Change your directory to gsachallenge/docker and run the build
+   script to create the "gsachallenge" docker image (this requires a
+   user with sudo privileges):
+
+        cd gsachallenge/docker
+        ./build_docker.sh
+
+ * You can then run the "gsachallenge" docker image ("-d" tells docker
+   to run the image in the background, while "-p 8888:80" maps the
+   container's web port, port 80, to localhost's port 8888):
+
+        docker run -d -p 8888:80 gsachallenge
+
+ * It takes a number of seconds for the docker image server to come
+   on-line, after which you can access the local copy of the FDA
+   Recall interactive map at http://localhost:8888/
 
 ### How to get started (manually) ###
 * TODO
