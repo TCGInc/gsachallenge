@@ -168,10 +168,7 @@ module.exports = function (app) {
 			var preproc = processFilteringRequestParams(req);
 
 			// Validate state
-			if(!req.query.stateAbbr) {
-				preproc.errors.push('Invalid stateAbbr.');
-			}
-			else {
+			if(req.query.stateAbbr) {
 				var states = req.query.stateAbbr.split(",");
 
 				states.forEach(function(state, idx) {

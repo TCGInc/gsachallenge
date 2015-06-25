@@ -379,6 +379,21 @@ describe('FDA data tests', function() {
 				})
 				.end(done);
 		});
+
+		it('throws error about stateAbbr', function(done) {
+			request(app.app)
+				.get('/fda/recalls?includeDrugs=true&stateAbbr=abc&limit=25&offset=0&orderBy=reasonForRecall&orderDir=asc')
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					res.body.should.have.property('result', null);
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.true;
+					res.body.status.should.have.property('message', 'Invalid stateAbbr (abc).');
+				})
+				.end(done);
+		});
 	});
 
 	describe('GET /fda/recalls/:noun/:id', function() {
