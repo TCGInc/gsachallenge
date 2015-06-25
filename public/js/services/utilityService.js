@@ -56,7 +56,7 @@ app.service("utilityService", [function() {
 		},
 
 		parseDateString: function(rawDate) {
-			return rawDate ? new Date(rawDate).toISOString().substring(0, 10) : "1900-01-01";
+			return rawDate ? new Date(rawDate).toISOString().substring(0, 10) : "";
 		},
 
 		addAlert: function(alerts, type, message) {

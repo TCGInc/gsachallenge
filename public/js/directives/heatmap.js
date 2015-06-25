@@ -70,7 +70,12 @@ app.directive("heatmap", function(utilityService) {
 						else {
 							scope[attrs.highlightedStates].splice(index, 1);
 							$(this).on("mouseout", function() {
-								$(this).css("fill", fills[getFillKey(stateFillData[stateAbbr.toUpperCase()].numberOfEvents)]);
+								var fillKey = "band 0";
+								var count = stateFillData[stateAbbr.toUpperCase()].numberOfEvents;
+								if (count) {
+									fillKey = getFillKey(count);
+								}
+								$(this).css("fill", fills[fillKey]);
 			            	});
 						}
 
