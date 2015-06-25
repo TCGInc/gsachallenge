@@ -204,9 +204,10 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 				$('td:eq(4)', nRow).text(parts[1] + "/" + parts[2] + "/" + parts[0]);
 			}
 	    	$('td', nRow).bind('click', function() {
-	    		$scope.$apply(function() {
-					$(nRow).toggleClass('open-row');
-				});
+				$("recall-detail span")
+					.data("event_id", aData.event_id)
+					.data("product_type", aData.product_type.toLowerCase())
+					.click();
 	    	});
 			$('.table-wrapper').show();
 			return nRow;
@@ -219,8 +220,11 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 			});
 
 			var queryEndpoint = "/fda/recalls?" + buildQueryString($scope.searchParams);
-			queryEndpoint += "&offset="+ajaxParams.start+"&limit="+ajaxParams.length+"&orderBy="+toCamel(ajaxParams.columns[ajaxParams.order[0].column].data)+"&orderDir="+ajaxParams.order[0].dir;
-    		queryEndpoint +=  "&stateAbbr=" + $scope.highlightedStates.join(",");
+			queryEndpoint += "&offset="+ajaxParams.start;
+			queryEndpoint += "&limit="+ajaxParams.length;
+			queryEndpoint += "&orderBy="+toCamel(ajaxParams.columns[ajaxParams.order[0].column].data);
+			queryEndpoint += "&orderDir="+ajaxParams.order[0].dir;
+    		queryEndpoint += "&stateAbbr=" + $scope.highlightedStates.join(",");
 
     		// Get recalls
     		$http.get(queryEndpoint).success(function(data, status, headers, config) {

@@ -46,7 +46,6 @@ app.controller("saveSearchModalInstanceController", function ($scope, $http, $lo
 			includeClass2: $scope.searchParams.classificationClass2,
 			includeClass3: $scope.searchParams.classificationClass3
 		};
-console.log(postData);
 
 		try {
 			$http.post("/filters", postData).

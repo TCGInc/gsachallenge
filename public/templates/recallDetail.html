@@ -1,0 +1,25 @@
+<script type="text/ng-template" id="recallDetail.html">
+    <div class="modal-header">
+        <h4 class="modal-title">RECALL DETAIL</h4>
+    </div>
+    <alert ng-repeat="alert in modalAlerts" type="{{alert.type}}" close="closeModalAlert($index)">{{alert.msg}}</alert>
+    <div class="modal-body">
+    	<div style="border: 40px solid blue; padding: 20px; font-family: cursive; font-size: 40px;
+    	color: green; font-style: oblique;">
+    		<span style="background-color: yellow;">
+    		Scott: You can place detail items exactly where you want by using
+    		this syntax in the markup: {{details['recall_number']}}<br />
+    		Below is the list of all available detail items.
+    		</span>
+    	</div>
+        <div ng-repeat="(label, value) in details | orderBy : label">
+        	<label style="font-weight:bold;">{{label}}</label>
+        	<span>{{value}}</span>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="close()">Close</button>
+    </div>
+</script>
+
+<span ng-click="openRecallDetailModal()"></span>
