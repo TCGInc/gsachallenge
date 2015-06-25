@@ -59,39 +59,29 @@ app.directive("heatmap", function(utilityService) {
 		        done: function(datamap) {
 		            datamap.svg.selectAll('.datamaps-subunit').on('click', function(geography) {
 
-			        	var stateAbbr = utilityService.stateNames[geography.properties.name];
+		            	var stateAbbr = utilityService.stateNames[geography.properties.name];
 
-			        	// Push or pop the clicked state off the highlighted state list and make it stick
-			        	// by coloring the fill on mouseout.
+			        	// Make the appropriate color on the state stick at mouseout.
 			        	var index = $.inArray(stateAbbr, scope[attrs.highlightedStates]);
 						if (index == -1) {
-							scope[attrs.highlightedStates].push(stateAbbr);
 							$(this).on("mouseout", function() { 
 								$(this).css("fill", fills["highlighted"]);
 			            	});
 						}
 						else {
-							scope[attrs.highlightedStates].splice(index, 1);
+							var fillKey = "band 0";
+							var count = stateFillData[stateAbbr.toUpperCase()].numberOfEvents;
+							if (count) {
+								fillKey = getFillKey(count);
+							}
+							$(this).css("fill", fills[fillKey]);
 							$(this).on("mouseout", function() {
-								var fillKey = "band 0";
-								var count = stateFillData[stateAbbr.toUpperCase()].numberOfEvents;
-								if (count) {
-									fillKey = getFillKey(count);
-								}
 								$(this).css("fill", fills[fillKey]);
 			            	});
 						}
 
-						// Update map colors to show the hightlight change.
-		            	if (Object.keys(scope[attrs.stateCounts]).length > 0) {
-							updateMap(scope[attrs.stateCounts], scope[attrs.highlightedStates]);
-						}
-
-						// Notify $scope of changes.
-						scope.$apply();
-
-						// Fire off the click-map-callback.
-		                scope[attrs.clickMapCallback](utilityService.stateNames[geography.properties.name]);
+						// Fire off the map-clicked-callback so the parent controller can do stuff.
+		                scope[attrs.mapClickedCallback](stateAbbr);
 		            });
 		        },
 		        data: stateFillData
@@ -141,6 +131,13 @@ app.directive("heatmap", function(utilityService) {
 			scope.$watch(attrs.stateCounts, function(stateCounts) {
 				if (Object.keys(stateCounts).length > 0) {
 					updateMap(stateCounts, scope[attrs.highlightedStates]);
+				}
+			});
+
+			// Update map after highlighted-states attribute value is changed.
+			scope.$watch(attrs.highlightedStates, function(highlightedStates) {
+				if (Object.keys(scope[attrs.stateCounts]).length > 0) {
+					updateMap(scope[attrs.stateCounts], highlightedStates);
 				}
 			});
 

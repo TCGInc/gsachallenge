@@ -113,7 +113,7 @@
 					{{savedSearch.name}}<br />
 					{{savedSearch.description}}
 				</div>
-				<heatmap state-counts="stateCounts" highlighted-states="highlightedStates" click-map-callback="clickMap">
+				<heatmap state-counts="stateCounts" highlighted-states="highlightedStates" map-clicked-callback="mapClicked">
 			</div>
   	</div>
 
@@ -140,10 +140,12 @@
 
   		<div class="row">
 			<div class="col-xs-12">
-		    <div class="table-wrapper">
+		    <div >
+		    	<!--
 		    	<div class="btn-group">
 					<button ng-repeat="state in highlightedStates" class="btn btn-primary" ng-click="removeHighlightedState($index)">{{state}}</button>
 			    </div>
+				-->
 		  		<table datatable="" dt-options="tableOptions" dt-columns="tableColumns" dt-instance="tableInstance" class="row-border hover"></table>
 				</div>
 			</div>

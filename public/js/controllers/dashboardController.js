@@ -31,7 +31,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 		utilityService.closeAlert($scope.alerts, index);
 	}
 
-	// Clear search parameters to their default values.
+	// Page callback to set search parameters to their default values.
 	$scope.clearFilters = function() {
 		// Determine if search parameters and heatmap are not in their initial state.
 		var p = $scope.searchParams;
@@ -40,30 +40,30 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 			!p.classificationClass1 || !p.classificationClass2 || !p.classificationClass3;
 		var $mapIsDirty = $scope.highlightedStates.length > 0;
 
-		if ($mapIsDirty) {
-			$scope.highlightedStates = [];
-			if ($scope.hasOwnProperty("tableInstance") && $scope.tableInstance.hasOwnProperty("DataTable")) {
-				$scope.tableInstance.DataTable.clear().draw();
-			}
-		}
-
 		if ($searchIsDirty) {
+			// Refresh both states and counts on the heatmap.
+			$scope.highlightedStates = [];
 			initializeSearchParameters();
 		}
 
 		if (!$searchIsDirty && $mapIsDirty) {
-			refreshHeatmap($scope.searchParams);
+			// Refresh just the states on the heatmap.
+			refreshHighlightedStates();
+		}
+
+		if ($searchIsDirty || $mapIsDirty) {
+			// Refresh the details table.
+			refreshDetailsTable();
 		}
 	};
 
-	// ng-click handler to remove a state from the details table.
+	// Page callback to remove a state highlight from the map and details table.
 	$scope.removeHighlightedState = function(index) {
-		$scope.highlightedStates.splice(index, 1);
-		refreshHeatmap($scope.searchParams);
+		refreshHighlightedStates($scope.highlightedStates[index]);
 		refreshDetailsTable();
 	}
 
-	// Discover from URL if a saved search should be quried and displayed.
+	// At page load, discover from URL if a saved search should be quried and displayed.
 	var searchResult = $location.absUrl().match(/search=(\d+)/);
 	if (searchResult && searchResult.length > 1) {
 		try {
@@ -93,6 +93,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 						name: data.result.name,
 						description: data.result.description
 					}
+					refreshDetailsTable();
 				}).
 				error(function(data, status, headers, config) {
 					throw JSON.stringify(data) + JSON.stringify(status);
@@ -124,8 +125,8 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 		return queryParams.join("&");
 	}
 
-	// Query API and update map counts.
-	function refreshHeatmap(searchParams) {
+	// Refresh the $scope.stateCounts variable which will, in turn, refresh the heatmap.
+	function refreshStateCounts(searchParams) {
 
 		var queryString = buildQueryString(searchParams);
 
@@ -150,40 +151,38 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 		});
 	}
 
-	// Refresh the heatmap when the user changes a search parameter.
+	// Refresh the stateCounts (which will then refresh the heatmap) when the user changes a search parameter.
 	$scope.$watchCollection("searchParams", function(searchParams) {
-		refreshHeatmap(searchParams);
+		refreshStateCounts(searchParams);
+		refreshDetailsTable();
 	});
 
-	// Query the server for lists to send to the autocomplete search form elements.
-	$scope.autocomplete = function(field, value) {
-
-		var queryString = "/fda/autocomplete?field=" + field + "&query=" + value;
-		if ($scope.searchParams.eventTypeFood) queryString += "&includeFood=true";
-		if ($scope.searchParams.eventTypeDrug) queryString += "&includeDrugs=true";
-		if ($scope.searchParams.eventTypeDevice) queryString += "&includeDevices=true";
-
-		return $http.get(queryString).then(function(response) {
-			$scope.alerts = [];
-			var trimmedResult = response.data.result.map(function(result) {
-				// Trim long result records to better fit into the autocomplete dropdown.
-				if (result.length > 50) {
-					var padding = parseInt((50 - value.length) / 2);
-					var re = new RegExp(".{0," + padding + "}" + value + ".{0," + padding + "}", "i");
-					var matches = result.match(re);
-					return matches[0];
+	// Refresh the list of highlighted states, which will then refresh the heatmap.
+	function refreshHighlightedStates(stateAbbr) {
+		$scope.$apply(function() {
+			if (!stateAbbr) {
+				// Clear all highlights from states if no stateAbbr given.
+				$scope.highlightedStates = [];
+			}
+			else {
+				var index = $.inArray(stateAbbr, $scope.highlightedStates);
+				if (index == -1) {
+					$scope.highlightedStates.push(stateAbbr);
 				}
-				return result;
-			});
-      		return trimmedResult;
-    	},
-    	function(error) {
-    		utilityService.addAlert($scope.alerts, "danger", "There was a problem with your lookup.");
-    		$log.error(JSON.stringify(error));
-    	});
+				else {
+					$scope.highlightedStates.splice(index, 1);
+				}
+			}
+		});
 	}
 
-	// Configure datatable.
+	// Handler for heatmap directive when a state is clicked.
+	$scope.mapClicked = function(stateAbbr) {
+		refreshHighlightedStates(stateAbbr);
+		refreshDetailsTable();
+    }
+
+	// Configure state details table.
 	$scope.tableOptions = DTOptionsBuilder.fromSource("")
 		.withDataProp("result.recalls")
 		.withPaginationType('full_numbers')
@@ -215,6 +214,10 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 						$log.error("Error retrieving recall data: " + data.status.message);
 						return;
 					}
+// console.log("--", oSettings);
+// console.log(data);
+					// oSettings._iRecordsDisplay = data.result.total;
+					// oSettings._iRecordsTotal = data.result.total;
 					fnCallback(data, status, headers, config);
 				},
 				'error': function(data, status, headers, config) {
@@ -232,19 +235,42 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
     ];
     $scope.tableInstance = {};
 
-	// Handler for heatmap directive when a state is clicked.
-	$scope.clickMap = function(stateAbbr) {
-		refreshDetailsTable();
-    }
-
 	// Refresh the datatable.
 	function refreshDetailsTable() {
-		if ($scope.highlightedStates.length > 0) {
+		if ($scope.tableInstance.hasOwnProperty("DataTable")) {
 			$scope.tableInstance.changeData("");
 		}
-		else {
-			$scope.tableInstance.DataTable.clear().draw();
-		}
+	}
+
+	// Give the page some time to load before running table query to initialize the details table.
+	setTimeout(function() {	refreshDetailsTable(); }, 1000);
+
+	// Query the server for lists to send to the autocomplete search form elements.
+	$scope.autocomplete = function(field, value) {
+
+		var queryString = "/fda/autocomplete?field=" + field + "&query=" + value;
+		if ($scope.searchParams.eventTypeFood) queryString += "&includeFood=true";
+		if ($scope.searchParams.eventTypeDrug) queryString += "&includeDrugs=true";
+		if ($scope.searchParams.eventTypeDevice) queryString += "&includeDevices=true";
+
+		return $http.get(queryString).then(function(response) {
+			$scope.alerts = [];
+			var trimmedResult = response.data.result.map(function(result) {
+				// Trim long result records to better fit into the autocomplete dropdown.
+				if (result.length > 50) {
+					var padding = parseInt((50 - value.length) / 2);
+					var re = new RegExp(".{0," + padding + "}" + value + ".{0," + padding + "}", "i");
+					var matches = result.match(re);
+					return matches[0];
+				}
+				return result;
+			});
+      		return trimmedResult;
+    	},
+    	function(error) {
+    		utilityService.addAlert($scope.alerts, "danger", "There was a problem with your lookup.");
+    		$log.error(JSON.stringify(error));
+    	});
 	}
 
 }]);
