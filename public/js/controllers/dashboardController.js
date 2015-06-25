@@ -13,8 +13,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 		classificationClass1: true,
 		classificationClass2: true,
 		classificationClass3: true,
-		recallingFirm: "",
-		stateName: ""
+		recallingFirm: ""
 	};
 	$scope.savedSearch = {
 		id: 0,
@@ -23,6 +22,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 	}
 	$scope.alerts = [];
 	$scope.stateCounts = {};
+	$scope.highlightedStates = [];
 	$scope.closeAlert = function(index) {
 		utilityService.closeAlert($scope.alerts, index);
 	}
@@ -50,8 +50,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 						classificationClass1:data.result.includeClass1,
 						classificationClass2: data.result.includeClass2,
 						classificationClass3: data.result.includeClass3,
-						recallingFirm: data.result.recallingFirm,
-						stateName: ""
+						recallingFirm: data.result.recallingFirm
 					};
 					$scope.savedSearch = {
 						id: data.result.id,
@@ -155,8 +154,8 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 	    .withOption('bFilter', false)
 	    .withOption('dom', '<"top"il>rt<"bottom"p><"clear">')
 	    .withOption('rowCallback', function(nRow, aData, iDisplayIndex) {
-			if (aData.recallInitiationDate) {
-				var parts = aData.recallInitiationDate.substring(0,10).split("-");
+			if (aData.recall_initiation_date) {
+				var parts = aData.recall_initiation_date.substring(0,10).split("-");
 				$('td:eq(4)', nRow).text(parts[1] + "/" + parts[2] + "/" + parts[0]);
 			}
 	    	$('td', nRow).bind('click', function() {
@@ -170,7 +169,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 		.withFnServerData(function(sSource, aoData, fnCallback, oSettings) {
     		var queryEndpoint = "/fda/recalls?" + buildQueryString($scope.searchParams);
     		queryEndpoint += "&offset=0&limit=100&orderBy=recallInitiationDate&orderDir=asc";
-    		queryEndpoint +=  "&stateAbbr=" + utilityService.stateNames[$scope.searchParams.stateName].toLowerCase();
+    		queryEndpoint +=  "&stateAbbr=" + $scope.highlightedStates.join(",");
 			oSettings.jqXHR = $.ajax({
 				'dataType': 'json',
 				'type': 'GET',
@@ -179,20 +178,24 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 			});
 		});
 	$scope.tableColumns = [
-        DTColumnBuilder.newColumn('productType').withTitle('Type').withClass('col-type'),
-        DTColumnBuilder.newColumn('recallingFirm').withTitle('Recalling Firm').withClass('col-firm'),
-        DTColumnBuilder.newColumn('reasonForRecall').withTitle('Reason for Recall').withClass('col-reason'),
-        DTColumnBuilder.newColumn('productDescription').withTitle('Product Description').withClass('col-desc'),
-        DTColumnBuilder.newColumn('recallInitiationDate').withTitle('Recall Date').withClass('col-date'),
-        DTColumnBuilder.newColumn('stateAbbr').withTitle('State').withClass('col-state')
+        DTColumnBuilder.newColumn('product_type').withTitle('Type').withClass('col-type'),
+        DTColumnBuilder.newColumn('recalling_firm').withTitle('Recalling Firm').withClass('col-firm'),
+        DTColumnBuilder.newColumn('reason_for_recall').withTitle('Reason for Recall').withClass('col-reason'),
+        DTColumnBuilder.newColumn('product_description').withTitle('Product Description').withClass('col-desc'),
+        DTColumnBuilder.newColumn('recall_initiation_date').withTitle('Recall Date').withClass('col-date'),
+        DTColumnBuilder.newColumn('states').withTitle('States').withClass('col-state')
 
     ];
     $scope.tableInstance = {};
 
 	// Handler for heatmap directive when a state is clicked.
-	$scope.clickMap = function(stateName) {
-    	$scope.searchParams.stateName = stateName;
-		$scope.tableInstance.changeData("");
+	$scope.clickMap = function(stateAbbr) {
+		if ($scope.highlightedStates.length > 0) {
+			$scope.tableInstance.changeData("");
+		}
+		else {
+			$scope.tableInstance.DataTable.clear().draw();
+		}
     }
 
 }]);

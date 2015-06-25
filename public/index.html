@@ -110,7 +110,7 @@
 					{{savedSearch.name}}<br />
 					{{savedSearch.description}}
 				</div>
-				<heatmap state-counts="stateCounts">
+				<heatmap state-counts="stateCounts" highlighted-states="highlightedStates" click-map-callback="clickMap">
 			</div>
   	</div>
 
@@ -123,19 +123,19 @@
 						</div>
 						<div class="col-sm-8 col-md-8 clearfix">
 							<label>Share this Search:</label>
-              <span class="st st_email_large" displayText="Email"></span>
-              <span class="st st_facebook_large" displayText="Facebook"></span>
-              <span class="st st_twitter_large" displayText="Tweet"></span>
-              <span class="st st_tumblr_large" displayText="Tumblr"></span>
-              <span class="st st_reddit_large" displayText="Reddit"></span>
-              <span class="st st_sharethis_large" displayText="ShareThis"></span>
+			            	<span class="st st_email_large" displayText="Email"></span>
+			            	<span class="st st_facebook_large" displayText="Facebook"></span>
+			            	<span class="st st_twitter_large" displayText="Tweet"></span>
+			            	<span class="st st_tumblr_large" displayText="Tumblr"></span>
+			            	<span class="st st_reddit_large" displayText="Reddit"></span>
+			            	<span class="st st_sharethis_large" displayText="ShareThis"></span>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 
-  	<div class="row">
+  		<div class="row">
 			<div class="col-xs-12">
 		    <div class="table-wrapper">
 		  		<table datatable="" dt-options="tableOptions" dt-columns="tableColumns" dt-instance="tableInstance" class="row-border hover"></table>
