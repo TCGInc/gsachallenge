@@ -209,12 +209,15 @@ function FdaService() {
 		var dbNouns = this.convertFdaToDbNouns(params.nouns);
 		params.productType = dbNouns;
 
-		var raw = 'FROM v_states_enforcements WHERE product_type = ANY(:productType) AND recall_initiation_date between :fromDate AND :toDate AND (';
-		params.stateAbbr.forEach(function(state) {
-			raw += "'" + state + "' = ANY(states) OR ";
-		});
-		raw = raw.slice(0, -3);
-		raw += ') ';
+		var raw = 'FROM v_states_enforcements WHERE product_type = ANY(:productType) AND recall_initiation_date between :fromDate AND :toDate ';
+		if(params.stateAbbr && params.stateAbbr.length) {
+			raw += 'AND (';
+			params.stateAbbr.forEach(function(state) {
+				raw += "'" + state + "' = ANY(states) OR ";
+			});
+			raw = raw.slice(0, -3);
+			raw += ') ';
+		}
 
 		if(params.productDescription) {
 			params.productDescription = '%' + params.productDescription + '%';
