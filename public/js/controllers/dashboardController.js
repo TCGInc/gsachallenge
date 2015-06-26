@@ -35,23 +35,23 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 	$scope.clearFilters = function() {
 		// Determine if search parameters and heatmap are not in their initial state.
 		var p = $scope.searchParams;
-		var $searchIsDirty = !p.eventTypeFood || !p.eventTypeDrug || !p.eventTypeDevice || p.dateFrom ||
+		var searchIsDirty = !p.eventTypeFood || !p.eventTypeDrug || !p.eventTypeDevice || p.dateFrom ||
 			p.dateTo || p.productDescription || p.recallReason || p.recallingFirm ||
 			!p.classificationClass1 || !p.classificationClass2 || !p.classificationClass3;
-		var $mapIsDirty = $scope.highlightedStates.length > 0;
+		var mapIsDirty = $scope.highlightedStates.length > 0;
 
-		if ($searchIsDirty) {
+		if (searchIsDirty) {
 			// Refresh both states and counts on the heatmap.
 			$scope.highlightedStates = [];
 			initializeSearchParameters();
 		}
 
-		if (!$searchIsDirty && $mapIsDirty) {
+		if (!searchIsDirty && mapIsDirty) {
 			// Refresh just the states on the heatmap.
 			refreshHighlightedStates();
 		}
 
-		if ($searchIsDirty || $mapIsDirty) {
+		if (searchIsDirty || mapIsDirty) {
 			// Refresh the details table.
 			refreshDetailsTable();
 		}
