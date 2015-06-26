@@ -143,7 +143,9 @@
 			<div class="col-xs-12">
 		    <div >
 		    	<div class="btn-group">
-					<button ng-repeat="state in highlightedStates.sort()" class="btn btn-primary" ng-click="removeHighlightedState($index)">{{state}}</button>
+		    		<span ng-repeat="state in highlightedStates.sort()">
+						<button class="btn btn-primary" ng-click="removeHighlightedState($index)">{{state}}&nbsp;&nbsp;<span class="glyphicon glyphicon-remove"></span></button>&nbsp;&nbsp;
+					</span>
 			    </div>
 		  		<table datatable="" dt-options="tableOptions" dt-columns="tableColumns" dt-instance="tableInstance" class="row-border hover"></table>
 				</div>
