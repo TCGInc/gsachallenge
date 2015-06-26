@@ -3,15 +3,16 @@ FDA Recall Interactive Map: http://18fchallenge.tcg.com/
 gsachallenge - TCG's GSA ADS 18F Challenge Submission
 =====================================================
 
-Our GSA Agile Delivery Services submission, the FDA Recall Interactive
-Map, allows users to search and navigate the openFDA drug, service,
-and food enforcement data (available at http://open.fda.gov) by
-location, type, date, product description, and recall reason. This
-application provides two key services:
+Our GSA Agile Delivery Services submission allows users to search and
+navigate the openFDA: food, device, and drug enforcement data
+(available at http://open.fda.gov).  This tool exposes all API
+data elements but specializes on the US State through a
+State normalization routine (natural languate to states).
+This application provides key services:
 
- 1. procedures to analyze and clean the free-text location data for
-    search, and
- 2. the resulting ability to easily navigate recall data by state
+ 1. routines to analyze and clean the natural language distribution
+    pattern, and
+ 2. the resulting desktop and mobile UI to navigate recall data by state
     (through a touch-interactive map of the United States).
 
 ## Architecture ##
@@ -83,6 +84,8 @@ following selection of component technologies:
    copies of our system (both the node server and database) locally or
    into the cloud.
 
+  * Perl/CURL - General utility scripts.
+
 Additional dependencies include:
 
  * MomentJS - JavaScript date library - Moment allows us to parse and
@@ -107,25 +110,26 @@ Interactive map application is an n-tier environment:
 
 ## Key Challenge Requirements ##
 ### Use of IaaS ###
-We deployed our prototype (18fchallenge.tcg.com) into Amazon's IaaS EC2 environment using
-an Ubuntu virtual machine. In fact we used the EC2 API to deploy a VMWare image that we originally prepared
-to help our developers quickly start working. By using Jenkins,
-we were able to use branches for continous deployment to
-both our integration and production machines. This allowed us
-to quickly configure and verify our various environments.
+
+We deployed our prototype (18fchallenge.tcg.com) into Amazon's IaaS
+EC2 environment using an Ubuntu virtual machine. In fact we used the
+EC2 API to deploy a VMWare image that we originally prepared to help
+our developers quickly start working. By using Jenkins, we were able
+to use branches for continous deployment to both our integration and
+production machines. This allowed us to quickly configure and verify
+our various environments.
 
 ### Relationship to the US Services Playbook ###
 * TODO
 
-### Contaiberization -- Using Docker to easily get started ###
+### Containerization -- Using Docker to easily get started ###
 
-In a traditional Docker deployment, individual services are
-split into separate containers (so that one main process
-is run in its own container). This generally encourages
-container reuse. For this prototype, we have
-an opportunity to leverage Docker for a non-traditional use case:
-to permit curious individuals to easily instantiate their
-own copy of the FDA Recall Interactive Map.
+In a traditional Docker deployment, individual services are split into
+separate containers (so that one main process is run in its own
+container). This generally encourages container reuse. For this
+prototype, we have an opportunity to leverage Docker for a
+non-traditional use case: to permit curious individuals to easily
+instantiate their own copy of the FDA Recall Interactive Map.
 
 To do this:
 
