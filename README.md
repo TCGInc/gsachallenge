@@ -109,7 +109,9 @@ Interactive map application is an n-tier environment:
 ### Use of IaaS ###
 We deployed our prototype (18fchallenge.tcg.com) into Amazon's IaaS EC2 environment using
 an Ubuntu virtual machine. In fact we used the EC2 API to deploy a VMWare image that we originally prepared
-to help our developers quickly start working. This allowed us
+to help our developers quickly start working. By using Jenkins,
+we were able to use branches for continous deployment to
+both our integration and production machines. This allowed us
 to quickly configure and verify our various environments.
 
 ### Relationship to the US Services Playbook ###
