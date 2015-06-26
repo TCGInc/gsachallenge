@@ -26,7 +26,10 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 		id: 0,
 		name: "",
 		description: ""
-	}
+	};
+	$scope.shareThisUrl = $location.absUrl();
+
+
 	$scope.closeAlert = function(index) {
 		utilityService.closeAlert($scope.alerts, index);
 	}
@@ -71,6 +74,12 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 	    // At page load or hash change, discover from URL if a saved search should be queried and displayed.
 		var searchResult = $location.path();
 		if (searchResult && searchResult.length > 1) {
+			$scope.shareThisUrl = $location.absUrl();
+
+			//stWidget.initFire=false;
+			//stWidget.init();
+			
+
 			searchResult = searchResult.substring(1);
 			searchResult = searchResult.replace(/^(\d+).*$/, "$1");
 			try {
