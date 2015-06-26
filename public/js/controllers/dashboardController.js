@@ -253,7 +253,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 	// Refresh the datatable.
 	function refreshDetailsTable() {
 		if ($scope.tableInstance.hasOwnProperty("DataTable")) {
-			$scope.tableInstance.changeData("");
+			$scope.tableInstance.DataTable.ajax.reload();
 		}
 	}
 
