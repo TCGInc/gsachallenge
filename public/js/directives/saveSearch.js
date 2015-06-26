@@ -15,7 +15,7 @@ app.directive("saveSearch", function($modal) {
     }
 });
 
-app.controller("saveSearchModalInstanceController", function ($scope, $http, $log, $window, $modalInstance, utilityService) {
+app.controller("saveSearchModalInstanceController", function ($scope, $http, $log, $window, $modalInstance, $location, utilityService) {
 
 	$scope.modalAlerts = [];
 	$scope.closeModalAlert = function(index) {
@@ -54,7 +54,7 @@ app.controller("saveSearchModalInstanceController", function ($scope, $http, $lo
 						throw data.status.message;
 					}
 					$modalInstance.close();
-					$window.location = "?search=" + data.result.id;
+					$location.path(data.result.id);
 				}).
 				error(function(data, status, headers, config) {
 					throw JSON.stringify(data) + JSON.stringify(status);

@@ -41,7 +41,7 @@
 	</script>
 	<script>var switchTo5x=true;</script>
 	<script src="//w.sharethis.com/button/buttons.js"></script>
-	<script>stLight.options({publisher: "4ef9f5b9-9668-447f-b472-f33076dd3177", doNotHash: false, doNotCopy: false, hashAddressBar: false, onhover: false});</script>
+	<script>stLight.options({publisher: "4ef9f5b9-9668-447f-b472-f33076dd3177", doNotHash: true, doNotCopy: false, hashAddressBar: false, onhover: false});</script>
 	<link href="//cdn.datatables.net/1.10.7/css/jquery.dataTables.css" rel="stylesheet">
 	<link href="//cdn.datatables.net/plug-ins/1.10.7/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet">
 	<link href="//cdn.datatables.net/responsive/1.0.6/css/dataTables.responsive.css" rel="stylesheet">
@@ -125,7 +125,7 @@
 						<div class="col-sm-4 col-md-4 clearfix">
 							<save-search>
 						</div>
-						<div class="col-sm-8 col-md-8 clearfix">
+						<div class="col-sm-8 col-md-8 clearfix" ng-hide="!savedSearch.id">
 							<label>Share this Search:</label>
 			            	<span class="st st_email_large" displayText="Email"></span>
 			            	<span class="st st_facebook_large" displayText="Facebook"></span>

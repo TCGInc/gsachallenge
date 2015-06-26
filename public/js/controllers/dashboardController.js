@@ -63,47 +63,55 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 		refreshDetailsTable();
 	}
 
-	// At page load, discover from URL if a saved search should be quried and displayed.
-	var searchResult = $location.absUrl().match(/search=(\d+)/);
-	if (searchResult && searchResult.length > 1) {
-		try {
-			$http.get("/filters/" + searchResult[1]).
-				success(function(data, status, headers, config) {
-					if (data.status.error) {
-						throw data.status.message;
-					}
+	
 
-					var getDate = d3.time.format("%Y-%m-%d");
+	$scope.$watch(function () {
+	    return location.hash
+	}, function (value) {
+	    // At page load or hash change, discover from URL if a saved search should be queried and displayed.
+		var searchResult = $location.path();
+		if (searchResult && searchResult.length > 1) {
+			searchResult = searchResult.substring(1);
+			searchResult = searchResult.replace(/^(\d+).*$/, "$1");
+			try {
+				$http.get("/filters/" + searchResult).
+					success(function(data, status, headers, config) {
+						if (data.status.error) {
+							throw data.status.message;
+						}
 
-					$scope.searchParams = {
-						eventTypeFood: data.result.includeFood,
-						eventTypeDrug: data.result.includeDrugs,
-						eventTypeDevice: data.result.includeDevices,
-						dateFrom: data.result.fromDate ? getDate.parse(data.result.fromDate) : "",
-						dateTo: data.result.toDate ? getDate.parse(data.result.toDate) : "",
-						productDescription: data.result.productDescription,
-						recallReason: data.result.reasonForRecall,
-						classificationClass1:data.result.includeClass1,
-						classificationClass2: data.result.includeClass2,
-						classificationClass3: data.result.includeClass3,
-						recallingFirm: data.result.recallingFirm
-					};
-					$scope.savedSearch = {
-						id: data.result.id,
-						name: data.result.name,
-						description: data.result.description
-					}
-					refreshDetailsTable();
-				}).
-				error(function(data, status, headers, config) {
-					throw JSON.stringify(data) + JSON.stringify(status);
-				})
+						var getDate = d3.time.format("%Y-%m-%d");
+
+						$scope.searchParams = {
+							eventTypeFood: data.result.includeFood,
+							eventTypeDrug: data.result.includeDrugs,
+							eventTypeDevice: data.result.includeDevices,
+							dateFrom: data.result.fromDate ? getDate.parse(data.result.fromDate) : "",
+							dateTo: data.result.toDate ? getDate.parse(data.result.toDate) : "",
+							productDescription: data.result.productDescription,
+							recallReason: data.result.reasonForRecall,
+							classificationClass1:data.result.includeClass1,
+							classificationClass2: data.result.includeClass2,
+							classificationClass3: data.result.includeClass3,
+							recallingFirm: data.result.recallingFirm
+						};
+						$scope.savedSearch = {
+							id: data.result.id,
+							name: data.result.name,
+							description: data.result.description
+						}
+						refreshDetailsTable();
+					}).
+					error(function(data, status, headers, config) {
+						throw JSON.stringify(data) + JSON.stringify(status);
+					})
+			}
+			catch(errorMessage) {
+				$log.error(errorMessage);
+				utilityService.addAlert($scope.alerts, "warning", "No saved search was found for this search ID.");
+			}
 		}
-		catch(errorMessage) {
-			$log.error(errorMessage);
-			utilityService.addAlert($scope.alerts, "warning", "No saved search was found for this search ID.");
-		}
-	}
+	});
 
 	// Build query parameter string.
 	function buildQueryString(searchParams) {
