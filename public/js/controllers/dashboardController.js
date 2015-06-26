@@ -1,4 +1,4 @@
-app.controller("dashboardController", ["$location", "$scope", "$http", "$resource", "$log", "utilityService", "DTOptionsBuilder", "DTColumnBuilder", function($location, $scope, $http, $resource, $log, utilityService, DTOptionsBuilder, DTColumnBuilder) {
+app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "utilityService", "DTOptionsBuilder", "DTColumnBuilder", function($location, $scope, $http, $log, utilityService, DTOptionsBuilder, DTColumnBuilder) {
 	"use strict";
 
 	function initializeSearchParameters() {
@@ -143,20 +143,27 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 			return;
 		}
 
-		var StateCounts = $resource("/fda/recalls/counts?" + queryString);
-
-		var counts = StateCounts.get(function() {
-			if (counts.status.error) {
-				if (counts.status.message != "Invalid fromDate." && counts.status.message != "Invalid toDate.") {
-					utilityService.addAlert($scope.alerts, "danger", "There was a problem with your search.");
-				}
-    			$log.error(JSON.stringify(counts.status));
-			}
-			else {
-				$scope.alerts = [];
-				$scope.stateCounts = counts.result.aggregate;
-			}
-		});
+		try {
+			$http.get("/fda/recalls/counts?" + queryString).
+				success(function(data, status, headers, config) {
+					if (data.status.error) {
+						if (data.status.message != "Invalid fromDate." && data.status.message != "Invalid toDate.") {
+							throw data.status.message;
+						}
+					}
+					else {
+						$scope.alerts = [];
+						$scope.stateCounts = data.result.aggregate;
+					}
+				}).
+				error(function(data, status, headers, config) {
+					throw JSON.stringify(data) + JSON.stringify(status);
+				})
+		}
+		catch(errorMessage) {
+			$log.error(errorMessage);
+			utilityService.addAlert($scope.modalAlerts, "danger", "There is a system problem when searching.");
+		}
 	}
 
 	// Refresh the stateCounts (which will then refresh the heatmap) when the user changes a search parameter.
@@ -237,6 +244,11 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
     		// Get recalls
     		$http.get(queryEndpoint).success(function(data, status, headers, config) {
 
+    			if (data.status.error) {
+					$log.error(data.status.message);
+					return;
+				}
+
     			// Structure recalls in DataTables format
     			var res = {
     				draw: aoData.draw,
@@ -261,7 +273,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$resourc
 	// Refresh the datatable.
 	function refreshDetailsTable() {
 		if ($scope.tableInstance.hasOwnProperty("DataTable")) {
-			$scope.tableInstance.changeData("");
+			$scope.tableInstance.DataTable.ajax.reload();
 		}
 	}
 
