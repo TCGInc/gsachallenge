@@ -14,7 +14,7 @@ application provides two key services:
  2. the resulting ability to easily navigate recall data by state
     (through a touch-interactive map of the United States).
 
-### Architecture ###
+## Architecture ##
 
 Our choice of architecture components was guided by the following
 factors:
@@ -105,13 +105,27 @@ Interactive map application is an n-tier environment:
  * Service tier: NodeJS/Express RESTful services 
  * Presentation tier: Angular/Bootstrap/etc. single-page application
 
+## Key Challenge Requirements ##
+### Use of IaaS ###
+We deployed our prototype (18fchallenge.tcg.com) into Amazon's IaaS EC2 environment using
+an Ubuntu virtual machine. In fact we used the EC2 API to deploy a VMWare image that we originally prepared
+to help our developers quickly start working. This allowed us
+to quickly configure and verify our various environments.
+
 ### Relationship to the US Services Playbook ###
 * TODO
 
-### How to get started (Docker) ###
+### Contaiberization -- Using Docker to easily get started ###
 
-A Docker container is a fast way to get your own copy of the FDA Recall
-Interactive Map up and running. To do this:
+In a traditional Docker deployment, individual services are
+split into separate containers (so that one main process
+is run in its own container). This generally encourages
+container reuse. For this prototype, we have
+an opportunity to leverage Docker for a non-traditional use case:
+to permit curious individuals to easily instantiate their
+own copy of the FDA Recall Interactive Map.
+
+To do this:
 
  * Please install docker for your environment:
    https://docs.docker.com/installation/
@@ -200,7 +214,7 @@ environment that supports Postgres 9.4 and Node):
 At this point you should be able to access the application at
 http://localhost/ .
 
-### Public domain ###
+## Public domain ##
 
 This project is in the worldwide [public domain](LICENSE.md).
 
