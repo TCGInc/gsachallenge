@@ -275,7 +275,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
         DTColumnBuilder.newColumn('reason_for_recall').withTitle('Reason for Recall').withClass('col-reason'),
         DTColumnBuilder.newColumn('product_description').withTitle('Product Description').withClass('col-desc'),
         DTColumnBuilder.newColumn('recall_initiation_date').withTitle('Recall Date').withClass('col-date'),
-        DTColumnBuilder.newColumn('states').withTitle('States').withClass('col-state')
+        DTColumnBuilder.newColumn('states').withTitle('States').withClass('col-state').notSortable()
     ];
     $scope.tableInstance = {};
 
