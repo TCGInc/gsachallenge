@@ -63,6 +63,7 @@ app.directive("heatmap", function(utilityService) {
 
 			        	// Make the appropriate color on the state stick at mouseout.
 			        	var index = $.inArray(stateAbbr, scope[attrs.highlightedStates]);
+			        	$(this).off("mouseout");
 						if (index == -1) {
 							$(this).on("mouseout", function() { 
 								$(this).css("fill", fills["highlighted"]);
@@ -116,6 +117,12 @@ app.directive("heatmap", function(utilityService) {
 					else if (count > 0) {
 						fillKeyValue = getFillKey(count);
 					}
+
+					// Ensure mouseout color is correct for the state.
+					$("path." + stateAbbr.toUpperCase()).off("mouseout");
+					$("path." + stateAbbr.toUpperCase()).on("mouseout", function() { 
+						$(this).css("fill", fills[fillKeyValue]);
+		            });
 
 					stateFillData[stateAbbr.toUpperCase()] = {
 						fillKey: fillKeyValue,
