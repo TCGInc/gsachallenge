@@ -104,6 +104,12 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 							classificationClass3: data.result.includeClass3,
 							recallingFirm: data.result.recallingFirm
 						};
+						if(data.result.stateAbbr) {
+							$scope.highlightedStates = data.result.stateAbbr;
+							$scope.highlightedStates.forEach(function(state, idx, arr) {
+								arr[idx] = state.toLowerCase();
+							});
+						}
 						$scope.savedSearch = {
 							id: data.result.id,
 							name: data.result.name,
