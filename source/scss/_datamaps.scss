@@ -49,13 +49,18 @@
     #045a8d 100%,
     #023858 100%);
   border: 1px solid black;
-  bottom: -15px;
+  bottom: auto;
   font-size: 12px;
   left: 0;
   line-height: 1;
   padding: 5px;
   position: absolute;
   right: 0;
+  top: -10px;
+  @media (min-width: $screen-md) {
+    bottom: -15px;
+    top: auto;
+  }
   .leg-less {
     color: black;
     float: left;

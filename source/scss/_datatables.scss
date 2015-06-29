@@ -149,8 +149,11 @@ table.dataTable {
     margin-top: -40px !important;
     padding: 30px !important;
     text-align: center !important;
-    width: 30% !important;
+    width: 100% !important;
     z-index: 2 !important;
+    @media (min-width: $screen-sm) {
+      width: 30% !important;
+    }
   }
 }
 
