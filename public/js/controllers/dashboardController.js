@@ -33,6 +33,15 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 		// Refresh detail table after the user selects or deselects a state using the form multiselect.
 		refreshDetailsTable();
 	}
+	$scope.openDate = function($event, id) {
+		$event.preventDefault();
+		$event.stopPropagation();
+		$scope.dateOpen[id] = true;
+	};
+	$scope.dateOpen = {
+		'from': false,
+		'to': false
+	}
 
 
 	$scope.closeAlert = function(index) {
@@ -163,9 +172,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 			$http.get("/fda/recalls/counts?" + queryString).
 				success(function(data, status, headers, config) {
 					if (data.status.error) {
-						if (data.status.message != "Invalid fromDate." && data.status.message != "Invalid toDate.") {
-							throw data.status.message;
-						}
+						throw data.status.message;
 					}
 					else {
 						$scope.alerts = [];
