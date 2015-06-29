@@ -270,7 +270,16 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
     				recordsTotal: data.result.total,
     				recordsFiltered: data.result.total,
     				data: data.result.recalls
-    			}
+    			};
+
+    			angular.forEach(data.result.recalls, function(recall) {
+    				if(recall.states.length == 51) {
+    					recall.states = 'Nationwide';
+    				}
+    				else {
+    					recall.states.sort();
+    				}
+    			});
 
     			fnCallback(res);
     		});
