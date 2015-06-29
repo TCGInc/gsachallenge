@@ -3,7 +3,8 @@ table.dataTable {
   font-size: 14px;
   max-width: 100% !important;
   table-layout: fixed;
-  @media (min-width: $screen-sm) {
+  width: 100% !important;
+  @media (min-width: $screen-md) {
     font-size: 16px;
   }
   thead {
@@ -12,13 +13,13 @@ table.dataTable {
       line-height: 1;
       padding: 30px 10px 10px 10px !important;
       position: relative;
-      @media (min-width: $screen-sm) {
+      @media (min-width: $screen-md) {
         padding: 10px 30px 10px 10px !important;
       }
       &:after {
         position: absolute !important;
         right: calc(50% - 8px) !important;
-        @media (min-width: $screen-sm) {
+        @media (min-width: $screen-md) {
           right: 8px !important;
           top: calc(50% - 8px) !important;
         }
@@ -39,6 +40,10 @@ table.dataTable {
       white-space: normal;
     }
   }
+  td.col-type {
+    padding-bottom: 0 !important;
+    text-align: center !important;
+  }
   th, td {
     &.col-type {
       display: none !important;
@@ -47,13 +52,13 @@ table.dataTable {
       width: 25% !important;
     }
     &.col-reason {
-      width: 25% !important;
+      width: 30% !important;
     }
     &.col-desc {
-      width: 25% !important;
+      width: 30% !important;
     }
     &.col-date {
-      width: 25% !important;
+      width: 15% !important;
     }
     &.col-state {
       display: none !important;
@@ -61,19 +66,19 @@ table.dataTable {
     @media (min-width: $screen-sm) {
       &.col-type {
         display: table-cell !important;
-        width: 15% !important;
+        width: 10% !important;
       }
       &.col-firm {
         width: 15% !important;
       }
       &.col-reason {
-        width: 20% !important;
+        width: 25% !important;
       }
       &.col-desc {
-        width: 20% !important;
+        width: 25% !important;
       }
       &.col-date {
-        width: 15% !important;
+        width: 10% !important;
       }
       &.col-state {
         display: table-cell !important;
@@ -82,22 +87,22 @@ table.dataTable {
     }
     @media (min-width: $screen-md) {
       &.col-type {
-        width: 10% !important;
+        width: 8% !important;
       }
       &.col-firm {
-        width: 20% !important;
+        width: 15% !important;
       }
       &.col-reason {
-        width: 20% !important;
+        width: 25% !important;
       }
       &.col-desc {
-        width: 20% !important;
+        width: 25% !important;
       }
       &.col-date {
-        width: 20% !important;
+        width: 12% !important;
       }
       &.col-state {
-        width: 10% !important;
+        width: 15% !important;
       }
     }
   }
@@ -131,8 +136,48 @@ table.dataTable {
       }
     }
   }
+  .dataTables_processing {
+    background: rgba($brand-primary, .8) !important;
+    border-radius: $border-radius-small !important;
+    box-shadow: 0 0 2px rgba(black,.5) !important;
+    color: white !important;
+    font-family: $font-family-headers !important;
+    font-weight: 800 !important;
+    height: auto !important;
+    line-height: 1 !important;
+    margin-left: -15% !important;
+    margin-top: -40px !important;
+    padding: 30px !important;
+    text-align: center !important;
+    width: 30% !important;
+    z-index: 2 !important;
+  }
 }
 
-.table-wrapper {
-  display: none;
+.modal-lg {
+  .modal-body {
+    border-top: 1px solid rgba(black,.5);
+  }
+  dd {
+    margin-bottom: 15px;
+  }
+}
+
+.prod-type {
+  @include hide-text;
+  cursor: pointer;
+  height: 32px;
+  width: 32px;
+}
+
+.type-devices {
+  background-image: url(../img/devices.svg);
+}
+
+.type-drugs {
+  background-image: url(../img/drugs.svg);
+}
+
+.type-food {
+  background-image: url(../img/food.svg);
 }

@@ -24,6 +24,21 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 800;
 }
 
+share-this {
+  display: inline-block !important;
+  height: 32px !important;
+  line-height: 32px !important;
+  vertical-align: middle !important;
+}
+
+share-this * {
+  display: block !important;
+  float: left;
+  height: 32px !important;
+  line-height: 32px !important;
+  vertical-align: middle !important;
+}
+
 .form-wrapper {
   background-color: $gray-lightest;
   border-radius: $border-radius-small;
