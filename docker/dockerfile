@@ -11,7 +11,7 @@ ENV LC_ALL en_US.UTF-8
 
 # Get latest version of core ubuntu
 RUN apt-get update
-RUN apt-get upgrade
+RUN apt-get -y upgrade
 
 # Install Postgres 9.4
 # Add the Postgres repository
