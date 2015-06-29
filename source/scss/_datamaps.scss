@@ -70,3 +70,22 @@
     float: right;
   }
 }
+
+.ss-head {
+  background-color: $gray-lightest;
+  border-radius: $border-radius-small;
+  color: $gray-dark;
+  margin-bottom: 30px;
+  padding: 10px;
+  text-align: center;
+  @media (min-width: $screen-md) {
+    margin-bottom: 0;
+  }
+  h3 {
+    font-size: 21px;
+    margin: 0 0 5px;
+  }
+  p {
+    margin: 0;
+  }
+}
