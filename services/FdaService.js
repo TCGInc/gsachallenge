@@ -237,7 +237,7 @@ function FdaService() {
 
 		// Get count of recalls matching criteria
 		models.sequelize.query('SELECT COUNT(*) AS count ' + raw, {replacements: params, type: models.sequelize.QueryTypes.SELECT}).then(function(count) {
-		
+
 			raw += 'ORDER BY ' + models.enforcements.attributes[params.orderBy].field + ' ' + params.orderDir + ' LIMIT :limit OFFSET :offset';
 
 			models.sequelize.query('SELECT * ' + raw, {replacements: params, model: models.enforcements}).then(function(recalls) {
