@@ -9,14 +9,6 @@ function FdaService() {
 
 	var serviceSelf = this;
 
-	function addToStateCount(map, state, count) {
-		if (map[state] === undefined) {
-			map[state] = count;
-		} else {
-			map[state] += count;
-		}
-	}
-
 	// Mapping from FDA API noun to database product_type
 	this.NOUN_DB_TO_FDA = {
 		"Drugs": "drug",
@@ -31,6 +23,8 @@ function FdaService() {
 		"food": "Food"
 	};
 
+	// Convert a list of FDA API style nouns (drug, device, food) to 
+	// the nouns used in the database (Drugs, Devices, Food)
 	this.convertFdaToDbNouns = function(nouns) {
 		var dbNouns = [];
 		nouns.forEach(function(noun) {
@@ -39,6 +33,15 @@ function FdaService() {
 
 		return dbNouns;
 	};
+
+	// Initialize or increase a state's counter by 'count'
+	function addToStateCount(map, state, count) {
+		if (map[state] === undefined) {
+			map[state] = count;
+		} else {
+			map[state] += count;
+		}
+	}
 
 	// Returns recalls counts associated to a list of nouns in aggregate and broken down by noun
 	// {
@@ -135,10 +138,12 @@ function FdaService() {
 		});
 	};
 
+	// Checks if given noun is in known list of nouns
 	this.isValidNoun = function(noun) {
 		return this.NOUN_FDA_TO_DB[noun] !== undefined;
 	};
 
+	// Returns an array of possible autocomplete strings for a given field and set of nouns
 	this.getAutocompleteStrings = function(params, callback) {
 
 		// Get column name corresponding to field name
@@ -258,6 +263,7 @@ function FdaService() {
 		});
 	};
 
+	// Wrapper for the FDA api to get a specific recall event
 	this.getRecallEvent = function(noun, id, callback) {
 		var options = {
 			url: 'https://api.fda.gov/' + noun + '/enforcement.json?search=event_id:' + id,
@@ -287,62 +293,6 @@ function FdaService() {
 		'sd', 'tn', 'tx', 'ut', 'vt', 'va', 'wa', 'wv', 'wi', 'wy',
 		'dc'
 	];
-
-	this.statesMap = {
-		'alabama': 'al',
-		'alaska': 'ak',
-		'arizona': 'az',
-		'arkansas': 'ar',
-		'california': 'ca',
-		'colorado': 'co',
-		'connecticut': 'ct',
-		'delaware': 'de',
-		'florida': 'fl',
-		'georgia': 'ga',
-		'hawaii': 'hi',
-		'idaho': 'id',
-		'illinois': 'il',
-		'indiana': 'in',
-		'iowa': 'ia',
-		'kansas': 'ks',
-		'kentucky': 'ky',
-		'louisiana': 'la',
-		'maine': 'me',
-		'maryland': 'md',
-		'massachusetts': 'ma',
-		'michigan': 'mi',
-		'minnesota': 'mn',
-		'mississippi': 'ms',
-		'missouri': 'mo',
-		'montana': 'mt',
-		'nebraska': 'ne',
-		'nevada': 'nv',
-		'new hampshire': 'nh',
-		'new jersey': 'nj',
-		'new mexico': 'nm',
-		'new york': 'ny',
-		'north carolina': 'nc',
-		'north dakota': 'nd',
-		'ohio': 'oh',
-		'oklahoma': 'ok',
-		'oregon': 'or',
-		'pennsylvania': 'pa',
-		'rhode island': 'ri',
-		'south carolina': 'sc',
-		'south dakota': 'sd',
-		'tennessee': 'tn',
-		'texas': 'tx',
-		'utah': 'ut',
-		'vermont': 'vt',
-		'virginia': 'va',
-		'washington': 'wa',
-		'west virginia': 'wv',
-		'wisconsin': 'wi',
-		'wyoming': 'wy',
-		'district of columbia': 'dc',
-		'washington, dc': 'dc'
-	};
-
 }
 
 module.exports = function () {

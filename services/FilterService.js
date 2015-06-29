@@ -10,20 +10,6 @@ function FilterService() {
 
 	var serviceSelf = this;
 
-	this.isUniqueName = function(name, callback) {
-		models.filter.find({name: name}).then(function(filter) {
-			if(filter) {
-				callback(null, false);
-			}
-			else {
-				callback(null, true);
-			}
-		}, function(error) {
-			logger.error(error);
-			callback(error, null);
-		});
-	};
-
 	// Formats a filter for being returned as JSON
 	this.convertToResponse = function(filter) {
 		if(!filter) {

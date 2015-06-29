@@ -8,6 +8,7 @@ module.exports = function (app) {
 	var FilterService = require('../services/FilterService')();
 	var FdaService = require('../services/FdaService')();
 
+	// Return a callback which sends the result object or error as json
 	function getSendResponseCallback(res) {
 		return function commonCallback(err, result) {
 			if(err) {
