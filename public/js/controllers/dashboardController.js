@@ -29,6 +29,10 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 	};
 	$scope.shareThisUrl = $location.absUrl();
 	$scope.stateOptions = utilityService.stateNames;
+	$scope.selectState = function() {
+		// Refresh detail table after the user selects or deselects a state using the form multiselect.
+		refreshDetailsTable();
+	}
 
 
 	$scope.closeAlert = function(index) {

@@ -107,7 +107,7 @@
 					</div>
 					<div class="form-group">
 						<label for="states"><i class="fa fa-question-circle" data-toggle="popover" data-placement="top" data-container="body" title="States" data-content="Search by the states in which the recall event occurred."></i>States</label>
-						<select multiple name="states" id="states" class="form-control" ng-model="highlightedStates" ng-options="abbr as name for (name, abbr) in stateOptions"></select>
+						<select multiple name="states" id="states" class="form-control" ng-model="highlightedStates" ng-options="abbr as name for (name, abbr) in stateOptions" ng-click="selectState()"></select>
 					</div>
 					<div class="form-group group-c">
 						<button class="btn btn-default btn-xs" ng-click="clearFilters()">Clear Filters</button>
