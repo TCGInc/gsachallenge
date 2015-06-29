@@ -146,14 +146,12 @@
 
   		<div class="row">
 			<div class="col-xs-12">
-		    <div >
-		    	<div class="btn-group">
-		    		<span ng-repeat="state in highlightedStates.sort()">
-						<button class="btn btn-primary" ng-click="removeHighlightedState($index)">{{state}}&nbsp;&nbsp;<span class="glyphicon glyphicon-remove"></span></button>&nbsp;&nbsp;
+	    	<div class="btn-group highlighted-states">
+	    		<span ng-repeat="state in highlightedStates.sort()">
+						<button class="btn btn-default" ng-click="removeHighlightedState($index)">{{state}}&nbsp;&nbsp;<span class="glyphicon glyphicon-remove"></span></button>&nbsp;&nbsp;
 					</span>
-			    </div>
-		  		<table datatable="" dt-options="tableOptions" dt-columns="tableColumns" dt-instance="tableInstance" class="row-border hover"></table>
-				</div>
+		    </div>
+	  		<table datatable="" dt-options="tableOptions" dt-columns="tableColumns" dt-instance="tableInstance" class="row-border hover"></table>
 			</div>
 		</div>
 

@@ -24,6 +24,21 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 800;
 }
 
+
+select[multiple], select.form-control[multiple] {
+  margin-top: 5px;
+}
+
+select[multiple], select.form-control[multiple],
+textarea, textarea.form-control,
+input.form-control, input[type=text],
+input[type=password], input[type=email],
+input[type=number], [type=text].form-control,
+[type=password].form-control, [type=email].form-control,
+[type=tel].form-control, [contenteditable].form-control {
+  background: linear-gradient(to bottom, rgba(white,.0) , rgba(white,.7));
+}
+
 share-this {
   display: inline-block !important;
   height: 32px !important;
@@ -82,6 +97,24 @@ share-this * {
 .group-c {
   margin-bottom: 0;
   text-align: center;
+}
+
+.highlighted-states {
+  text-align: center;
+  width: 100%;
+  .btn-default {
+    border: 1px solid $gray-lighter;
+    border-width: 1px;
+    margin-bottom: 5px;
+    &:active,
+    &:focus,
+    &:hover {
+      border: 1px solid $brand-danger;
+      .glyphicon {
+        color: $brand-danger;
+      }
+    }
+  }
 }
 
 .modal-title {
