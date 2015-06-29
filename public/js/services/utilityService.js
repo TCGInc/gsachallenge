@@ -56,6 +56,10 @@ app.service("utilityService", [function() {
 			"Wyoming": "wy"
 		},
 
+		toCamel: function(str) {
+			return str.replace(/(_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});
+		},
+
 		parseDateString: function(rawDate) {
 			return rawDate ? new Date(rawDate).toISOString().substring(0, 10) : "";
 		},

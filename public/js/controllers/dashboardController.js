@@ -28,6 +28,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 		description: ""
 	};
 	$scope.shareThisUrl = $location.absUrl();
+	$scope.stateOptions = utilityService.stateNames;
 
 
 	$scope.closeAlert = function(index) {
@@ -66,7 +67,6 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 		refreshDetailsTable();
 	}
 
-	
 
 	$scope.$watch(function () {
 	    return location.hash
@@ -257,7 +257,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 			var queryEndpoint = "/fda/recalls?" + buildQueryString($scope.searchParams);
 			queryEndpoint += "&offset="+ajaxParams.start;
 			queryEndpoint += "&limit="+ajaxParams.length;
-			queryEndpoint += "&orderBy="+toCamel(ajaxParams.columns[ajaxParams.order[0].column].data);
+			queryEndpoint += "&orderBy="+utilityService.toCamel(ajaxParams.columns[ajaxParams.order[0].column].data);
 			queryEndpoint += "&orderDir="+ajaxParams.order[0].dir;
     		queryEndpoint += "&stateAbbr=" + $scope.highlightedStates.join(",");
 
@@ -339,10 +339,6 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
     		utilityService.addAlert($scope.alerts, "danger", "There was a problem with your lookup.");
     		$log.error(JSON.stringify(error));
     	});
-	}
-
-	function toCamel(str) {
-		return str.replace(/(_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});
 	}
 
 }]);
