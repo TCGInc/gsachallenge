@@ -20,7 +20,7 @@ app.service("utilityService", [function() {
 			"Indiana": "in",
 			"Iowa": "ia",
 			"Kansas": "ks",
-			"Kentuky": "ky",
+			"Kentucky": "ky",
 			"Louisiana": "la",
 			"Maine": "me",
 			"Maryland": "md",
@@ -54,6 +54,10 @@ app.service("utilityService", [function() {
 			"West Virginia": "wv",
 			"Wisconsin": "wi",
 			"Wyoming": "wy"
+		},
+
+		toCamel: function(str) {
+			return str.replace(/(_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});
 		},
 
 		parseDateString: function(rawDate) {

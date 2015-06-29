@@ -28,6 +28,11 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 		description: ""
 	};
 	$scope.shareThisUrl = $location.absUrl();
+	$scope.stateOptions = utilityService.stateNames;
+	$scope.selectState = function() {
+		// Refresh detail table after the user selects or deselects a state using the form multiselect.
+		refreshDetailsTable();
+	}
 
 
 	$scope.closeAlert = function(index) {
@@ -66,8 +71,8 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 		refreshDetailsTable();
 	}
 
-	
 
+	// Load a previously saved search based on URL.
 	$scope.$watch(function () {
 	    return location.hash
 	}, function (value) {
@@ -75,10 +80,6 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 		var searchResult = $location.path();
 		if (searchResult && searchResult.length > 1) {
 			$scope.shareThisUrl = $location.absUrl();
-
-			//stWidget.initFire=false;
-			//stWidget.init();
-			
 
 			searchResult = searchResult.substring(1);
 			searchResult = searchResult.replace(/^(\d+).*$/, "$1");
@@ -257,7 +258,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 			var queryEndpoint = "/fda/recalls?" + buildQueryString($scope.searchParams);
 			queryEndpoint += "&offset="+ajaxParams.start;
 			queryEndpoint += "&limit="+ajaxParams.length;
-			queryEndpoint += "&orderBy="+toCamel(ajaxParams.columns[ajaxParams.order[0].column].data);
+			queryEndpoint += "&orderBy="+utilityService.toCamel(ajaxParams.columns[ajaxParams.order[0].column].data);
 			queryEndpoint += "&orderDir="+ajaxParams.order[0].dir;
     		queryEndpoint += "&stateAbbr=" + $scope.highlightedStates.join(",");
 
@@ -283,6 +284,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
     				}
     				else {
     					recall.states.sort();
+    					recall.states = recall.states.join(", ");
     				}
     			});
 
@@ -339,10 +341,6 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
     		utilityService.addAlert($scope.alerts, "danger", "There was a problem with your lookup.");
     		$log.error(JSON.stringify(error));
     	});
-	}
-
-	function toCamel(str) {
-		return str.replace(/(_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});
 	}
 
 }]);
