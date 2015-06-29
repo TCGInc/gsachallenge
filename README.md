@@ -5,10 +5,10 @@ gsachallenge - TCG's GSA ADS 18F Challenge Submission
 
 Our GSA Agile Delivery Services submission allows users to search and
 navigate the openFDA: food, device, and drug enforcement data
-(available at http://open.fda.gov).  This tool exposes all API
-data elements but specializes on the US State through a
-State normalization routine (natural languate to states).
-This application provides key services:
+(available at http://open.fda.gov).  This tool exposes all API data
+elements but specializes on the US State through a State normalization
+routine (natural languate to states).  This application provides key
+services:
 
  1. routines to analyze and clean the natural language distribution
     pattern, and
@@ -179,7 +179,7 @@ environment that supports Postgres 9.4 and Node):
 
         # Add the Postgres repository and install the key
         echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list
-	wget --quiet -O - --no-check-certificate https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+        wget --quiet -O - --no-check-certificate https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
         # install the packages
         apt-get update
         apt-get -y install postgresql-9.4
@@ -226,6 +226,23 @@ environment that supports Postgres 9.4 and Node):
 
 At this point you should be able to access the application at
 http://localhost/ .
+
+## Cron job to update the database from openFDA ##
+
+We download a copy of the openFDA data into a local PostgreSQL
+database so that we can massage the location information. Therefore,
+we want to make sure to periodically check openFDA for new data. The
+perl script database/bootstrap/fdaApiDataLoader.pl accomplishes this
+task. To install this script, first install the dependencies:
+
+    sudo apt-get install libdbd-pg-perl libxml-simple-perl libjson-pp-perl libdatetime-perl
+
+edit database/bootstrap/fdaApiDataLoader.pl to match your database
+password, and then add a cron job to periodically call the script. The following
+cron line will update the database at 3AM and assumes that the source is installed
+in /opt/gsachallenge:
+
+    0 3 * * * cd /opt/gsachallenge/database/bootstrap/; /usr/bin/perl fdaApiDataLoader.pl > /dev/null
 
 ## Public domain ##
 
