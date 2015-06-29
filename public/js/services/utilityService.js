@@ -20,7 +20,7 @@ app.service("utilityService", [function() {
 			"Indiana": "in",
 			"Iowa": "ia",
 			"Kansas": "ks",
-			"Kentuky": "ky",
+			"Kentucky": "ky",
 			"Louisiana": "la",
 			"Maine": "me",
 			"Maryland": "md",
