@@ -157,6 +157,13 @@ To do this:
    on-line, after which you can access the local copy of the FDA
    Recall interactive map at http://localhost:8888/
 
+ * NOTE: The resulting docker images have two mount points: /gsac for
+   the source code and /var/lib/postgres/9.4/main for the PostgreSQL
+   database. The easiest way to initialize these mount points is to
+   copy the directories from the completed docker file system. The
+   purpose of using the volume points is to allow updating the source
+   code and persisting data across docker environments.
+
 ### How to get started (manually) ###
 
 Installing the FDA Recall Interactive Map from scratch is a bit more
