@@ -44,7 +44,8 @@ app.controller("saveSearchModalInstanceController", function ($scope, $http, $lo
 			recallingFirm: $scope.searchParams.recallingFirm,
 			includeClass1: $scope.searchParams.classificationClass1,
 			includeClass2: $scope.searchParams.classificationClass2,
-			includeClass3: $scope.searchParams.classificationClass3
+			includeClass3: $scope.searchParams.classificationClass3,
+			stateAbbr: $scope.highlightedStates
 		};
 
 		try {

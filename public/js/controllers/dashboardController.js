@@ -14,7 +14,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 			classificationClass2: true,
 			classificationClass3: true,
 			recallingFirm: ""
-		};		
+		};
 	}
 
 	// Initialize $scope.
@@ -104,6 +104,12 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 							classificationClass3: data.result.includeClass3,
 							recallingFirm: data.result.recallingFirm
 						};
+						if(data.result.stateAbbr) {
+							$scope.highlightedStates = data.result.stateAbbr;
+							$scope.highlightedStates.forEach(function(state, idx, arr) {
+								arr[idx] = state.toLowerCase();
+							});
+						}
 						$scope.savedSearch = {
 							id: data.result.id,
 							name: data.result.name,
@@ -222,6 +228,11 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 		.withOption('serverSide', true)
 	    .withOption('bFilter', false)
 	    .withOption('dom', '<"top"il>rt<"bottom"p><"clear">')
+	    .withOption('createdRow', function() {
+				$('body').tooltip({
+				  selector: '.prod-type'
+				});
+	    })
 	    .withOption('rowCallback', function(nRow, aData, iDisplayIndex) {
 			if (aData.recall_initiation_date) {
 				var parts = aData.recall_initiation_date.substring(0,10).split("-");
@@ -233,7 +244,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 					.data("product_type", aData.product_type.toLowerCase())
 					.click();
 	    	});
-			$('.table-wrapper').show();
+    	  $('[data-toggle="tooltip"]').tooltip();
 			return nRow;
 	    })
 		.withFnServerData(function(sSource, aoData, fnCallback, oSettings) {
@@ -270,12 +281,16 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
     		});
 		});
 	$scope.tableColumns = [
-        DTColumnBuilder.newColumn('product_type').withTitle('Type').withClass('col-type').withOption('tv1', 'testestest'),
+        DTColumnBuilder.newColumn('product_type').withTitle('Type').withClass('col-type').withOption('tv1', 'testestest')
+        	.renderWith(function(data, type, full, meta) {
+        		var lc_data = data.toLowerCase();
+        		return '<span class="prod-type type-' + lc_data + '" data-toggle="tooltip" data-placement="right" title="' + data + '">' + data + '</span';
+        	}),
         DTColumnBuilder.newColumn('recalling_firm').withTitle('Recalling Firm').withClass('col-firm'),
         DTColumnBuilder.newColumn('reason_for_recall').withTitle('Reason for Recall').withClass('col-reason'),
         DTColumnBuilder.newColumn('product_description').withTitle('Product Description').withClass('col-desc'),
         DTColumnBuilder.newColumn('recall_initiation_date').withTitle('Recall Date').withClass('col-date'),
-        DTColumnBuilder.newColumn('states').withTitle('States').withClass('col-state')
+        DTColumnBuilder.newColumn('states').withTitle('States').withClass('col-state').notSortable()
     ];
     $scope.tableInstance = {};
 

@@ -6,6 +6,7 @@ var AppResponse = require('../util/AppResponse');
 module.exports = function (app) {
 
 	var FilterService = require('../services/FilterService')();
+	var FdaService = require('../services/FdaService')();
 
 	function getSendResponseCallback(res) {
 		return function commonCallback(err, result) {
@@ -57,6 +58,22 @@ module.exports = function (app) {
 			if(m2.isBefore(m1)) {
 				errors.push('fromDate is before toDate.');
 			}
+		}
+
+		// Validate state
+		if(req.body.stateAbbr && req.body.stateAbbr.length > 0) {
+			var states = req.body.stateAbbr;
+
+			states.forEach(function(state, idx) {
+				if(FdaService.statesAbbr.indexOf(state.trim().toLowerCase()) === -1) {
+					errors.push('Invalid stateAbbr (' + state + ').');
+				}
+
+				states[idx] = state.trim().toUpperCase();
+			});
+		}
+		else {
+			req.body.stateAbbr = null;
 		}
 
 		if(!req.body.includeFood && !req.body.includeDrugs && !req.body.includeDevices) {

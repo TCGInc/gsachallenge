@@ -58,6 +58,10 @@ module.exports = function(sequelize, DataTypes) {
 			type: DataTypes.BOOLEAN,
 			field: 'include_class3',
 			defaultValue: false
+		},
+		stateAbbr: {
+			type: DataTypes.ARRAY(DataTypes.STRING),
+			field: 'state_abbr'
 		}
 	}, {
 		timestamps: true,
