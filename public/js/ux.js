@@ -13,3 +13,7 @@ $('body').tooltip({
 $(document).ready(function() {
   $('heatmap > div').append('<div class="map-leg"><div class="leg-less"><i class="fa fa-arrow-left"></i> Fewer Recalls</div><div class="leg-more">More Recalls <i class="fa fa-arrow-right"></i></div></div>');
 });
+
+window.addEventListener("orientationchange", function() {
+  $('#DataTables_Table_0').DataTable().ajax.reload();
+}, false);

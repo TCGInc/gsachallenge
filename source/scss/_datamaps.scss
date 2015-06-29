@@ -49,13 +49,18 @@
     #045a8d 100%,
     #023858 100%);
   border: 1px solid black;
-  bottom: -15px;
+  bottom: auto;
   font-size: 12px;
   left: 0;
   line-height: 1;
   padding: 5px;
   position: absolute;
   right: 0;
+  top: -10px;
+  @media (min-width: $screen-md) {
+    bottom: -15px;
+    top: auto;
+  }
   .leg-less {
     color: black;
     float: left;
@@ -63,5 +68,24 @@
   .leg-more {
     color: white;
     float: right;
+  }
+}
+
+.ss-head {
+  background-color: $gray-lightest;
+  border-radius: $border-radius-small;
+  color: $gray-dark;
+  margin-bottom: 30px;
+  padding: 10px;
+  text-align: center;
+  @media (min-width: $screen-md) {
+    margin-bottom: 0;
+  }
+  h3 {
+    font-size: 21px;
+    margin: 0 0 5px;
+  }
+  p {
+    margin: 0;
   }
 }
