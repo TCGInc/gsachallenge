@@ -72,6 +72,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 	}
 
 
+	// Load a previously saved search based on URL.
 	$scope.$watch(function () {
 	    return location.hash
 	}, function (value) {
@@ -79,10 +80,6 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 		var searchResult = $location.path();
 		if (searchResult && searchResult.length > 1) {
 			$scope.shareThisUrl = $location.absUrl();
-
-			//stWidget.initFire=false;
-			//stWidget.init();
-			
 
 			searchResult = searchResult.substring(1);
 			searchResult = searchResult.replace(/^(\d+).*$/, "$1");
@@ -287,6 +284,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
     				}
     				else {
     					recall.states.sort();
+    					recall.states = recall.states.join(", ");
     				}
     			});
 
