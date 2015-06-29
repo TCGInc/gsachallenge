@@ -75,8 +75,8 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 	};
 
 	// Page callback to remove a state highlight from the map and details table.
-	$scope.removeHighlightedState = function(index) {
-		refreshHighlightedStates($scope.highlightedStates[index]);
+	$scope.removeHighlightedState = function(state) {
+		refreshHighlightedStates(utilityService.stateNames[state]);
 		refreshDetailsTable();
 	}
 

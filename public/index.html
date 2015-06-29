@@ -53,6 +53,7 @@
 	<script src="js/directives/recallDetail.js"></script>
 	<script src="js/directives/saveSearch.js"></script>
 	<script src="js/directives/shareThis.js"></script>
+	<script src="js/filters/stateName.js"></script>
 	<script>
 		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -177,9 +178,9 @@
   		<div class="row">
 			<div class="col-xs-12">
 	    	<div class="btn-group highlighted-states">
-	    		<span ng-repeat="state in highlightedStates.sort()">
-						<button class="btn btn-default" ng-click="removeHighlightedState($index)">{{state}}&nbsp;&nbsp;<span class="glyphicon glyphicon-remove"></span></button>&nbsp;&nbsp;
-					</span>
+	    		<span ng-repeat="state in highlightedStates | orderBy | stateName">
+					<button class="btn btn-default" ng-click="removeHighlightedState(state)">{{state}}&nbsp;&nbsp;<span class="glyphicon glyphicon-remove"></span></button>&nbsp;&nbsp;
+				</span>
 		    </div>
 	  		<table datatable="" dt-options="tableOptions" dt-columns="tableColumns" dt-instance="tableInstance" class="row-border hover"></table>
 			</div>
