@@ -145,13 +145,14 @@ table.dataTable {
     font-weight: 800 !important;
     height: auto !important;
     line-height: 1 !important;
-    margin-left: -15% !important;
+    margin-left: -40% !important;
     margin-top: -40px !important;
     padding: 30px !important;
     text-align: center !important;
-    width: 100% !important;
+    width: 80% !important;
     z-index: 2 !important;
     @media (min-width: $screen-sm) {
+      margin-left: -15% !important;
       width: 30% !important;
     }
   }
