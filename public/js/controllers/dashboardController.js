@@ -83,7 +83,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 
 	// Load a previously saved search based on URL.
 	$scope.$watch(function () {
-	    return location.hash
+	    return $location.hash
 	}, function (value) {
 	    // At page load or hash change, discover from URL if a saved search should be queried and displayed.
 		var searchResult = $location.path();
