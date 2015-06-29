@@ -65,7 +65,7 @@ app.directive("heatmap", function(utilityService) {
 			        	var index = $.inArray(stateAbbr, scope[attrs.highlightedStates]);
 			        	$(this).off("mouseout");
 						if (index == -1) {
-							$(this).on("mouseout", function() { 
+							$(this).on("mouseout", function() {
 								$(this).css("fill", fills["highlighted"]);
 			            	});
 						}
