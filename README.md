@@ -151,7 +151,7 @@ To do this:
    to run the image in the background, while "-p 8888:80" maps the
    container's web port, port 80, to localhost's port 8888):
 
-        docker run -d -p 8888:80 gsachallenge
+        sudo docker run -d -p 8888:80 gsachallenge
 
  * It takes a number of seconds for the docker image server to come
    on-line, after which you can access the local copy of the FDA

@@ -70,6 +70,13 @@ RUN cd /gsac; npm install
 COPY image_scripts/start_gsac.sh .
 RUN chmod 755 start_gsac.sh
 
+# Make the source code a mountable volume
+VOLUME /gsac
+
+# Make the postgres database a mountable volume
+VOLUME /var/lib/postgresql/9.4/main/
+
+
 # Now expose and start the server
 EXPOSE 80
 CMD /start_gsac.sh
