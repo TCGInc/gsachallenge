@@ -15,6 +15,5 @@ $(document).ready(function() {
 });
 
 window.addEventListener("orientationchange", function() {
-  alert(window.orientation);
   $('#DataTables_Table_0').DataTable().ajax.reload();
 }, false);
