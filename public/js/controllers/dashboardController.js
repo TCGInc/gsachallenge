@@ -18,7 +18,6 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 	}
 
 	// Initialize $scope.
-	initializeSearchParameters();
 	$scope.highlightedStates = [];
 	$scope.stateCounts = {};
 	$scope.alerts = [];
@@ -34,6 +33,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 		refreshDetailsTable();
 	}
 	$scope.openDate = function($event, id) {
+		// Open one of the dropdown calendars on a date form element.
 		$event.preventDefault();
 		$event.stopPropagation();
 		$scope.dateOpen[id] = true;
@@ -44,12 +44,14 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 	}
 
 
+	// Remove an alert from being displayed at the top of the page.
 	$scope.closeAlert = function(index) {
 		utilityService.closeAlert($scope.alerts, index);
 	}
 
 	// Page callback to set search parameters to their default values.
 	$scope.clearFilters = function() {
+
 		// Determine if search parameters and heatmap are not in their initial state.
 		var p = $scope.searchParams;
 		var searchIsDirty = !p.eventTypeFood || !p.eventTypeDrug || !p.eventTypeDevice || p.dateFrom ||
@@ -81,7 +83,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 	}
 
 
-	// Load a previously saved search based on URL.
+	// Page setup at page load.
 	$scope.$watch(function () {
 	    return location.hash
 	}, function (value) {
@@ -101,6 +103,15 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 
 						var getDate = d3.time.format("%Y-%m-%d");
 
+						// Load highlighted states.
+						if(data.result.stateAbbr) {
+							$scope.highlightedStates = data.result.stateAbbr;
+							$scope.highlightedStates.forEach(function(state, idx, arr) {
+								arr[idx] = state.toLowerCase();
+							});
+						}
+
+						// Load form search paramters.
 						$scope.searchParams = {
 							eventTypeFood: data.result.includeFood,
 							eventTypeDrug: data.result.includeDrugs,
@@ -114,18 +125,13 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 							classificationClass3: data.result.includeClass3,
 							recallingFirm: data.result.recallingFirm
 						};
-						if(data.result.stateAbbr) {
-							$scope.highlightedStates = data.result.stateAbbr;
-							$scope.highlightedStates.forEach(function(state, idx, arr) {
-								arr[idx] = state.toLowerCase();
-							});
-						}
+
+						// Load saved search info for display on page.
 						$scope.savedSearch = {
 							id: data.result.id,
 							name: data.result.name,
 							description: data.result.description
 						}
-						refreshDetailsTable();
 					}).
 					error(function(data, status, headers, config) {
 						throw JSON.stringify(data) + JSON.stringify(status);
@@ -135,6 +141,9 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 				$log.error(errorMessage);
 				utilityService.addAlert($scope.alerts, "warning", "No saved search was found for this search ID.");
 			}
+		}
+		else {
+			initializeSearchParameters();
 		}
 	});
 
@@ -191,8 +200,10 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 
 	// Refresh the stateCounts (which will then refresh the heatmap) when the user changes a search parameter.
 	$scope.$watchCollection("searchParams", function(searchParams) {
-		refreshStateCounts(searchParams);
-		refreshDetailsTable();
+		if (searchParams) {
+			refreshStateCounts(searchParams);
+			refreshDetailsTable();
+		}
 	});
 
 	// Refresh the list of highlighted states, which will then refresh the heatmap.
@@ -256,6 +267,18 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 			return nRow;
 	    })
 		.withFnServerData(function(sSource, aoData, fnCallback, oSettings) {
+
+			// Pass through an empty results set when table initialized.
+			if (!$scope.hasOwnProperty("searchParams")) {
+				fnCallback({
+    				draw: aoData.draw,
+    				recordsTotal: 0,
+    				recordsFiltered: 0,
+    				data: []
+    			});
+    			return;
+			}
+
 			// Re-orient params so they're easier to use
 			var ajaxParams = {};
 			angular.forEach(aoData, function(elem, idx) {
@@ -317,10 +340,16 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 		if ($scope.tableInstance.hasOwnProperty("DataTable")) {
 			$scope.tableInstance.DataTable.ajax.reload();
 		}
+		else {
+			// Wait for datatable to initialize before loading the query results.
+			var checkTableInitialized = setInterval(function() {
+				if ($scope.tableInstance.hasOwnProperty("DataTable")) {
+					$scope.tableInstance.DataTable.ajax.reload();
+					clearInterval(checkTableInitialized);
+				}
+			}, 500);
+		}
 	}
-
-	// Give the page some time to load before running table query to initialize the details table.
-	setTimeout(function() {	refreshDetailsTable(); }, 1000);
 
 	// Query the server for lists to send to the autocomplete search form elements.
 	$scope.autocomplete = function(field, value) {
