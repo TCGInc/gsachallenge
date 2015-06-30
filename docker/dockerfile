@@ -62,7 +62,7 @@ RUN /etc/init.d/postgresql start && sleep 5 &&\
     gunzip -c gsac.sql.gz | PGPASSWORD=gsac123 psql -U gsac
 
 # Copy NODE application
-ADD gsac.tar .
+ADD gsac.tar /gsac/
 # Install dependencies
 RUN cd /gsac; npm install
 
