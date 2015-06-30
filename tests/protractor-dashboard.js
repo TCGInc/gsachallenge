@@ -18,7 +18,7 @@ module.exports = {
 
 	// Click a state button above details table.
 	clickStateButton: function(state) {
-		return element(by.partialButtonText(state.toLowerCase())).click();
+		return element(by.partialButtonText(state)).click();
 	},
 
 	// Get the list of states currently highlighted on the heatmap.

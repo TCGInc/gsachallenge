@@ -23,7 +23,7 @@ RUN wget --quiet -O - --no-check-certificate https://www.postgresql.org/media/ke
 # Get packages
 RUN apt-get update
 # Install postgresql 
-RUN apt-get -y install postgresql-9.4
+RUN apt-get -y install postgresql-9.4 postgresql-contrib-9.4
 
 # Init the postgres database
 # Switch to postgres user
@@ -38,7 +38,7 @@ RUN echo "local all all	                md5" >> /etc/postgresql/9.4/main/pg_hba.
 RUN echo "host  all all	  127.0.0.1/32  md5" >> /etc/postgresql/9.4/main/pg_hba.conf
 RUN echo "host  all all	  ::1/128       md5" >> /etc/postgresql/9.4/main/pg_hba.conf
 # Now create the gsac database and user
-RUN    /etc/init.d/postgresql start &&\
+RUN    /etc/init.d/postgresql start && sleep 5 &&\
     psql --command "CREATE USER gsac WITH SUPERUSER PASSWORD 'gsac123';" &&\
     createdb -O gsac gsac
 
@@ -58,11 +58,11 @@ RUN wget --no-check-certificate https://www.npmjs.org/install.sh && sh ./install
 
 # Install the database
 COPY gsac.sql.gz /
-RUN /etc/init.d/postgresql start &&\
+RUN /etc/init.d/postgresql start && sleep 5 &&\
     gunzip -c gsac.sql.gz | PGPASSWORD=gsac123 psql -U gsac
 
 # Copy NODE application
-ADD gsac.tar .
+ADD gsac.tar /gsac/
 # Install dependencies
 RUN cd /gsac; npm install
 

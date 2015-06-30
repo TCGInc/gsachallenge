@@ -7,7 +7,7 @@ describe('GSA Challenge Demo App', function() {
 	});
 
 	it('should have the correct page title', function() {
-		expect(dashboard.getTitle()).toEqual('FDA Recall Enforcement Events');
+		expect(dashboard.getTitle()).toEqual('U.S. Food and Drug Administration Recalls');
 	});
 
 	it('should be able to add/remove several states by clicking state buttons', function() {
@@ -17,15 +17,15 @@ describe('GSA Challenge Demo App', function() {
 		var states = dashboard.getHighlightedStates();
 
 		expect(states.count()).toEqual(3);
-		expect(states.first().getText()).toMatch('MD');
-		expect(states.last().getText()).toMatch('VA');
+		expect(states.first().getText()).toMatch('MARYLAND');
+		expect(states.last().getText()).toMatch('VIRGINIA');
 
 		dashboard.clickStateOnMap('MD');
 		dashboard.clickStateOnMap('VA');
 		states = dashboard.getHighlightedStates();
 
 		expect(states.count()).toEqual(1);
-		expect(states.first().getText()).toMatch('TX');
+		expect(states.first().getText()).toMatch('TEXAS');
 	});
 
 	it('should be able to remove a state from the map by clicking the state button above the detail table', function() {
@@ -35,15 +35,15 @@ describe('GSA Challenge Demo App', function() {
 		var states = dashboard.getHighlightedStates();
 
 		expect(states.count()).toEqual(3);
-		expect(states.first().getText()).toMatch('MD');
-		expect(states.last().getText()).toMatch('VA');
+		expect(states.first().getText()).toMatch('MARYLAND');
+		expect(states.last().getText()).toMatch('VIRGINIA');
 
-		dashboard.clickStateButton('MD');
-		dashboard.clickStateButton('VA');
+		dashboard.clickStateButton('Maryland');
+		dashboard.clickStateButton('Virginia');
 		states = dashboard.getHighlightedStates();
 
 		expect(states.count()).toEqual(1);
-		expect(states.first().getText()).toMatch('TX');
+		expect(states.first().getText()).toMatch('TEXAS');
 	});
 
 	it('should be able to search using the search form', function() {

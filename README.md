@@ -182,7 +182,7 @@ environment that supports Postgres 9.4 and Node):
         wget --quiet -O - --no-check-certificate https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
         # install the packages
         apt-get update
-        apt-get -y install postgresql-9.4
+        apt-get -y install postgresql-9.4 postgresql-contrib-9.4
 
  * Create the gsac user and database (update the authentication as
    needed):

@@ -4,9 +4,15 @@
 --
 --
 --
+
+--Needed for LIKE gin indexes
+CREATE EXTENSION pg_trgm;
+
+--Drop old views and tables
 DROP VIEW IF EXISTS v_unmapped_events;
 DROP VIEW IF EXISTS v_state_enforcements;
-DROP VIEW IF EXISTS v_states_enforcements;
+DROP VIEW IF EXISTS v_states_enforcements; -- delete old version
+DROP TABLE IF EXISTS v_states_enforcements; -- delete new version
 
 DROP TABLE IF EXISTS fda_enforcement_states;
 DROP TABLE IF EXISTS states;
@@ -141,15 +147,87 @@ fda_enforcement_events a, fda_enforcement_states b, states c
 where a.id = b.fda_enforcement_EVENTS_id and b.states_id=c.id;
 
 
-CREATE OR REPLACE VIEW v_states_enforcements AS 
- SELECT a.*,
-    array_agg(c.state_abbr) as states
+-- Note: Instead of a view, this is a table updated with a trigger
+-- Create it using a select
+SELECT a.*, array_agg(c.state_abbr) as states
+  INTO v_states_enforcements
    FROM fda_enforcement_events a,
     fda_enforcement_states b,
     states c
   WHERE a.id = b.fda_enforcement_events_id AND b.states_id = c.id
   GROUP BY a.id;
 
+-- Create needed indexes
+CREATE INDEX vsse_product_type_index ON v_states_enforcements (product_type);
+CREATE INDEX vsse_recall_number_index ON v_states_enforcements (recall_number);
+CREATE INDEX vsse_recall_initiation_date_index ON v_states_enforcements (recall_initiation_date ASC NULLS LAST);
+CREATE INDEX vsse_report_date_index ON v_states_enforcements (report_date ASC NULLS LAST);
+CREATE INDEX vsse_id_index ON v_states_enforcements (id);
+CREATE INDEX vsse_product_description_index on v_states_enforcements USING gin (product_description gin_trgm_ops);
+CREATE INDEX vsse_recalling_firm on v_states_enforcements USING gin (recalling_firm gin_trgm_ops);
+CREATE INDEX vsse_reason_for_recall_index on v_states_enforcements USING gin (reason_for_recall gin_trgm_ops);
+
+DROP TRIGGER  IF EXISTS event_changes ON fda_enforcement_events;
+
+CREATE OR REPLACE FUNCTION process_event_changes() 
+RETURNS TRIGGER AS $v_states_enforcements$
+    BEGIN
+        -- Delete old rows from v_states_enforcements
+        IF ((TG_OP = 'DELETE') OR (TG_OP = 'UPDATE')) THEN
+            DELETE FROM v_states_enforcements where id = OLD.id;
+        END IF;
+        -- Create new rows in v_states_enforcements that aggregate states
+        IF ((TG_OP = 'INSERT') OR (TG_OP = 'UPDATE')) THEN
+            DELETE FROM v_states_enforcements where id = NEW.id;
+	    INSERT INTO v_states_enforcements 
+              SELECT a.*, array_agg(c.state_abbr)
+              FROM fda_enforcement_events a, fda_enforcement_states b, states c
+              WHERE a.id = NEW.id AND a.id = b.fda_enforcement_events_id 
+                    AND b.states_id = c.id
+              GROUP BY a.id;
+        END IF;
+        RETURN NULL; -- result is ignored since this is an AFTER trigger
+    END;
+$v_states_enforcements$ LANGUAGE plpgsql;
+
+CREATE TRIGGER event_changes
+AFTER INSERT OR UPDATE OR DELETE ON fda_enforcement_events
+    FOR EACH ROW EXECUTE PROCEDURE process_event_changes();
+
+DROP TRIGGER  IF EXISTS state_enforcement_changes ON fda_enforcement_states;
+
+CREATE OR REPLACE FUNCTION process_state_enforcement_changes() 
+RETURNS TRIGGER AS $v_states_enforcements$
+    BEGIN
+        -- Delete old rows from v_states_enforcements
+        IF ((TG_OP = 'DELETE') OR (TG_OP = 'UPDATE')) THEN
+            DELETE FROM v_states_enforcements where id = OLD.fda_enforcement_events_id;
+	    INSERT INTO v_states_enforcements 
+              SELECT a.*, array_agg(c.state_abbr)
+              FROM fda_enforcement_events a, fda_enforcement_states b, states c
+              WHERE a.id = OLD.fda_enforcement_events_id
+                    AND a.id = b.fda_enforcement_events_id 
+                    AND b.states_id = c.id
+              GROUP BY a.id;
+        END IF;
+        -- Create new rows in v_states_enforcements that aggregate states
+        IF ((TG_OP = 'INSERT') OR (TG_OP = 'UPDATE')) THEN
+            DELETE FROM v_states_enforcements where id = NEW.fda_enforcement_events_id;
+	    INSERT INTO v_states_enforcements 
+              SELECT a.*, array_agg(c.state_abbr)
+              FROM fda_enforcement_events a, fda_enforcement_states b, states c
+              WHERE a.id = NEW.fda_enforcement_events_id
+                    AND a.id = b.fda_enforcement_events_id 
+                    AND b.states_id = c.id
+              GROUP BY a.id;
+        END IF;
+        RETURN NULL; -- result is ignored since this is an AFTER trigger
+    END;
+$v_states_enforcements$ LANGUAGE plpgsql;
+
+CREATE TRIGGER state_enforcement_changes
+AFTER INSERT OR UPDATE OR DELETE ON fda_enforcement_states
+    FOR EACH ROW EXECUTE PROCEDURE process_state_enforcement_changes();
 
 --unmapped view
 create or replace view v_unmapped_events
