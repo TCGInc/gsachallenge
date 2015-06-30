@@ -33,6 +33,15 @@ app.controller("recallDetailModalInstanceController", function ($scope, $http, $
 				if (data.status.error) {
 					throw data.status.message;
 				}
+
+				function reformatDate(rawDate) {
+					var parts = rawDate.toString().match(/^(\d{4})(\d{2})(\d{2})$/);
+					return parts[2] + "/" + parts[3] + "/" + parts[1];
+				}
+
+				data.result.recall_initiation_date = reformatDate(data.result.recall_initiation_date);
+				data.result.report_date = reformatDate(data.result.report_date);
+
 				$scope.details = data.result;
 			}).
 			error(function(data, status, headers, config) {
