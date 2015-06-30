@@ -23,7 +23,7 @@ RUN wget --quiet -O - --no-check-certificate https://www.postgresql.org/media/ke
 # Get packages
 RUN apt-get update
 # Install postgresql 
-RUN apt-get -y install postgresql-9.4
+RUN apt-get -y install postgresql-9.4 postgresql-contrib-9.4
 
 # Init the postgres database
 # Switch to postgres user
