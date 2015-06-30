@@ -168,11 +168,18 @@ module.exports = function (app) {
 			var preproc = processFilteringRequestParams(req);
 
 			// Validate state
-			if(!req.query.stateAbbr || FdaService.statesAbbr.indexOf(req.query.stateAbbr) === -1) {
-				preproc.errors.push('Invalid stateAbbr.');
-			}
-			else {
-				preproc.searchParams.stateAbbr = req.query.stateAbbr;
+			if(req.query.stateAbbr) {
+				var states = req.query.stateAbbr.split(",");
+
+				states.forEach(function(state, idx) {
+					if(FdaService.statesAbbr.indexOf(state.trim().toLowerCase()) === -1) {
+						preproc.errors.push('Invalid stateAbbr (' + state + ').');
+					}
+
+					states[idx] = state.trim().toUpperCase();
+				});
+
+				preproc.searchParams.stateAbbr = states;
 			}
 
 			// Validate limit (records per page)

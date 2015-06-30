@@ -1,6 +1,32 @@
+.datamap path {
+  cursor: pointer;
+}
+
+.hoverinfo {
+  background-color: $gray-lightest !important;
+  border-radius: $border-radius-small !important;
+  border: none !important;
+  box-shadow: 0 0 2px rgba(black,.5) !important;
+  color: $gray-dark !important;
+  font-family: $font-family-sans-serif !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+  padding: 7px 10px 10px !important;
+  text-align: center !important;
+  em {
+    color: $brand-primary !important;
+    display: block !important;
+    font-family: $font-family-headers !important;
+    font-size: 36px !important;
+    font-style: normal !important;
+    font-weight: 800 !important;
+    margin-bottom: 12px !important;
+  }
+}
+
 /*
     Currently have colors hard-coded for legend. If we're going to allow
-    users to select color schemes, need to move this into JavaScript.
+    users to select color schemes, we need to move this into JavaScript.
 */
 
 .map-leg {
@@ -23,13 +49,18 @@
     #045a8d 100%,
     #023858 100%);
   border: 1px solid black;
-  bottom: -15px;
+  bottom: auto;
   font-size: 12px;
   left: 0;
   line-height: 1;
   padding: 5px;
   position: absolute;
   right: 0;
+  top: -10px;
+  @media (min-width: $screen-md) {
+    bottom: -15px;
+    top: auto;
+  }
   .leg-less {
     color: black;
     float: left;
@@ -37,5 +68,24 @@
   .leg-more {
     color: white;
     float: right;
+  }
+}
+
+.ss-head {
+  background-color: $gray-lightest;
+  border-radius: $border-radius-small;
+  color: $gray-dark;
+  margin-bottom: 30px;
+  padding: 10px;
+  text-align: center;
+  @media (min-width: $screen-md) {
+    margin-bottom: 0;
+  }
+  h3 {
+    font-size: 21px;
+    margin: 0 0 5px;
+  }
+  p {
+    margin: 0;
   }
 }

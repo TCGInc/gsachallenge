@@ -1,10 +1,10 @@
 ::selection {
-  background: $brand-primary;
+  background: $brand-danger;
   color: white;
 }
 
 ::-moz-selection {
-  background: $brand-primary;
+  background: $brand-danger;
   color: white;
 }
 
@@ -24,8 +24,39 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 800;
 }
 
+
+select[multiple], select.form-control[multiple] {
+  margin-top: 5px;
+}
+
+select[multiple], select.form-control[multiple],
+textarea, textarea.form-control,
+input.form-control, input[type=text],
+input[type=password], input[type=email],
+input[type=number], [type=text].form-control,
+[type=password].form-control, [type=email].form-control,
+[type=tel].form-control, [contenteditable].form-control {
+  background: linear-gradient(to bottom, rgba(white,.0) , rgba(white,.7));
+}
+
+share-this {
+  display: inline-block !important;
+  height: 32px !important;
+  line-height: 32px !important;
+  vertical-align: middle !important;
+}
+
+share-this * {
+  display: block !important;
+  float: left;
+  height: 32px !important;
+  line-height: 32px !important;
+  vertical-align: middle !important;
+}
+
 .form-wrapper {
   background-color: $gray-lightest;
+  border-radius: $border-radius-small;
   padding: 20px;
   label {
     color: $gray-dark;
@@ -61,14 +92,89 @@ h1, h2, h3, h4, h5, h6 {
       }
     }
   }
-  .form-group:last-child {
-    margin: 25px 0 0;
+}
+
+.group-c {
+  margin-bottom: 0;
+  text-align: center;
+}
+
+.highlighted-states {
+  text-align: center;
+  width: 100%;
+  .btn-default {
+    border: 1px solid $gray-lighter;
+    border-width: 1px;
+    margin-bottom: 5px;
+    &:active,
+    &:focus,
+    &:hover {
+      border: 1px solid $brand-danger;
+      .glyphicon {
+        color: $brand-danger;
+      }
+    }
   }
+}
+
+.modal-title {
+  font-size: 18px;
 }
 
 .popover {
   max-width: 350px;
   width: 350px;
+}
+
+.save_icon {
+  @include hide-text;
+  background-image: url(../img/save.svg);
+  cursor: pointer;
+  height: 32px;
+  margin: 0 20px 0 3px;
+  width: 32px;
+  &:active,
+  &:focus,
+  &:hover {
+    opacity: .7;
+  }
+  .no-svg & {
+    background-image: url(../img/save.png);
+  }
+}
+
+.sharing {
+  background-color: $gray-lightest;
+  border-radius: $border-radius-small;
+  line-height: 32px;
+  margin: 30px 0 20px;
+  padding: 0 10px 15px;
+  text-align: center;
+  @media (min-width: $screen-sm) {
+    padding: 10px;
+  }
+  label {
+    display: block;
+    font-family: $font-family-headers;
+    font-size: 14px;
+    font-weight: 800;
+    height: 32px;
+    margin: 10px 0 0 0;
+    vertical-align: middle;
+    @media (min-width: $screen-sm) {
+      display: inline-block;
+      margin: 0 6px 0 0;
+    }
+  }
+  span {
+    display: inline-block;
+    height: 32px;
+    vertical-align: middle;
+    &.st {
+      position: relative;
+      top: -3px;
+    }
+  }
 }
 
 .site-header {
@@ -81,6 +187,7 @@ h1, h2, h3, h4, h5, h6 {
     background-image: url(../img/fda.svg);
     height: 50px;
     margin: 0;
+    width: 100%;
     .no-svg & {
       background-image: url(../img/fda.png);
     }

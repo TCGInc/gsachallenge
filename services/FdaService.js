@@ -9,14 +9,6 @@ function FdaService() {
 
 	var serviceSelf = this;
 
-	function addToStateCount(map, state, count) {
-		if (map[state] === undefined) {
-			map[state] = count;
-		} else {
-			map[state] += count;
-		}
-	}
-
 	// Mapping from FDA API noun to database product_type
 	this.NOUN_DB_TO_FDA = {
 		"Drugs": "drug",
@@ -31,6 +23,8 @@ function FdaService() {
 		"food": "Food"
 	};
 
+	// Convert a list of FDA API style nouns (drug, device, food) to 
+	// the nouns used in the database (Drugs, Devices, Food)
 	this.convertFdaToDbNouns = function(nouns) {
 		var dbNouns = [];
 		nouns.forEach(function(noun) {
@@ -39,6 +33,15 @@ function FdaService() {
 
 		return dbNouns;
 	};
+
+	// Initialize or increase a state's counter by 'count'
+	function addToStateCount(map, state, count) {
+		if (map[state] === undefined) {
+			map[state] = count;
+		} else {
+			map[state] += count;
+		}
+	}
 
 	// Returns recalls counts associated to a list of nouns in aggregate and broken down by noun
 	// {
@@ -135,10 +138,12 @@ function FdaService() {
 		});
 	};
 
+	// Checks if given noun is in known list of nouns
 	this.isValidNoun = function(noun) {
 		return this.NOUN_FDA_TO_DB[noun] !== undefined;
 	};
 
+	// Returns an array of possible autocomplete strings for a given field and set of nouns
 	this.getAutocompleteStrings = function(params, callback) {
 
 		// Get column name corresponding to field name
@@ -203,56 +208,47 @@ function FdaService() {
 	// 	]
 	// }
 	this.getRecallEvents = function(params, callback) {
+		// Using raw queries here as the ORM doesn't appear to support the use of postgres' ANY()
 
 		// Convert list of nouns to match the db product_type column
 		var dbNouns = this.convertFdaToDbNouns(params.nouns);
+		params.productType = dbNouns;
 
-		var findAll = {
-			where: {
-				productType: {
-					in: dbNouns
-				},
-				recallInitiationDate: {
-					$between: [params.fromDate, params.toDate]
-				},
-				stateAbbr: models.Sequelize.fn('UPPER', params.stateAbbr)
-			}
-		};
+		var raw = 'FROM v_states_enforcements WHERE product_type = ANY(:productType) AND recall_initiation_date between :fromDate AND :toDate ';
+		if(params.stateAbbr && params.stateAbbr.length) {
+			raw += 'AND (';
+			params.stateAbbr.forEach(function(state) {
+				raw += "'" + state + "' = ANY(states) OR ";
+			});
+			raw = raw.slice(0, -3);
+			raw += ') ';
+		}
 
 		if(params.productDescription) {
-			findAll.where.productDescription = {
-				$ilike: '%' + params.productDescription + '%'
-			};
+			params.productDescription = '%' + params.productDescription + '%';
+			raw += 'AND product_description ilike :productDescription ';
 		}
 		if(params.reasonForRecall) {
-			findAll.where.reasonForRecall = {
-				$ilike: '%' + params.reasonForRecall + '%'
-			};
+			params.reasonForRecall = '%' + params.reasonForRecall + '%';
+			raw += 'AND reason_for_recall ilike :reasonForRecall ';
 		}
 		if(params.recallingFirm) {
-			findAll.where.recallingFirm = {
-				$ilike: '%' + params.recallingFirm + '%'
-			};
+			params.recallingFirm = '%' + params.recallingFirm + '%';
+			raw += 'AND recalling_firm ilike :recallingFirm ';
 		}
 		if(params.classifications.length) {
-			findAll.where.classification = {
-				in: params.classifications
-			};
+			raw += 'AND classification = ANY(:classifications) ';
 		}
 
 		// Get count of recalls matching criteria
-		models.enforcements.count(findAll).then(function(count) {
+		models.sequelize.query('SELECT COUNT(*) AS count ' + raw, {replacements: params, type: models.sequelize.QueryTypes.SELECT}).then(function(count) {
 
-			// After getting total count, add order, limit, and offset parameters
-			findAll.order = [[models.enforcements.attributes[params.orderBy].field, params.orderDir]];
-			findAll.limit = params.limit;
-			findAll.offset = params.offset;
+			raw += 'ORDER BY ' + models.enforcements.attributes[params.orderBy].field + ' ' + params.orderDir + ' LIMIT :limit OFFSET :offset';
 
-			// Query
-			models.enforcements.findAll(findAll).then(function(recalls) {
+			models.sequelize.query('SELECT * ' + raw, {replacements: params, model: models.enforcements}).then(function(recalls) {
 
 				var result = {
-					total: count,
+					total: parseInt(count[0].count),
 					recalls: serviceSelf.recallsToResponse(recalls)
 				};
 
@@ -267,6 +263,7 @@ function FdaService() {
 		});
 	};
 
+	// Wrapper for the FDA api to get a specific recall event
 	this.getRecallEvent = function(noun, id, callback) {
 		var options = {
 			url: 'https://api.fda.gov/' + noun + '/enforcement.json?search=event_id:' + id,
@@ -296,62 +293,6 @@ function FdaService() {
 		'sd', 'tn', 'tx', 'ut', 'vt', 'va', 'wa', 'wv', 'wi', 'wy',
 		'dc'
 	];
-
-	this.statesMap = {
-		'alabama': 'al',
-		'alaska': 'ak',
-		'arizona': 'az',
-		'arkansas': 'ar',
-		'california': 'ca',
-		'colorado': 'co',
-		'connecticut': 'ct',
-		'delaware': 'de',
-		'florida': 'fl',
-		'georgia': 'ga',
-		'hawaii': 'hi',
-		'idaho': 'id',
-		'illinois': 'il',
-		'indiana': 'in',
-		'iowa': 'ia',
-		'kansas': 'ks',
-		'kentucky': 'ky',
-		'louisiana': 'la',
-		'maine': 'me',
-		'maryland': 'md',
-		'massachusetts': 'ma',
-		'michigan': 'mi',
-		'minnesota': 'mn',
-		'mississippi': 'ms',
-		'missouri': 'mo',
-		'montana': 'mt',
-		'nebraska': 'ne',
-		'nevada': 'nv',
-		'new hampshire': 'nh',
-		'new jersey': 'nj',
-		'new mexico': 'nm',
-		'new york': 'ny',
-		'north carolina': 'nc',
-		'north dakota': 'nd',
-		'ohio': 'oh',
-		'oklahoma': 'ok',
-		'oregon': 'or',
-		'pennsylvania': 'pa',
-		'rhode island': 'ri',
-		'south carolina': 'sc',
-		'south dakota': 'sd',
-		'tennessee': 'tn',
-		'texas': 'tx',
-		'utah': 'ut',
-		'vermont': 'vt',
-		'virginia': 'va',
-		'washington': 'wa',
-		'west virginia': 'wv',
-		'wisconsin': 'wi',
-		'wyoming': 'wy',
-		'district of columbia': 'dc',
-		'washington, dc': 'dc'
-	};
-
 }
 
 module.exports = function () {

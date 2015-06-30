@@ -6,7 +6,9 @@ var AppResponse = require('../util/AppResponse');
 module.exports = function (app) {
 
 	var FilterService = require('../services/FilterService')();
+	var FdaService = require('../services/FdaService')();
 
+	// Return a callback which sends the result object or error as json
 	function getSendResponseCallback(res) {
 		return function commonCallback(err, result) {
 			if(err) {
@@ -41,19 +43,38 @@ module.exports = function (app) {
 		// Validate parameters
 		var errors = [];
 
-		if(req.body.fromDate == null || !/^(19|20)\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/.test(req.body.fromDate)) {
+		var goodDates = true;
+		if(req.body.fromDate && !/^(19|20)\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/.test(req.body.fromDate)) {
 			errors.push('Invalid fromDate.');
+			goodDates = false;
 		}
-		else if(req.body.toDate == null || !/^(19|20)\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/.test(req.body.toDate)) {
+		if(req.body.toDate && !/^(19|20)\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/.test(req.body.toDate)) {
 			errors.push('Invalid toDate.');
+			goodDates = false;
 		}
-		else {
+		if(goodDates && req.body.fromDate && req.body.toDate) {
 			var m1 = moment(req.body.fromDate, 'YYYY-MM-DD');
 			var m2 = moment(req.body.toDate, 'YYYY-MM-DD');
 
 			if(m2.isBefore(m1)) {
 				errors.push('fromDate is before toDate.');
 			}
+		}
+
+		// Validate state
+		if(req.body.stateAbbr && req.body.stateAbbr.length > 0) {
+			var states = req.body.stateAbbr;
+
+			states.forEach(function(state, idx) {
+				if(FdaService.statesAbbr.indexOf(state.trim().toLowerCase()) === -1) {
+					errors.push('Invalid stateAbbr (' + state + ').');
+				}
+
+				states[idx] = state.trim().toUpperCase();
+			});
+		}
+		else {
+			req.body.stateAbbr = null;
 		}
 
 		if(!req.body.includeFood && !req.body.includeDrugs && !req.body.includeDevices) {

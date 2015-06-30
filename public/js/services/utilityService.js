@@ -3,77 +3,81 @@ app.service("utilityService", [function() {
 
 	return {
 		stateNames: {
-			"Alabama": "AL",
-			"Alaska": "AK",
-			"Arizona": "AZ",
-			"Arkansas": "AR",
-			"California": "CA",
-			"Colorado": "CO",
-			"Connecticut": "CT",
-			"Delaware": "DE",
-			"Florida": "FL",
-			"Georgia": "GA",
-			"Hawaii": "HI",
-			"Idaho": "ID",
-			"Illinois": "IL",
-			"Indiana": "IN",
-			"Iowa": "IA",
-			"Kansas": "KS",
-			"Kentuky": "KY",
-			"Louisiana": "LA",
-			"Maine": "ME",
-			"Maryland": "MD",
-			"Massachusetts": "MA",
-			"Michigan": "MI",
-			"Minnesota": "MN",
-			"Mississippi": "MS",
-			"Missouri": "MO",
-			"Montana": "MT",
-			"Nebraska": "NE",
-			"Nevada": "NV",
-			"New Hampshire": "NH",
-			"New Jersey": "NJ",
-			"New Mexico": "NM",
-			"New York": "NY",
-			"North Carolina": "NC",
-			"North Dakota": "ND",
-			"Ohio": "OH",
-			"Oklahoma": "OK",
-			"Oregon": "OR",
-			"Pennsylvania": "PA",
-			"Rhode Island": "RI",
-			"South Carolina": "SC",
-			"South Dakota": "SD",
-			"Tennessee": "TN",
-			"Texas": "TX",
-			"Utah": "UT",
-			"Vermont": "VT",
-			"Virginia": "VA",
-			"Washington": "WA",
-			"West Virginia": "WV",
-			"Wisconsin": "WI",
-			"Wyoming": "WY"
+			"Alabama": "al",
+			"Alaska": "ak",
+			"Arizona": "az",
+			"Arkansas": "ar",
+			"California": "ca",
+			"Colorado": "co",
+			"Connecticut": "ct",
+			"Delaware": "de",
+			"District of Columbia": "dc",
+			"Florida": "fl",
+			"Georgia": "ga",
+			"Hawaii": "hi",
+			"Idaho": "id",
+			"Illinois": "il",
+			"Indiana": "in",
+			"Iowa": "ia",
+			"Kansas": "ks",
+			"Kentucky": "ky",
+			"Louisiana": "la",
+			"Maine": "me",
+			"Maryland": "md",
+			"Massachusetts": "ma",
+			"Michigan": "mi",
+			"Minnesota": "mn",
+			"Mississippi": "ms",
+			"Missouri": "mo",
+			"Montana": "mt",
+			"Nebraska": "ne",
+			"Nevada": "nv",
+			"New Hampshire": "nh",
+			"New Jersey": "nj",
+			"New Mexico": "nm",
+			"New York": "ny",
+			"North Carolina": "nc",
+			"North Dakota": "nd",
+			"Ohio": "oh",
+			"Oklahoma": "ok",
+			"Oregon": "or",
+			"Pennsylvania": "pa",
+			"Rhode Island": "ri",
+			"South Carolina": "sc",
+			"South Dakota": "sd",
+			"Tennessee": "tn",
+			"Texas": "tx",
+			"Utah": "ut",
+			"Vermont": "vt",
+			"Virginia": "va",
+			"Washington": "wa",
+			"West Virginia": "wv",
+			"Wisconsin": "wi",
+			"Wyoming": "wy"
 		},
 
-		addAlert(scope, type, message) {
+		toCamel: function(str) {
+			return str.replace(/(_[a-z])/g, function($1){return $1.toUpperCase().replace('_','');});
+		},
+
+		parseDateString: function(rawDate) {
+			return rawDate ? new Date(rawDate).toISOString().substring(0, 10) : "";
+		},
+
+		addAlert: function(alerts, type, message) {
 			// type choices: "danger" (red), "success" (green), "info" (blue), "warning" (yellow)
-
-			if (!scope.hasOwnProperty("alerts")) {
-				scope.alerts = [];
-			}
-
-			scope.alerts.push({
+			alerts.push({
 				type: type,
 				msg: message}
 			);
 		},
 
-		closeAlert(scope, index) {
-			scope.alerts.splice(index, 1);
+		closeAlert: function(alerts, index) {
+			alerts.splice(index, 1);
 		},
 
-		closeAllAlerts(scope) {
-			scope.alerts = [];
+		closeAllAlerts: function(alerts) {
+			alerts = [];
 		}
 
 	};

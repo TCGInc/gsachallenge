@@ -1,20 +1,153 @@
-app.controller("dashboardController", ["$scope", "$http", "$resource", "$log", "utilityService", "DTOptionsBuilder", "DTColumnBuilder", function($scope, $http, $resource, $log, utilityService, DTOptionsBuilder, DTColumnBuilder) {
+app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "utilityService", "DTOptionsBuilder", "DTColumnBuilder", function($location, $scope, $http, $log, utilityService, DTOptionsBuilder, DTColumnBuilder) {
 	"use strict";
+
+	function initializeSearchParameters() {
+		$scope.searchParams = {
+			eventTypeFood: true,
+			eventTypeDrug: true,
+			eventTypeDevice: true,
+			dateFrom: "",
+			dateTo: "",
+			productDescription: "",
+			recallReason: "",
+			classificationClass1: true,
+			classificationClass2: true,
+			classificationClass3: true,
+			recallingFirm: ""
+		};
+	}
+
+	// Initialize $scope.
+	initializeSearchParameters();
+	$scope.highlightedStates = [];
+	$scope.stateCounts = {};
+	$scope.alerts = [];
+	$scope.savedSearch = {
+		id: 0,
+		name: "",
+		description: ""
+	};
+	$scope.shareThisUrl = $location.absUrl();
+	$scope.stateOptions = utilityService.stateNames;
+	$scope.selectState = function() {
+		// Refresh detail table after the user selects or deselects a state using the form multiselect.
+		refreshDetailsTable();
+	}
+	$scope.openDate = function($event, id) {
+		$event.preventDefault();
+		$event.stopPropagation();
+		$scope.dateOpen[id] = true;
+	};
+	$scope.dateOpen = {
+		'from': false,
+		'to': false
+	}
+
+
+	$scope.closeAlert = function(index) {
+		utilityService.closeAlert($scope.alerts, index);
+	}
+
+	// Page callback to set search parameters to their default values.
+	$scope.clearFilters = function() {
+		// Determine if search parameters and heatmap are not in their initial state.
+		var p = $scope.searchParams;
+		var searchIsDirty = !p.eventTypeFood || !p.eventTypeDrug || !p.eventTypeDevice || p.dateFrom ||
+			p.dateTo || p.productDescription || p.recallReason || p.recallingFirm ||
+			!p.classificationClass1 || !p.classificationClass2 || !p.classificationClass3;
+		var mapIsDirty = $scope.highlightedStates.length > 0;
+
+		if (searchIsDirty) {
+			// Refresh both states and counts on the heatmap.
+			$scope.highlightedStates = [];
+			initializeSearchParameters();
+		}
+
+		if (!searchIsDirty && mapIsDirty) {
+			// Refresh just the states on the heatmap.
+			refreshHighlightedStates();
+		}
+
+		if (searchIsDirty || mapIsDirty) {
+			// Refresh the details table.
+			refreshDetailsTable();
+		}
+	};
+
+	// Page callback to remove a state highlight from the map and details table.
+	$scope.removeHighlightedState = function(state) {
+		refreshHighlightedStates(utilityService.stateNames[state]);
+		refreshDetailsTable();
+	}
+
+
+	// Load a previously saved search based on URL.
+	$scope.$watch(function () {
+	    return $location.hash
+	}, function (value) {
+	    // At page load or hash change, discover from URL if a saved search should be queried and displayed.
+		var searchResult = $location.path();
+		if (searchResult && searchResult.length > 1) {
+			$scope.shareThisUrl = $location.absUrl();
+
+			searchResult = searchResult.substring(1);
+			searchResult = searchResult.replace(/^(\d+).*$/, "$1");
+			try {
+				$http.get("/filters/" + searchResult).
+					success(function(data, status, headers, config) {
+						if (data.status.error) {
+							throw data.status.message;
+						}
+
+						var getDate = d3.time.format("%Y-%m-%d");
+
+						$scope.searchParams = {
+							eventTypeFood: data.result.includeFood,
+							eventTypeDrug: data.result.includeDrugs,
+							eventTypeDevice: data.result.includeDevices,
+							dateFrom: data.result.fromDate ? getDate.parse(data.result.fromDate) : "",
+							dateTo: data.result.toDate ? getDate.parse(data.result.toDate) : "",
+							productDescription: data.result.productDescription,
+							recallReason: data.result.reasonForRecall,
+							classificationClass1:data.result.includeClass1,
+							classificationClass2: data.result.includeClass2,
+							classificationClass3: data.result.includeClass3,
+							recallingFirm: data.result.recallingFirm
+						};
+						if(data.result.stateAbbr) {
+							$scope.highlightedStates = data.result.stateAbbr;
+							$scope.highlightedStates.forEach(function(state, idx, arr) {
+								arr[idx] = state.toLowerCase();
+							});
+						}
+						$scope.savedSearch = {
+							id: data.result.id,
+							name: data.result.name,
+							description: data.result.description
+						}
+						refreshDetailsTable();
+					}).
+					error(function(data, status, headers, config) {
+						throw JSON.stringify(data) + JSON.stringify(status);
+					})
+			}
+			catch(errorMessage) {
+				$log.error(errorMessage);
+				utilityService.addAlert($scope.alerts, "warning", "No saved search was found for this search ID.");
+			}
+		}
+	});
 
 	// Build query parameter string.
 	function buildQueryString(searchParams) {
 
 		var queryParams = [];
 
-		function getDateString(rawDate) {
-			return new Date(rawDate).toISOString().substring(0, 10);
-		}
-
 		if (searchParams.eventTypeFood) queryParams.push("includeFood=true");
 		if (searchParams.eventTypeDrug) queryParams.push("includeDrugs=true");
 		if (searchParams.eventTypeDevice) queryParams.push("includeDevices=true");
-		if (searchParams.dateFrom) queryParams.push("fromDate=" + getDateString(searchParams.dateFrom));
-		if (searchParams.dateTo) queryParams.push("toDate=" + getDateString(searchParams.dateTo));
+		if (searchParams.dateFrom) queryParams.push("fromDate=" + utilityService.parseDateString(searchParams.dateFrom));
+		if (searchParams.dateTo) queryParams.push("toDate=" + utilityService.parseDateString(searchParams.dateTo));
 		if (searchParams.productDescription) queryParams.push("productDescription=" + searchParams.productDescription);
 		if (searchParams.recallReason) queryParams.push("reasonForRecall=" + searchParams.recallReason);
 		if (searchParams.classificationClass1) queryParams.push("includeClass1=true");
@@ -25,55 +158,169 @@ app.controller("dashboardController", ["$scope", "$http", "$resource", "$log", "
 		return queryParams.join("&");
 	}
 
-	// Query API and update map counts.
-	function updateHeatmap(searchParams) {
+	// Refresh the $scope.stateCounts variable which will, in turn, refresh the heatmap.
+	function refreshStateCounts(searchParams) {
 
 		var queryString = buildQueryString(searchParams);
 
 		// No change in the heatmap if all form elements are blank.
 		if (!queryString) {
-			utilityService.addAlert($scope, "warning", "Please make entries into the search form to run a search.");
 			return;
 		}
 
-		var StateCounts = $resource("/fda/recalls/counts?" + queryString);
+		try {
+			$http.get("/fda/recalls/counts?" + queryString).
+				success(function(data, status, headers, config) {
+					if (data.status.error) {
+						throw data.status.message;
+					}
+					else {
+						$scope.alerts = [];
+						$scope.stateCounts = data.result.aggregate;
+					}
+				}).
+				error(function(data, status, headers, config) {
+					throw JSON.stringify(data) + JSON.stringify(status);
+				})
+		}
+		catch(errorMessage) {
+			$log.error(errorMessage);
+			utilityService.addAlert($scope.modalAlerts, "danger", "There is a system problem when searching.");
+		}
+	}
 
-		var counts = StateCounts.get(function() {
-			if (counts.status.error) {
-				utilityService.addAlert($scope, "danger", "There was a problem with your search.");
-    			$log.error(JSON.stringify(counts.status));
+	// Refresh the stateCounts (which will then refresh the heatmap) when the user changes a search parameter.
+	$scope.$watchCollection("searchParams", function(searchParams) {
+		refreshStateCounts(searchParams);
+		refreshDetailsTable();
+	});
+
+	// Refresh the list of highlighted states, which will then refresh the heatmap.
+	function refreshHighlightedStates(stateAbbr, withApply) {
+
+		function refresh() {
+			if (!stateAbbr) {
+				// Clear all highlights from states if no stateAbbr given.
+				$scope.highlightedStates = [];
 			}
 			else {
-				utilityService.closeAllAlerts($scope);
-				$scope.stateCounts = counts.result.aggregate;
+				var index = $.inArray(stateAbbr, $scope.highlightedStates);
+				if (index == -1) {
+					$scope.highlightedStates.push(stateAbbr);
+				}
+				else {
+					$scope.highlightedStates.splice(index, 1);
+				}
 			}
+		}
+
+		if (!withApply) {
+			refresh();
+		}
+		else {
+			$scope.$apply(refresh);
+		}
+	}
+
+	// Handler for heatmap directive when a state is clicked.
+	$scope.mapClicked = function(stateAbbr) {
+		refreshHighlightedStates(stateAbbr, true);
+		refreshDetailsTable();
+    }
+
+	// Configure state details table.
+	$scope.tableOptions = DTOptionsBuilder.newOptions()
+		.withDataProp("data")
+		.withPaginationType('full_numbers')
+		.withOption('processing', true)
+		.withOption('serverSide', true)
+	    .withOption('bFilter', false)
+	    .withOption('dom', '<"top"il>rt<"bottom"p><"clear">')
+	    .withOption('createdRow', function() {
+				$('body').tooltip({
+				  selector: '.prod-type'
+				});
+	    })
+	    .withOption('rowCallback', function(nRow, aData, iDisplayIndex) {
+			if (aData.recall_initiation_date) {
+				var parts = aData.recall_initiation_date.substring(0,10).split("-");
+				$('td:eq(4)', nRow).text(parts[1] + "/" + parts[2] + "/" + parts[0]);
+			}
+	    	$('td', nRow).bind('click', function() {
+				$("recall-detail span")
+					.data("event_id", aData.event_id)
+					.data("product_type", aData.product_type.toLowerCase())
+					.click();
+	    	});
+    	  $('[data-toggle="tooltip"]').tooltip();
+			return nRow;
+	    })
+		.withFnServerData(function(sSource, aoData, fnCallback, oSettings) {
+			// Re-orient params so they're easier to use
+			var ajaxParams = {};
+			angular.forEach(aoData, function(elem, idx) {
+				ajaxParams[elem.name] = elem.value;
+			});
+
+			var queryEndpoint = "/fda/recalls?" + buildQueryString($scope.searchParams);
+			queryEndpoint += "&offset="+ajaxParams.start;
+			queryEndpoint += "&limit="+ajaxParams.length;
+			queryEndpoint += "&orderBy="+utilityService.toCamel(ajaxParams.columns[ajaxParams.order[0].column].data);
+			queryEndpoint += "&orderDir="+ajaxParams.order[0].dir;
+    		queryEndpoint += "&stateAbbr=" + $scope.highlightedStates.join(",");
+
+    		// Get recalls
+    		$http.get(queryEndpoint).success(function(data, status, headers, config) {
+
+    			if (data.status.error) {
+					$log.error(data.status.message);
+					return;
+				}
+
+    			// Structure recalls in DataTables format
+    			var res = {
+    				draw: aoData.draw,
+    				recordsTotal: data.result.total,
+    				recordsFiltered: data.result.total,
+    				data: data.result.recalls
+    			};
+
+    			angular.forEach(data.result.recalls, function(recall) {
+    				if(recall.states.length == 51) {
+    					recall.states = 'Nationwide';
+    				}
+    				else {
+    					recall.states.sort();
+    					recall.states = recall.states.join(", ");
+    				}
+    			});
+
+    			fnCallback(res);
+    		});
 		});
+	$scope.tableColumns = [
+        DTColumnBuilder.newColumn('product_type').withTitle('Type').withClass('col-type').withOption('tv1', 'testestest')
+        	.renderWith(function(data, type, full, meta) {
+        		var lc_data = data.toLowerCase();
+        		return '<span class="prod-type type-' + lc_data + '" data-toggle="tooltip" data-placement="right" title="' + data + '">' + data + '</span';
+        	}),
+        DTColumnBuilder.newColumn('recalling_firm').withTitle('Recalling Firm').withClass('col-firm'),
+        DTColumnBuilder.newColumn('reason_for_recall').withTitle('Reason for Recall').withClass('col-reason'),
+        DTColumnBuilder.newColumn('product_description').withTitle('Product Description').withClass('col-desc'),
+        DTColumnBuilder.newColumn('recall_initiation_date').withTitle('Recall Date').withClass('col-date'),
+        DTColumnBuilder.newColumn('states').withTitle('States').withClass('col-state').notSortable()
+    ];
+    $scope.tableInstance = {};
+
+	// Refresh the datatable.
+	function refreshDetailsTable() {
+		if ($scope.tableInstance.hasOwnProperty("DataTable")) {
+			$scope.tableInstance.DataTable.ajax.reload();
+		}
 	}
 
-	// Initialize $scope.
-	$scope.searchParams = {
-		eventTypeFood: true,
-		eventTypeDrug: true,
-		eventTypeDevice: true,
-		dateFrom: "",
-		dateTo: "",
-		productDescription: "",
-		recallReason: "",
-		classificationClass1: true,
-		classificationClass2: true,
-		classificationClass3: true,
-		recallingFirm: "",
-		stateName: ""
-	};
-	$scope.stateCounts = {};
-	$scope.closeAlert = function(index) {
-		utilityService.closeAlert($scope, index);
-	}
-
-	// Refresh the heatmap when the user changes a search parameter.
-	$scope.$watchCollection("searchParams", function(searchParams) {
-		updateHeatmap(searchParams);
-	});
+	// Give the page some time to load before running table query to initialize the details table.
+	setTimeout(function() {	refreshDetailsTable(); }, 1000);
 
 	// Query the server for lists to send to the autocomplete search form elements.
 	$scope.autocomplete = function(field, value) {
@@ -84,7 +331,7 @@ app.controller("dashboardController", ["$scope", "$http", "$resource", "$log", "
 		if ($scope.searchParams.eventTypeDevice) queryString += "&includeDevices=true";
 
 		return $http.get(queryString).then(function(response) {
-			utilityService.closeAllAlerts($scope);
+			$scope.alerts = [];
 			var trimmedResult = response.data.result.map(function(result) {
 				// Trim long result records to better fit into the autocomplete dropdown.
 				if (result.length > 50) {
@@ -98,49 +345,9 @@ app.controller("dashboardController", ["$scope", "$http", "$resource", "$log", "
       		return trimmedResult;
     	},
     	function(error) {
-    		utilityService.addAlert($scope, "danger", "There was a problem with your search.");
+    		utilityService.addAlert($scope.alerts, "danger", "There was a problem with your lookup.");
     		$log.error(JSON.stringify(error));
     	});
 	}
-
-	$scope.tableOptions = DTOptionsBuilder.fromSource("")
-		.withDataProp("result.recalls")
-		.withPaginationType('full_numbers')
-    .withOption('responsive', true)
-    .withOption('bFilter', false)
-    .withOption('dom', '<"top"il>rt<"bottom"p><"clear">')
-    .withOption('rowCallback', function( nRow, aData, iDisplayIndex ) {
-      $('td', nRow).bind('click', function() {
-        $scope.$apply(function() {
-          $(nRow).toggleClass('open-row');
-        });
-      });
-      $('.table-wrapper').show();
-      return nRow;
-    })
-		.withFnServerData(function(sSource, aoData, fnCallback, oSettings) {
-    		var queryEndpoint = "/fda/recalls?" + buildQueryString($scope.searchParams);
-    		queryEndpoint += "&offset=0&limit=100&orderBy=recallInitiationDate&orderDir=asc";
-    		queryEndpoint +=  "&stateAbbr=" + utilityService.stateNames[$scope.searchParams.stateName].toLowerCase();
-			oSettings.jqXHR = $.ajax({
-				'dataType': 'json',
-				'type': 'GET',
-				'url': queryEndpoint,
-				'success': fnCallback
-			});
-		});
-	$scope.tableColumns = [
-        DTColumnBuilder.newColumn('productType').withTitle('Type'),
-        DTColumnBuilder.newColumn('recallingFirm').withTitle('Recalling Firm'),
-        DTColumnBuilder.newColumn('reasonForRecall').withTitle('Reason for Recall'),
-        DTColumnBuilder.newColumn('productDescription').withTitle('Description'),
-        DTColumnBuilder.newColumn('recallInitiationDate').withTitle('Recall Date'),
-    ];
-    $scope.tableInstance = {};
-    
-    $scope.clickMap = function(stateName) {
-    	$scope.searchParams.stateName = stateName;
-		$scope.tableInstance.changeData("");
-    }
 
 }]);

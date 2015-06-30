@@ -65,46 +65,6 @@ describe('Filter tests', function() {
 				.end(done);
 		});
 
-		it('errors about fromDate', function(done) {
-			request(app.app)
-				.post('/filters')
-				.send({
-					name: 'zzzzzzzzzzzzz',
-					toDate: '2015-06-19',
-					includeDrugs: true
-				})
-				.set('Accept', 'application/json')
-				.expect('Content-Type', /json/)
-				.expect(200)
-				.expect(function(res) {
-					(res.body.result === null).should.be.true;
-					(res.body.status === null).should.be.false;
-					res.body.status.error.should.be.true;
-					res.body.status.should.have.property('message', 'Invalid fromDate.');
-				})
-				.end(done);
-		});
-
-		it('errors about toDate', function(done) {
-			request(app.app)
-				.post('/filters')
-				.send({
-					name: 'zzzzzzzzzzzzz',
-					fromDate: '2015-06-19',
-					includeDrugs: true
-				})
-				.set('Accept', 'application/json')
-				.expect('Content-Type', /json/)
-				.expect(200)
-				.expect(function(res) {
-					(res.body.result === null).should.be.true;
-					(res.body.status === null).should.be.false;
-					res.body.status.error.should.be.true;
-					res.body.status.should.have.property('message', 'Invalid toDate.');
-				})
-				.end(done);
-		});
-
 		it('errors about date order', function(done) {
 			request(app.app)
 				.post('/filters')
@@ -416,6 +376,21 @@ describe('FDA data tests', function() {
 					res.body.should.have.property('status');
 					res.body.status.error.should.be.true;
 					res.body.status.should.have.property('message', 'Invalid orderDir.');
+				})
+				.end(done);
+		});
+
+		it('throws error about stateAbbr', function(done) {
+			request(app.app)
+				.get('/fda/recalls?includeDrugs=true&stateAbbr=abc&limit=25&offset=0&orderBy=reasonForRecall&orderDir=asc')
+				.set('Accept', 'application/json')
+				.expect('Content-Type', /json/)
+				.expect(200)
+				.expect(function(res) {
+					res.body.should.have.property('result', null);
+					res.body.should.have.property('status');
+					res.body.status.error.should.be.true;
+					res.body.status.should.have.property('message', 'Invalid stateAbbr (abc).');
 				})
 				.end(done);
 		});
