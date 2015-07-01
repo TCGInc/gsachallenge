@@ -54,6 +54,20 @@ share-this * {
   vertical-align: middle !important;
 }
 
+.btn-coll {
+  @media (min-width: $screen-sm) {
+    display: none;
+  }
+}
+
+.btn-hide {
+  display: none;
+}
+
+.collapse.in {
+  display: inline;
+}
+
 .form-wrapper {
   background-color: $gray-lightest;
   border-radius: $border-radius-small;
@@ -177,6 +191,75 @@ share-this * {
   }
 }
 
+.site-footer {
+  background-color: $gray-dark;
+  color: white;
+  font-size: 14px;
+  margin-top: 20px;
+  padding: 20px;
+  text-align: center;
+  @media (min-width: $screen-md) {
+    font-size: 16px;
+    padding-bottom: 5px;
+  }
+  li, p {
+    a {
+      border-bottom: 1px solid white;
+      color: white;
+      &:active,
+      &:focus,
+      &:hover {
+        border-bottom: 1px solid $brand-danger;
+        color: white;
+        text-decoration: none;
+      }
+    }
+  }
+  h1 {
+    margin: 0 0 15px;
+    a {
+      @include hide-text;
+      background-image: url(../img/tcg.svg);
+      height: 75px;
+      margin: 0;
+      width: 185px;
+      .no-svg & {
+        background-image: url(../img/tcg.png);
+      }
+    }
+  }
+  li {
+    list-style: none;
+    b {
+      margin: 0 25px 0 30px;
+    }
+    b,
+    span {
+      display: none;
+      @media (min-width: $screen-md) {
+        display: inline-block;
+      }
+    }
+    br {
+      @media (min-width: $screen-md) {
+        display: none;
+      }
+    }
+  }
+  ul {
+    padding: 0;
+  }
+  .btn {
+    margin-top: 15px;
+    @media (min-width: $screen-md) {
+      margin-top: 0;
+    }
+  }
+  .fa {
+    margin-right: 7px;
+  }
+}
+
 .site-header {
   background-color: $brand-primary;
   color: white;
@@ -194,8 +277,11 @@ share-this * {
   }
   h2 {
     color: white;
-    font-size: 24px;
+    font-size: 18px;
     margin: 20px 0 0;
+    @media (min-width: $screen-sm) {
+      font-size: 24px;
+    }
   }
   p {
     font-size: 14px;
@@ -214,6 +300,11 @@ share-this * {
       border-bottom: 1px solid $gray-light;
       color: $gray-light;
       text-decoration: none;
+    }
+  }
+  .collapse {
+    @media (min-width: $screen-sm) {
+      display: inline;
     }
   }
 }

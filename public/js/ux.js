@@ -17,3 +17,7 @@ $(document).ready(function() {
 window.addEventListener("orientationchange", function() {
   $('#DataTables_Table_0').DataTable().ajax.reload();
 }, false);
+
+$(document).on('click', '.btn-coll', function() {
+  $(this).addClass('btn-hide');
+});

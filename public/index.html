@@ -77,13 +77,13 @@
 		<div class="container">
 			<h1>U.S. Food and Drug Administration</h1>
 			<h2>U.S. Food and Drug Administration Recalls</h2>
-			<p>Recalls are actions taken by a firm to remove a product from the market. Recalls may be conducted on a firm’s own initiative, by FDA request, or by FDA order under statutory authority. Whereas not all recalls are announced in the media or on our <a href="http://www.fda.gov/Safety/Recalls/default.htm">Recalls press release</a> page, all recalls monitored by FDA are included in FDA’s weekly Enforcement Report once they are classified according to the level of hazard involved.</p>
+			<p>Recalls are actions taken by a firm to remove a product from the market. <a class="btn-coll" data-toggle="collapse" href=".headcoll" aria-expanded="false" aria-controls="headcoll">Read more...</a> <span class="collapse headcoll">Recalls may be conducted on a firm’s own initiative, by FDA request, or by FDA order under statutory authority. Whereas not all recalls are announced in the media or on our <a href="http://www.fda.gov/Safety/Recalls/default.htm">Recalls press release</a> page, all recalls monitored by FDA are included in FDA’s weekly Enforcement Report once they are classified according to the level of hazard involved.</span></p>
 		</div>
 	</header>
 
 	<div class="container">
 
-	<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+		<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
 
   	<div class="row">
 			<div class="col-md-8 col-md-push-4 col-lg-9 col-lg-push-3">
@@ -175,7 +175,7 @@
 			</div>
 		</div>
 
-  		<div class="row">
+  	<div class="row">
 			<div class="col-xs-12">
 	    	<div class="btn-group highlighted-states">
 	    		<span ng-repeat="state in highlightedStates | orderBy | stateName">
@@ -188,11 +188,27 @@
 
 	</div>
 
-
+	<footer class="site-footer">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-3">
+					<h1><a href="http://www.tcg.com">Turner Consulting Group. “Yes, it <em>can</em> be done!”</a></h1>
+				</div>
+				<div class="col-md-6">
+					<p>Brought to you by the fine folks at <a href="http://www.tcg.com">TCG</a>.</p>
+					<ul>
+						<li><i class="fa fa-map-marker"></i>306 Florida Avenue NW<span>,&nbsp;</span><br>Washington, DC 20001</li>
+						<li><i class="fa fa-envelope"></i><a href="mailto:talktous@tcg.com">talktous@tcg.com</a><b>|</b><br><i class="fa fa-phone"></i>202-986-5533</li>
+					</ul>
+				</div>
+				<div class="col-md-3">
+					<a href="https://github.com/TCGInc/gsachallenge" class="btn btn-default btn-sm"><i class="fa fa-github-alt"></i> View on GitHub</a>
+				</div>
+			</div>
+		</div>
+	</footer>
 
 	<recall-detail></recall-detail>
-
-
 
 	<script>
 		$(document).ready(function() {
@@ -200,24 +216,6 @@
 			$("#dateTo").mask("99/99/9999",{placeholder:"mm/dd/yyyy"});
 		});
 	</script>
-
-
-	<footer style="background-color: #444749">
-		<div class="container" style="padding: 20px">
-			<div class="row">
-				<div class="col-md-3">
-					<img src="http://tcg.com/images/tcg-logo.gif">
-				</div>
-				<div class="col-md-7">
-					<p style="color: white">Brought to you by the fine folks at <a style="color: white" href="http://www.tcg.com">TCG</a>. "Yes. It <em>can</em> be done!"
-					<br>306 Florida Avenue NW, Washington, DC 20001 | <a style="color: white" href="mailto:talktous@tcg.com">talktous@tcg.com</a> | 202-986-5533</p>
-				</div>
-				<div class="col-md-2">
-					<a style="color: white" href="https://github.com/TCGInc/gsachallenge"><i class="fa fa-github-alt"></i> View on GitHub</a>
-				</div>
-			</div>
-		</div>
-	</footer>
 
 </body>
 </html>
