@@ -1,6 +1,7 @@
 <script type="text/ng-template" id="saveSearch.html">
     <div class="modal-header">
-        <h4 class="modal-title">Enter a name and description to remember this search.</h4>
+        <h4 class="modal-title">Enter a name and description for this search.</h4>
+        <p>After you save, you can share your search.</p>
     </div>
     <alert ng-repeat="alert in modalAlerts" type="{{alert.type}}" close="closeModalAlert($index)">{{alert.msg}}</alert>
     <div class="modal-body">
@@ -19,5 +20,13 @@
     </div>
 </script>
 
-<label>Save this Search:</label>
-<span class="save_icon" ng-click="openModal()">Save</span>
+<button class="btn btn-primary" ng-click="openModal()"><i class="fa fa-share-square"></i> Save &amp; Share this Search</button>
+<div class="share-btns">
+    <share-this url="shareThisUrl" service="email"></share-this>
+    <share-this url="shareThisUrl" service="facebook"></share-this>
+    <share-this url="shareThisUrl" service="twitter"></share-this>
+    <share-this url="shareThisUrl" service="tumblr"></share-this>
+    <share-this url="shareThisUrl" service="reddit"></share-this>
+    <share-this url="shareThisUrl" service="sharethis"></share-this>
+    <div class="share-over" ng-click="openModal()" ng-hide="savedSearch.id"></div>
+</div>

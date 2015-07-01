@@ -25,10 +25,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 
-select[multiple], select.form-control[multiple] {
-  margin-top: 5px;
-}
-
 select[multiple], select.form-control[multiple],
 textarea, textarea.form-control,
 input.form-control, input[type=text],
@@ -37,21 +33,6 @@ input[type=number], [type=text].form-control,
 [type=password].form-control, [type=email].form-control,
 [type=tel].form-control, [contenteditable].form-control {
   background: linear-gradient(to bottom, rgba(white,.0) , rgba(white,.7));
-}
-
-share-this {
-  display: inline-block !important;
-  height: 32px !important;
-  line-height: 32px !important;
-  vertical-align: middle !important;
-}
-
-share-this * {
-  display: block !important;
-  float: left;
-  height: 32px !important;
-  line-height: 32px !important;
-  vertical-align: middle !important;
 }
 
 .btn-coll {
@@ -95,16 +76,22 @@ share-this * {
       display: block;
       margin-bottom: 5px;
     }
-    .fa {
-      color: $brand-primary;
-      cursor: pointer;
-      float: right;
-      &:active,
-      &:focus,
-      &:hover {
-        color: $brand-danger;
-      }
+  }
+  .fa-question-circle {
+    color: $brand-primary;
+    cursor: pointer;
+    float: right;
+    font-size: 14px;
+    position: relative;
+    top: -2px;
+    &:active,
+    &:focus,
+    &:hover {
+      color: $brand-danger;
     }
+  }
+  .input-group {
+    clear: both;
   }
 }
 
@@ -114,6 +101,7 @@ share-this * {
 }
 
 .highlighted-states {
+  margin-top: 30px;
   text-align: center;
   width: 100%;
   .btn-default {
@@ -140,54 +128,35 @@ share-this * {
   width: 350px;
 }
 
-.save_icon {
-  @include hide-text;
-  background-image: url(../img/save.svg);
-  cursor: pointer;
-  height: 32px;
-  margin: 0 20px 0 3px;
-  width: 32px;
-  &:active,
-  &:focus,
-  &:hover {
-    opacity: .7;
+.save-share {
+  margin-bottom: 30px;
+  text-align: center;
+  @media (min-width: $screen-md) {
+    margin-top: 40px;
   }
-  .no-svg & {
-    background-image: url(../img/save.png);
+  .fa {
+    margin-right: 5px;
   }
 }
 
-.sharing {
-  background-color: $gray-lightest;
-  border-radius: $border-radius-small;
-  line-height: 32px;
-  margin: 30px 0 20px;
-  padding: 0 10px 15px;
+.share-btns {
+  height: 32px;
+  margin: 15px auto 0;
+  position: relative;
   text-align: center;
-  @media (min-width: $screen-sm) {
-    padding: 10px;
+  width: 300px;
+  share-this {
+    z-index: 1;
   }
-  label {
-    display: block;
-    font-family: $font-family-headers;
-    font-size: 14px;
-    font-weight: 800;
-    height: 32px;
-    margin: 10px 0 0 0;
-    vertical-align: middle;
-    @media (min-width: $screen-sm) {
-      display: inline-block;
-      margin: 0 6px 0 0;
-    }
-  }
-  span {
-    display: inline-block;
-    height: 32px;
-    vertical-align: middle;
-    &.st {
-      position: relative;
-      top: -3px;
-    }
+  .share-over {
+    background-color: rgba(white,.5);
+    cursor: pointer;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: 2;
   }
 }
 
