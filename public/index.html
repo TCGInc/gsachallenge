@@ -129,12 +129,12 @@
 					<div class="form-group">
 						<i class="fa fa-question-circle" data-toggle="popover" data-placement="top" data-container="body" title="Product Description" data-content="Search by the description of the recalled product."></i>
 						<label for="productDescription">Product Description</label>
-						<input type="text" name="productDescription" id="productDescription" class="form-control" ng-model="searchParams.productDescription">
+						<input type="text" name="productDescription" id="productDescription" class="form-control" ng-model="searchParams.productDescription" ng-model-options="{ debounce: 500 }">
 					</div>
 					<div class="form-group">
 						<i class="fa fa-question-circle" data-toggle="popover" data-placement="top" data-container="body" title="Reason for Recall" data-content="Search by the reason the product was recalled."></i>
 						<label for="recallReason">Reason for Recall</label>
-						<input type="text" name="recallReason" id="recallReason" class="form-control" ng-model="searchParams.recallReason">
+						<input type="text" name="recallReason" id="recallReason" class="form-control" ng-model="searchParams.recallReason" ng-model-options="{ debounce: 500 }">
 					</div>
 					<div class="form-group">
 						<i class="fa fa-question-circle" data-toggle="popover" data-placement="top" data-container="body" title="Recalling Firm" data-content="Search by the name of the company that produced the recalled product."></i>
