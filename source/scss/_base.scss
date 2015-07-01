@@ -129,14 +129,27 @@ input[type=number], [type=text].form-control,
 }
 
 .save-share {
-  margin-bottom: 30px;
+  margin: 0 0 20px;
   text-align: center;
   @media (min-width: $screen-md) {
-    margin-top: 40px;
+    margin: 40px 0 0;
   }
   .fa {
     margin-right: 5px;
   }
+}
+
+.search-saved {
+  background-color: $gray-lighter;
+  border-radius: $border-radius-small;
+  font-family: $font-family-headers;
+  font-weight: 800;
+  line-height: 48px;
+  margin-bottom: -48px;
+  padding: 10px;
+  position: relative;
+  top: -48px;
+  z-index: 2;
 }
 
 .share-btns {
@@ -150,10 +163,10 @@ input[type=number], [type=text].form-control,
   }
   .share-over {
     background-color: rgba(white,.5);
-    cursor: pointer;
-    position: absolute;
     bottom: 0;
+    cursor: pointer;
     left: 0;
+    position: absolute;
     right: 0;
     top: 0;
     z-index: 2;

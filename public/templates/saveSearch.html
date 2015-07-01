@@ -21,6 +21,7 @@
 </script>
 
 <button class="btn btn-primary" ng-click="openModal()"><i class="fa fa-share-square"></i> Save &amp; Share this Search</button>
+<div class="search-saved" ng-hide="!savedSearch.id">Your search has been saved. Click one of the buttons below to share your search.</div>
 <div class="share-btns">
     <share-this url="shareThisUrl" service="email"></share-this>
     <share-this url="shareThisUrl" service="facebook"></share-this>
