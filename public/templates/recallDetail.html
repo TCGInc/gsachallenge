@@ -3,7 +3,6 @@
         <button type="button" class="close" ng-click="close()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">Recall Information</h4>
     </div>
-    <alert ng-repeat="alert in modalAlerts" type="{{alert.type}}" close="closeModalAlert($index)">{{alert.msg}}</alert>
     <div class="modal-body">
         <dl>
             <dt>Recall Type (Status)</dt>

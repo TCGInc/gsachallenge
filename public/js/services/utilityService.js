@@ -64,20 +64,44 @@ app.service("utilityService", [function() {
 			return rawDate ? new Date(rawDate).toISOString().substring(0, 10) : "";
 		},
 
-		addAlert: function(alerts, type, message) {
+		addAlert: function(scope, type, message) {
+			if (!scope.hasOwnProperty("alerts")) {
+				scope.alerts = [];
+			}
+
 			// type choices: "danger" (red), "success" (green), "info" (blue), "warning" (yellow)
-			alerts.push({
+			scope.alerts.push({
 				type: type,
 				msg: message}
 			);
 		},
 
-		closeAlert: function(alerts, index) {
-			alerts.splice(index, 1);
+		closeAlert: function(scope, index) {
+			scope.alerts.splice(index, 1);
 		},
 
-		closeAllAlerts: function(alerts) {
-			alerts = [];
+		closeAllAlerts: function(scope) {
+			scope.alerts = [];
+		},
+
+		addModalAlert: function(scope, type, message) {
+			if (!scope.hasOwnProperty("modalAlerts")) {
+				scope.modalAlerts = [];
+			}
+
+			// type choices: "danger" (red), "success" (green), "info" (blue), "warning" (yellow)
+			scope.modalAlerts.push({
+				type: type,
+				msg: message}
+			);
+		},
+
+		closeModalAlert: function(scope, index) {
+			scope.modalAlerts.splice(index, 1);
+		},
+
+		closeAllModalAlerts: function(scope) {
+			scope.modalAlerts = [];
 		}
 
 	};

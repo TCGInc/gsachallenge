@@ -17,19 +17,20 @@ app.directive("saveSearch", function($modal) {
 
 app.controller("saveSearchModalInstanceController", function ($scope, $http, $log, $window, $modalInstance, $location, utilityService) {
 
-	$scope.modalAlerts = [];
+	utilityService.closeAllModalAlerts($scope);
+
 	$scope.closeModalAlert = function(index) {
-		utilityService.closeAlert($scope.modalAlerts, index);
+		utilityService.closeModalAlert($scope, index);
 	}
 
 	$scope.ok = function () {
 
-		$scope.modalAlerts = [];
-
 		if (!$scope.saveSearchName) {
-			utilityService.addAlert($scope.modalAlerts, "danger", "Please enter a name before saving.");
+			utilityService.addModalAlert($scope, "danger", "Please enter a name before saving.");
 			return;
 		}
+
+		utilityService.closeAllModalAlerts($scope);
 
 		var postData = {
 			name: $scope.saveSearchName,
@@ -48,23 +49,21 @@ app.controller("saveSearchModalInstanceController", function ($scope, $http, $lo
 			stateAbbr: $scope.highlightedStates
 		};
 
-		try {
-			$http.post("/filters", postData).
-				success(function(data, status, headers, config) {
-					if (data.status.error) {
-						throw data.status.message;
-					}
+		$http.post("/filters", postData).
+			success(function(data, status, headers, config) {
+				if (data.status.error) {
+					$log.error(data.status.message);
+					utilityService.addModalAlert($scope, "danger", data.status.message);
+				}
+				else {
 					$modalInstance.close();
 					$location.path(data.result.id);
-				}).
-				error(function(data, status, headers, config) {
-					throw JSON.stringify(data) + JSON.stringify(status);
-				})
-		}
-		catch(errorMessage) {
-			$log.error(errorMessage);
-			utilityService.addAlert($scope.modalAlerts, "danger", "There is a system problem and your search was not saved.");
-		}
+				}
+			}).
+			error(function(data, status, headers, config) {
+				$log.error(JSON.stringify(data) + JSON.stringify(status));
+				utilityService.addModalAlert($scope, "danger", "There is a system problem and your search was not saved.");
+			});
 	};
 
 	$scope.cancel = function () {
