@@ -111,7 +111,10 @@ app.directive("heatmap", function(utilityService) {
 				angular.forEach(stateCounts, function(count, stateAbbr) {
 
 					var fillKeyValue = "band 0";
-					if ($.inArray(stateAbbr, highlightedStates) > -1) {
+					if (countDomain[0] == countDomain[1]) {
+						// All the counts are the same so stick with band 0.
+					}
+					else if ($.inArray(stateAbbr, highlightedStates) > -1) {
 						fillKeyValue = "highlighted";
 					}
 					else if (count > 0) {
