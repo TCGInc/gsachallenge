@@ -95,11 +95,9 @@ function FdaService() {
 				$ilike: '%' + params.recallingFirm + '%'
 			};
 		}
-		if(params.classifications.length) {
-			findAll.where.classification = {
-				in: params.classifications
-			};
-		}
+		findAll.where.classification = {
+			in: params.classifications
+		};
 
 		// Query
 		models.enforcements.findAll(findAll).then(function(results) {
@@ -214,7 +212,7 @@ function FdaService() {
 		var dbNouns = this.convertFdaToDbNouns(params.nouns);
 		params.productType = dbNouns;
 
-		var raw = 'FROM v_states_enforcements WHERE product_type = ANY(:productType) AND recall_initiation_date between :fromDate AND :toDate ';
+		var raw = 'FROM v_states_enforcements WHERE product_type = ANY(:productType ::text[]) AND recall_initiation_date between :fromDate AND :toDate ';
 		if(params.stateAbbr && params.stateAbbr.length) {
 			raw += 'AND (';
 			params.stateAbbr.forEach(function(state) {
@@ -236,9 +234,7 @@ function FdaService() {
 			params.recallingFirm = '%' + params.recallingFirm + '%';
 			raw += 'AND recalling_firm ilike :recallingFirm ';
 		}
-		if(params.classifications.length) {
-			raw += 'AND classification = ANY(:classifications) ';
-		}
+		raw += 'AND classification = ANY(:classifications ::text[]) ';
 
 		// Get count of recalls matching criteria
 		models.sequelize.query('SELECT COUNT(*) AS count ' + raw, {replacements: params, type: models.sequelize.QueryTypes.SELECT}).then(function(count) {
