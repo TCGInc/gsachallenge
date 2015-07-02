@@ -168,13 +168,6 @@ table.dataTable {
   width: 32px;
 }
 
-.prod-type-sm {
-  @include hide-text;
-  cursor: pointer;
-  height: 16px;
-  width: 16px;
-}
-
 .type-devices {
   background-image: url(../img/devices.svg);
 }

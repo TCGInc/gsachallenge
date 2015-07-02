@@ -43,6 +43,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 		'to': false
 	}
 
+	var initCheck = 0;
 
 	// Remove an alert from being displayed at the top of the page.
 	$scope.closeAlert = function(index) {
@@ -230,6 +231,8 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 	$scope.mapClicked = function(stateAbbr) {
 		refreshHighlightedStates(stateAbbr, true);
 		refreshDetailsTable();
+		var stateName = convert_state(stateAbbr,'name');
+  	ga('send', 'event', 'State (Map)', 'Filter', stateName);
     }
 
 	// Configure state details table.
@@ -251,6 +254,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 				$('td:eq(4)', nRow).text(parts[1] + "/" + parts[2] + "/" + parts[0]);
 			}
 	    	$('td', nRow).bind('click', function() {
+  			ga('send', 'event', 'Recall Detail', 'Click', aData.event_id);
 				$("recall-detail span")
 					.data("event_id", aData.event_id)
 					.data("product_type", aData.product_type.toLowerCase())
@@ -342,6 +346,14 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 				}
 			}, 500);
 		}
+		if ( initCheck != 0 ) {
+			$scope.savedSearch = {
+				id: 0,
+				name: "",
+				description: ""
+			};
+		}
+		initCheck = $scope.savedSearch.id;
 	}
 
 	// Query the server for lists to send to the autocomplete search form elements.
