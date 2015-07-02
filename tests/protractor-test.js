@@ -83,8 +83,8 @@ describe('GSA Challenge Demo App', function() {
 	it('should be able to save a search', function() {
 		var randomString = dashboard.getRandomString(10);
 
-		element(by.className('save_icon')).click();
-		element(by.model('saveSearchName')).sendKeys(randomString);
+		element(by.partialButtonText('Save & Share this Search')).click();
+		element(by.id('saveSearchName')).sendKeys(randomString);
 		element(by.buttonText('Save')).click();
 
 		var name = element(by.binding('savedSearch.name'));
