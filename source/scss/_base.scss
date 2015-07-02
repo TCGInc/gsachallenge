@@ -49,6 +49,12 @@ input[type=number], [type=text].form-control,
   display: inline;
 }
 
+.detail-title .prod-type {
+  margin-right: 15px;
+  position: relative;
+  bottom: -8px;
+}
+
 .form-wrapper {
   background-color: $gray-lightest;
   border-radius: $border-radius-small;
@@ -119,8 +125,23 @@ input[type=number], [type=text].form-control,
   }
 }
 
+.recall-report {
+  div[class^="col-sm"],
+  div[class^="col-xs"] {
+    margin-bottom: 15px;
+  }
+  h5 {
+    margin: 0;
+  }
+  .init-date {
+    @media (min-width: $screen-sm) {
+      text-align: right;
+    }
+  }
+}
+
 .modal-title {
-  font-size: 18px;
+  text-align: center;
 }
 
 .popover {

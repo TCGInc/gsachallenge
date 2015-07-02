@@ -1,38 +1,56 @@
 <script type="text/ng-template" id="recallDetail.html">
     <div class="modal-header">
         <button type="button" class="close" ng-click="close()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Recall Information</h4>
+        <h4 class="modal-title detail-title"><span class="prod-type type-{{details['product_type'] | lowercase}}"></span>{{details['product_type']}} Recall</h4>
     </div>
-    <div class="modal-body">
-        <dl>
-            <dt>Recall Type (Status)</dt>
-            <dd>{{details['product_type']}} ({{details['status']}})</dd>
-
-            <dt>Severity Class (Voluntary/Mandated)</dt>
-            <dd>{{details['classification']}} ({{details['voluntary_mandated']}})</dd>
-
-            <dt>Recall Number (Event ID)</dt>
-            <dd>{{details['recall_number']}} ({{details['event_id']}})</dd>
-
-            <dt>Recall Initiation Date (Report Date)</dt>
-            <dd>{{details['recall_initiation_date']}} ({{details['report_date']}})</dd>
-
-            <dt>Recalling Firm (Location)</dt>
-            <dd>{{details['recalling_firm']}} ({{details['city']}}, {{details['state']}})</dd>
-
-            <dt>Product Description</dt>
-            <dd>{{details['product_description']}}</dd>
-
-            <dt>Reason for Recall</dt>
-            <dd>{{details['reason_for_recall']}}</dd>
-
-            <dt>Quantity</dt>
-            <dd>{{details['product_quantity']}}</dd>
-
-            <dt>Distribution</dt>
-            <dd>{{details['distribution_pattern']}}</dd>
-
-        </dl>
+    <alert ng-repeat="alert in modalAlerts" type="{{alert.type}}" close="closeModalAlert($index)">{{alert.msg}}</alert>
+    <div class="modal-body recall-report">
+        <div class="row">
+            <div class="col-sm-6">
+                <h5>{{details['recall_number']}} ({{details['event_id']}})</h5>
+            </div>
+            <div class="col-sm-6">
+                <h5 class="init-date">{{details['recall_initiation_date']}}</h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <strong>{{details['recalling_firm']}}</strong><br>
+                {{details['city']}}, {{details['state']}}
+            </div>
+            <div class="col-sm-4">
+                <strong>{{details['classification']}}</strong><br>
+                {{details['voluntary_mandated']}}
+            </div>
+            <div class="col-sm-4">
+                <strong>{{details['status']}}</strong><br>
+                Report Date: {{details['report_date']}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <strong>Product:</strong><br>
+                {{details['product_description']}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <strong>Reason:</strong><br>
+                {{details['reason_for_recall']}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <strong>Distributed:</strong><br>
+                {{details['distribution_pattern']}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <strong>Quantity:</strong><br>
+                {{details['product_quantity']}}
+            </div>
+        </div>
     </div>
     <div class="modal-footer">
         <button class="btn btn-primary" ng-click="close()">Close</button>
@@ -40,16 +58,3 @@
 </script>
 
 <span ng-click="openRecallDetailModal()"></span>
-
-
-<!--
-
-distribution_pattern Worldwide Distribution-USA (nationwide) and the countries of Canada, Japan, EMEA (Europe, Middle East and Africa), Asia Pacific, (Hong Kong, Indonesia, Malaysia, Australia, and Taiwan, Thailand), Latin America, (Chile, Colombia, Panama, Mexico, and Honduras).
-
-product_description Edwards Lifesciences Swan-Ganz Thermodilution VIP Catheters Model 141HF7J. For use in patients who require hemodynamic monitoring.
-
-product_quantity 32,145 units for all products in Recall Event
-
-reason_for_recall The device is being recalled because the firm received multiple complaints related to passage of a J-tip guidewire when inserted through the distal lumen hub of the catheter.
-
--->
