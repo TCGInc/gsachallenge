@@ -193,7 +193,30 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 
 	// Refresh the stateCounts (which will then refresh the heatmap) when the user changes a search parameter.
 	$scope.$watchCollection("searchParams", function(searchParams) {
-		if (searchParams) {
+		function validParameters(searchParams) {
+			var isValid = true;
+			utilityService.closeAllAlerts($scope);
+
+			if (searchParams.dateFrom) {
+				var dateFrom = utilityService.parseDateString(searchParams.dateFrom);
+				if (!dateFrom || !/^(19|20)\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/.test(dateFrom)) {
+					utilityService.addAlert($scope, "danger", "Invalid Start Date in the search form. Please correct.");
+					isValid = false;
+				}
+			}
+
+			if (searchParams.dateTo) {
+				var dateTo = utilityService.parseDateString(searchParams.dateTo);
+				if (!dateTo || !/^(19|20)\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/.test(dateTo)) {
+					utilityService.addAlert($scope, "danger", "Invalid End Date in the search form. Please correct.");
+					isValid = false;
+				}
+			}
+
+			return isValid;
+		}
+
+		if (searchParams && validParameters(searchParams)) {
 			refreshStateCounts(searchParams);
 			refreshDetailsTable();
 		}
