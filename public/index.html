@@ -86,7 +86,7 @@
 		<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
 
   	<div class="row">
-			<div class="col-md-8 col-md-push-4 col-lg-9 col-lg-push-3">
+			<div class="col-md-9 col-md-push-3">
 				<div ng-show="savedSearch.id > 0" class="ss-head">
 					<h3>{{savedSearch.name}}</h3>
 					<p>{{savedSearch.description}}</p>
@@ -96,7 +96,7 @@
 					<save-search></save-search>
 				</div>
 			</div>
-			<div class="col-md-4 col-md-pull-8 col-lg-3 col-lg-pull-9">
+			<div class="col-md-3 col-md-pull-9">
 				<div class="form-wrapper">
 					<div class="form-group group-types">
 						<label class="label-block"><i class="fa fa-question-circle" data-toggle="popover" data-placement="bottom" data-container="body" title="Product Types" data-content="<p><strong>Food:</strong> Food producers recall their products from the marketplace when the products are mislabeled or when the food may present a health hazard to consumers because the food is contaminated or has caused a foodborne illness outbreak.</p><p><strong>Drugs:</strong> Recalls are actions taken by a firm to remove a product from the market. Recalls may be conducted on a firm's own initiative, by FDA request, or by FDA order under statutory authority.</p><p><strong>Devices:</strong> FDA posts consumer information about the most serious medical device recalls. These products are on the list because there is a reasonable chance that they could cause serious health problems or death.</p>"></i>Product Type</label>
