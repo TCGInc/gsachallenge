@@ -161,20 +161,18 @@ table.dataTable {
   }
 }
 
-.modal-lg {
-  .modal-body {
-    border-top: 1px solid rgba(black,.5);
-  }
-  dd {
-    margin-bottom: 15px;
-  }
-}
-
 .prod-type {
   @include hide-text;
   cursor: pointer;
   height: 32px;
   width: 32px;
+}
+
+.prod-type-sm {
+  @include hide-text;
+  cursor: pointer;
+  height: 16px;
+  width: 16px;
 }
 
 .type-devices {

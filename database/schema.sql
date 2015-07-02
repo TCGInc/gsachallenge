@@ -16,6 +16,7 @@ CREATE TABLE filters
   include_class1 boolean,
   include_class2 boolean,
   include_class3 boolean,
+  state_abbr text[],
   CONSTRAINT filters_pk PRIMARY KEY (id),
   CONSTRAINT uniq_name UNIQUE (name)
 )
