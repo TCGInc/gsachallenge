@@ -83,11 +83,11 @@
 
 	<div class="container">
 
-		<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+		<alert class="initial-hide" ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" ng-class="(savedSearch.id) ? 'ang-show' : ''">{{alert.msg}}</alert>
 
   	<div class="row">
 			<div class="col-md-9 col-md-push-3">
-				<div ng-hide="!savedSearch.id" class="ss-head">
+				<div ng-hide="!savedSearch.id" class="ss-head initial-hide" ng-class="(savedSearch.id) ? 'ang-show' : ''">
 					<h3>{{savedSearch.name}}</h3>
 					<p>{{savedSearch.description}}</p>
 				</div>
