@@ -87,7 +87,7 @@
 
   	<div class="row">
 			<div class="col-md-9 col-md-push-3">
-				<div ng-show="savedSearch.id > 0" class="ss-head">
+				<div ng-hide="!savedSearch.id" class="ss-head">
 					<h3>{{savedSearch.name}}</h3>
 					<p>{{savedSearch.description}}</p>
 				</div>
