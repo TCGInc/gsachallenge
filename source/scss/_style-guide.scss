@@ -6,7 +6,7 @@ body {
   top: 30px;
 }
 
-.affix, 
+.affix,
 .affix-bottom {
   width: 220px;
   @media (min-width: $screen-md) {
@@ -25,7 +25,7 @@ body {
   position: relative;
 }
 
-.affix, 
+.affix,
 .affix-bottom,
 .affix-top {
   @media (max-width: $screen-sm) {
@@ -59,7 +59,6 @@ body {
     }
     &.color-gray-light {
       background-color: $gray-light;
-      border: 1px solid $gray;
       color: $gray;
     }
     &.color-gray-lightest {

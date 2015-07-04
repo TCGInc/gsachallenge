@@ -23,7 +23,6 @@ var paths = {
   },
   styles: {
     src:   'source/scss/main.scss',
-    src2:  'source/scss/style-guide.scss',
     dest:  'public/css/',
     watch: '**/*.scss'
   },
@@ -174,17 +173,6 @@ gulp.task('styles', function( ) {
     .pipe(gulp.dest(paths.styles.dest));
 });
 
-gulp.task('styles2', function( ) {
-  return sass(paths.styles.src2, {
-    sourcemap: true,
-    style: 'compressed'
-  })
-    .pipe(autoprefixer())
-    .pipe(concat('style-guide.min.css'))
-    .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest(paths.styles.dest));
-});
-
 gulp.task('icons', function() { 
   gulp.src(paths.icons.src)
     .pipe(gulp.dest(paths.icons.dest));
@@ -215,5 +203,4 @@ gulp.task('watch', function() {
   gulp.watch(paths.img.src,      ['img']);
 });
 
-  gulp.task('ux', ['styles', 'styles2', 'icons', 'bsicons', 'img', 'watch']);
-
+  gulp.task('ux', ['styles', 'icons', 'bsicons', 'img', 'watch']);
