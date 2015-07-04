@@ -1,0 +1,162 @@
+body {
+  position: relative;
+}
+
+.affix {
+  top: 30px;
+}
+
+.affix, 
+.affix-bottom {
+  width: 220px;
+  @media (min-width: $screen-md) {
+    width: 212px;
+  }
+  @media (min-width: $screen-lg) {
+    width: 262px;
+  }
+}
+
+.affix-bottom {
+  position: absolute;
+}
+
+.affix-top {
+  position: relative;
+}
+
+.affix, 
+.affix-bottom,
+.affix-top {
+  @media (max-width: $screen-sm) {
+    position: relative;
+  }
+}
+
+.buttons-holder {
+  button {
+    margin: 5px;
+  }
+}
+
+.color-holder {
+  figure {
+    border-radius: $border-radius-small;
+    color: white;
+    display: inline-block;
+    height: 100px;
+    line-height: 100px;
+    margin-bottom: 5px;
+    width: 100%;
+    &.color-blue {
+      background-color: $brand-primary;
+    }
+    &.color-gray {
+      background-color: $gray;
+    }
+    &.color-gray-dark {
+      background-color: $gray-dark;
+    }
+    &.color-gray-light {
+      background-color: $gray-light;
+      border: 1px solid $gray;
+      color: $gray;
+    }
+    &.color-gray-lightest {
+      background-color: $gray-lightest;
+      border: 1px solid $gray;
+      color: $gray;
+    }
+    &.color-red {
+      background-color: $brand-danger;
+    }
+  }
+}
+
+.icons-holder {
+  .fa {
+    margin: 5px;
+    @media (min-width: $screen-md) {
+      position: relative;
+      top: -10px;
+    }
+  }
+  .prod-type {
+    background-position: center center;
+    margin: 5px;
+    height: 48px;
+    line-height: 48px;
+    width: 62px;
+  }
+}
+
+.logo-holder {
+  line-height: 120px;
+  figure {
+    @include hide-text;
+    background-position: center center;
+    background-size: 50%;
+    border-radius: $border-radius-small;
+    display: block;
+    height: 200px;
+    width: 100%;
+    &.logo-blue {
+      background-color: white;
+      background-image: url(../img/fda-blue.svg);
+      .no-svg & {
+        background-image: url(../img/fda-blue.png);
+      }
+    }
+    &.logo-white {
+      background-color: $brand-primary;
+      background-image: url(../img/fda.svg);
+      .no-svg & {
+        background-image: url(../img/fda.png);
+      }
+    }
+  }
+  img {
+    border-radius: $border-radius-small;
+    margin: 0 3%;
+    overflow: hidden;
+  }
+}
+
+.sections section {
+  margin-bottom: 30px;
+}
+
+.style-holder {
+  background-color: $gray-lightest;
+  border-radius: $border-radius-small;
+  margin-bottom: 20px;
+  padding: 10px;
+  text-align: center;
+}
+
+.forms-holder {
+  padding: 10px 20px;
+  text-align: left;
+  label {
+    font-weight: bold;
+  }
+  .group-inline {
+    label {
+      padding-right: 5px;
+    }
+    label:first-child {
+      padding-left: 0;
+    }
+  }
+}
+
+.typography-holder {
+  padding: 10px 20px;
+  text-align: left;
+  a {
+    text-decoration: underline;
+  }
+  h1, h2, h3, p {
+    margin: 10px 0;
+  }
+}

@@ -23,6 +23,7 @@ var paths = {
   },
   styles: {
     src:   'source/scss/main.scss',
+    src2:  'source/scss/style-guide.scss',
     dest:  'public/css/',
     watch: '**/*.scss'
   },
@@ -159,7 +160,7 @@ gulp.task('liquibase', shell.task([
 
 
 gulp.task('styles', function( ) {
-	return sass(paths.styles.src, {
+  return sass(paths.styles.src, {
     loadPath: [
       paths.node.src + '/bootstrap-sass/assets/stylesheets',
       paths.node.src + '/font-awesome/scss'
@@ -169,6 +170,17 @@ gulp.task('styles', function( ) {
   })
     .pipe(autoprefixer())
     .pipe(concat('all.min.css'))
+    .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest(paths.styles.dest));
+});
+
+gulp.task('styles2', function( ) {
+  return sass(paths.styles.src2, {
+    sourcemap: true,
+    style: 'compressed'
+  })
+    .pipe(autoprefixer())
+    .pipe(concat('style-guide.min.css'))
     .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest(paths.styles.dest));
 });
@@ -196,9 +208,12 @@ gulp.task('img', function() { 
     .pipe(gulp.dest(paths.img.dest));
 });
 
-gulp.task('ux', function() {
+gulp.task('watch', function() {
 	gulp.watch(paths.styles.watch, ['styles']);
   gulp.watch(paths.icons.src,    ['icons']);
   gulp.watch(paths.bsicons.src,  ['bsicons']);
   gulp.watch(paths.img.src,      ['img']);
 });
+
+  gulp.task('ux', ['styles', 'styles2', 'icons', 'bsicons', 'img', 'watch']);
+

@@ -24,6 +24,26 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 800;
 }
 
+h1 {
+  font-size: 28px;
+}
+
+h2 {
+  font-size: 21px;
+}
+
+h3 {
+  font-size: 18px;
+}
+
+textarea, textarea.form-control, input.form-control,
+input[type=text], input[type=password], input[type=email],
+input[type=number], [type=text].form-control,
+[type=password].form-control, [type=email].form-control,
+[type=tel].form-control, [contenteditable].form-control {
+  padding-left: 5px;
+  padding-right: 5px;
+}
 
 select[multiple], select.form-control[multiple],
 textarea, textarea.form-control,
@@ -298,6 +318,14 @@ input[type=number], [type=text].form-control,
     margin: 20px 0 0;
     @media (min-width: $screen-sm) {
       font-size: 24px;
+    }
+  }
+  h3 {
+    color: white;
+    font-size: 16px;
+    margin: 20px 0 0;
+    @media (min-width: $screen-sm) {
+      font-size: 21px;
     }
   }
   p {
