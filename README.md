@@ -80,6 +80,11 @@ following selection of component technologies:
    and system resources) and remote monitoring of production from our
    integration environment (to ensure public availability).
 
+ * fail2ban - continuous monitoring - We we use the open source
+   fail2ban system to monitor ssh logs (and other open services as
+   needed) for suspicious atcitivity, and automatically ban multiple
+   invalid access attempts.
+
  * Docker - containerization - Docker allows us to quickly instantiate
    copies of our system (both the node server and database) locally or
    into the cloud.
