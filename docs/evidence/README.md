@@ -33,3 +33,7 @@ Evidence Folder Details
 * jenkins_CI_and_testing.png - Log of automated testing conducted
   after continuous integration deployment.
 
+## AB Benchmarking ##
+
+* benchmark_data.txt - Use of ab to conduct benchmarking and
+  performance optimizations of the site.
