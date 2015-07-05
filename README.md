@@ -82,7 +82,7 @@ following selection of component technologies:
 
  * fail2ban - continuous monitoring - We we use the open source
    fail2ban system to monitor ssh logs (and other open services as
-   needed) for suspicious atcitivity, and automatically ban multiple
+   needed) for suspicious atcitivity and automatically ban multiple
    invalid access attempts.
 
  * Docker - containerization - Docker allows us to quickly instantiate
