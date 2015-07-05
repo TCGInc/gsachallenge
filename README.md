@@ -28,76 +28,83 @@ Through initial user experience discussions, it quickly became clear
 that the desired end goal was a web-based responsive-design single
 page application that permitted free-text search, location-based
 search, and navigation of FDA enforcement data. This led to the
-following selection of component technologies:
+following selection of component technologies (the licenses for the
+technologies are listed after their names):
 
- * Node.js - back-end environment - Node.js allows us to simplify our
-   development environment by using the same language, JavaScript,
-   across the full application stack. As a foundational technology it
-   addresses all three of the factors through its use at 18F and our
-   familiarity with it.
+ * Node.js (MIT License) - back-end environment - Node.js
+   allows us to simplify our development environment by using the same
+   language, JavaScript, across the full application stack. As a
+   foundational technology it addresses all three of the factors
+   through its use at 18F and our familiarity with it.
 
- * Express - node.js web application framework - We use Express to
-   provide the HTTP application requests and develop REST services for
-   data and search requests from the single-page application.
+ * Express (MIT License) - node.js web application framework - We use
+   Express to provide the HTTP application requests and develop REST
+   services for data and search requests from the single-page
+   application.
 
- * AngularJS - data binding (model-view) - Within our single-page
-   application, we rely on AngularJS to automatically update our
-   interactive widgets based upon retrieved data.
+ * AngularJS (MIT License) - data binding (model-view) - Within our
+   single-page application, we rely on AngularJS to automatically
+   update our interactive widgets based upon retrieved data.
 
- * PostgreSQL - relational database - We use PostgreSQL for its
-   flexibility, providing both traditional relational database and
-   JSON object storage. In addition, we rely upon its built-in free
-   text searching to quickly slice through the FDA data.
+ * PostgreSQL (PostgreSQL License - OSI Approved) - relational
+   database - We use PostgreSQL for its flexibility, providing both
+   traditional relational database and JSON object storage. In
+   addition, we rely upon its built-in free text searching to quickly
+   slice through the FDA data.
 
- * jQuery Datatables - Interactive table widget - By itself, jQuery
-   provides general DOM and CSS manipulation. The Datatables plugin
-   creates a highly polished and interactive table for information
-   display, sorting, and paging.
+ * jQuery Datatables (MIT License) - Interactive table widget - By
+   itself, jQuery provides general DOM and CSS manipulation. The
+   Datatables plugin creates a highly polished and interactive table
+   for information display, sorting, and paging.
 
- * Font Awesome - vector icons and font framework - This framework
-   simlifies the iconography used in our single-page application.
+ * Font Awesome (MIT License) - vector icons and font framework - This
+   framework simlifies the iconography used in our single-page
+   application.
 
- * Bootstrap - responsive layout - We use Bootstrap to allows us to
-   reformat the page structure and individual widgets to support a
-   variety of mobile and desktop configurations.
+ * Bootstrap (MIT License) - responsive layout - We use Bootstrap to
+   allows us to reformat the page structure and individual widgets to
+   support a variety of mobile and desktop configurations.
 
- * App.js - web widgets - App.js provides us a number of widgets (such
-   as a date-picker) that behave like mobile native elements.
+ * App.js (MIT License) - web widgets - App.js provides us a number of
+   widgets (such as a date-picker) that behave like mobile native
+   elements.
 
- * Karma/Mocha - unit testing framework - With Karma and Mocha we are
-   able to exercise the services and front end (through phantomjs). By
-   plugging our unit test harness into Jenkins, we are able to
-   generate a unit test report within continuous integration.
+ * Karma/Mocha (MIT License) - unit testing framework - With Karma and
+   Mocha we are able to exercise the services and front end (through
+   phantomjs). By plugging our unit test harness into Jenkins, we are
+   able to generate a unit test report within continuous integration.
 
- * Jenkins - continuous integration, testing, and production
-   deployment - By installing and configuration Jenkins, we created a
-   continuous integration environment that monitors git, automatically
-   updates integration with commits, runs our unit tests, and reports
-   upon the status of our tests.
+ * Jenkins (MIT License) - continuous integration, testing, and
+   production deployment - By installing and configuration Jenkins, we
+   created a continuous integration environment that monitors git,
+   automatically updates integration with commits, runs our unit
+   tests, and reports upon the status of our tests.
 
- * Nagios - continuous monitoring - We use the open source Nagios core
-   for both local monitoring of the production environment (for netork
-   and system resources) and remote monitoring of production from our
-   integration environment (to ensure public availability).
+ * Nagios (GPLv2) - continuous monitoring - We use the open source
+   Nagios core for both local monitoring of the production environment
+   (for netork and system resources) and remote monitoring of
+   production from our integration environment (to ensure public
+   availability).
 
- * fail2ban - continuous monitoring - We we use the open source
-   fail2ban system to monitor ssh logs (and other open services as
-   needed) for suspicious atcitivity and automatically ban multiple
+ * fail2ban (GPLv2+) - continuous monitoring - We we use the open
+   source fail2ban system to monitor ssh logs (and other open services
+   as needed) for suspicious atcitivity and automatically ban multiple
    invalid access attempts.
 
- * Docker - containerization - Docker allows us to quickly instantiate
-   copies of our system (both the node server and database) locally or
-   into the cloud.
+ * Docker (Apache License 2.0) - containerization - Docker allows us
+   to quickly instantiate copies of our system (both the node server
+   and database) locally or into the cloud.
 
-  * Perl/CURL - General utility scripts.
+  * Perl/CURL (GPLv1/Artistic License) - General utility scripts.
 
 Additional dependencies include:
 
- * MomentJS - JavaScript date library - Moment allows us to parse and
-   format dates in a consistent manner.
+ * MomentJS (MIT License) - JavaScript date library - Moment allows us
+   to parse and format dates in a consistent manner.
 
- * Request - Simplified HTTP request client - We use request to call
-   openFDA to consume their RESTful API and retrieve data.
+ * Request (Apache License 2.0) - Simplified HTTP request client - We
+   use request to call openFDA to consume their RESTful API and
+   retrieve data.
 
 *Unstructured Location Data and the Resulting Architecture* -
 Originally we intended to directly consume data from openFDA to
