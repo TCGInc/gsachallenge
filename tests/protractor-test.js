@@ -11,35 +11,35 @@ describe('GSA Challenge Demo App', function() {
 	});
 
 	it('should be able to add/remove several states by clicking state buttons', function() {
-		dashboard.clickStateOnMap('VA');
-		dashboard.clickStateOnMap('TX');
-		dashboard.clickStateOnMap('MD');
+		dashboard.clickStateOnMultiselect('Utah');
+		dashboard.clickStateOnMultiselect('Texas');
+		dashboard.clickStateOnMultiselect('Maryland');
 		var states = dashboard.getHighlightedStates();
 
 		expect(states.count()).toEqual(3);
 		expect(states.first().getText()).toMatch('MARYLAND');
-		expect(states.last().getText()).toMatch('VIRGINIA');
+		expect(states.last().getText()).toMatch('UTAH');
 
-		dashboard.clickStateOnMap('MD');
-		dashboard.clickStateOnMap('VA');
+		dashboard.clickStateOnMultiselect('Maryland');
+		dashboard.clickStateOnMultiselect('Utah');
 		states = dashboard.getHighlightedStates();
 
 		expect(states.count()).toEqual(1);
 		expect(states.first().getText()).toMatch('TEXAS');
 	});
 
-	it('should be able to remove a state from the map by clicking the state button above the detail table', function() {
-		dashboard.clickStateOnMap('VA');
-		dashboard.clickStateOnMap('TX');
-		dashboard.clickStateOnMap('MD');
+	it('should be able to remove a state from the multiselect by clicking the state button above the detail table', function() {
+		dashboard.clickStateOnMultiselect('Utah');
+		dashboard.clickStateOnMultiselect('Texas');
+		dashboard.clickStateOnMultiselect('Maryland');
 		var states = dashboard.getHighlightedStates();
 
 		expect(states.count()).toEqual(3);
 		expect(states.first().getText()).toMatch('MARYLAND');
-		expect(states.last().getText()).toMatch('VIRGINIA');
+		expect(states.last().getText()).toMatch('UTAH');
 
 		dashboard.clickStateButton('Maryland');
-		dashboard.clickStateButton('Virginia');
+		dashboard.clickStateButton('Utah');
 		states = dashboard.getHighlightedStates();
 
 		expect(states.count()).toEqual(1);
@@ -65,18 +65,18 @@ describe('GSA Challenge Demo App', function() {
 
 		input.sendKeys('safeway');
 		checkbox.click();
-		dashboard.clickStateOnMap('VA');
+		dashboard.clickStateOnMultiselect('Utah');
 
 		expect(input.getAttribute('value')).toEqual('safeway');
 		expect(checkbox.getAttribute('checked')).toBe(null);
-		expect(detailTableCounts.getText()).toEqual('Showing 1 to 6 of 6 entries');
+		expect(detailTableCounts.getText()).toEqual('Showing 1 to 1 of 1 entries');
 		expect(states.count()).toEqual(1);
 
 		dashboard.clickClearFiltersButton();
 
 		expect(input.getAttribute('value')).toEqual('');
 		expect(checkbox.getAttribute('checked')).toBe('true');
-		expect(detailTableCounts.getText()).not.toEqual('Showing 1 to 6 of 6 entries');
+		expect(detailTableCounts.getText()).not.toEqual('Showing 1 to 1 of 1 entries');
 		expect(states.count()).toEqual(0);
 	});
 

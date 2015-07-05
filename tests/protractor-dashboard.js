@@ -11,9 +11,17 @@ module.exports = {
 		return browser.getTitle();
 	},
 
-	// Click a state on the heatmap.
-	clickStateOnMap: function(state) {
-		return element(by.css('path.' + state)).click();
+	// Click a state on the state multiselect form element.
+	clickStateOnMultiselect: function(state) {
+		element.all(by.css('select#states option')).then(function(options) {
+			options.forEach(function(v) {
+				v.getText().then(function(text) {
+					if (text.indexOf(state) != -1) {
+						v.click();
+					}
+				});
+			});
+		});
 	},
 
 	// Click a state button above details table.
