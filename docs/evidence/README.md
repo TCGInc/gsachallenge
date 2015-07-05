@@ -20,10 +20,16 @@ Evidence Folder Details
   site's load history (demonstrating that a t2.micro instance will not
   be adequate for prototype roll-out.
 
-** Jenkins Continuous Integration **
+## fail2ban Continuous Monitoring ##
+
+* fail2ban.log - Sample log showing active twarting of ssh password
+  hacking attempts.
+
+## Jenkins Continuous Integration ##
 
 * jenkins_CI_build_log.png - Automatic build log of our integration
   environment.
 
 * jenkins_CI_and_testing.png - Log of automated testing conducted
   after continuous integration deployment.
+
