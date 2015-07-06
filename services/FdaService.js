@@ -83,9 +83,8 @@ function FdaService() {
 			params.recallingFirm = '%' + params.recallingFirm + '%';
 			coreWhere += 'AND recalling_firm ilike :recallingFirm ';
 		}
-		if(params.classifications.length) {
-			coreWhere += 'AND classification = ANY(:classifications) ';
-		}
+		coreWhere += 'AND classification = ANY(:classifications ::text[]) ';
+
 		/* The FDA Dataset had over 10,000 nationwide recalls. As a result, the original (and
 		simple) query ended up reviewing 580,000 rows and taking almost a second. In the following
 		query we have two parts: one that counts up the nationwide recalls (length of states
@@ -252,9 +251,7 @@ function FdaService() {
 			params.recallingFirm = '%' + params.recallingFirm + '%';
 			raw += 'AND recalling_firm ilike :recallingFirm ';
 		}
-		if(params.classifications.length) {
-			raw += 'AND classification = ANY(:classifications) ';
-		}
+		raw += 'AND classification = ANY(:classifications ::text[]) ';
 
 		// Get count of recalls matching criteria
 		models.sequelize.query('SELECT COUNT(*) AS count ' + raw, {replacements: params, type: models.sequelize.QueryTypes.SELECT}).then(function(count) {
