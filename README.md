@@ -69,11 +69,11 @@ technologies are listed after their names):
    widgets (such as a date-picker) that behave like mobile native
    elements.
 
- * Protractor/Mocha (MIT License) - unit testing framework - With  
- Protractor and Mocha we are able to exercise the services and 
- front end (through phantomjs). By plugging our unit test harness
- into Jenkins, we are able to generate a unit test report within 
- continuous integration.
+ * Protractor/Mocha (MIT License) - unit testing framework - With
+   Protractor and Mocha we are able to exercise the services and front
+   end (through phantomjs). By plugging our unit test harness into
+   Jenkins, we are able to generate a unit test report within
+   continuous integration.
 
  * Jenkins (MIT License) - continuous integration, testing, and
    production deployment - By installing and configuration Jenkins, we
@@ -96,7 +96,7 @@ technologies are listed after their names):
    to quickly instantiate copies of our system (both the node server
    and database) locally or into the cloud.
 
-  * Perl/CURL (GPLv1/Artistic License) - General utility scripts.
+ * Perl/CURL (GPLv1/Artistic License) - General utility scripts.
 
 Additional dependencies include:
 
