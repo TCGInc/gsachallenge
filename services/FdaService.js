@@ -124,7 +124,7 @@ function FdaService() {
 			};
 
 			// Init state counts in aggregate result object
-			serviceSelf.statesAbbr.forEach(function (abbr) {
+			serviceSelf.STATES_ABBR.forEach(function (abbr) {
 				addToStateCount(result.aggregate, abbr, 0);
 			});
 
@@ -132,7 +132,7 @@ function FdaService() {
 			params.nouns.forEach(function(noun) {
 				result.byNoun[noun] = {};
 
-				serviceSelf.statesAbbr.forEach(function (abbr) {
+				serviceSelf.STATES_ABBR.forEach(function (abbr) {
 					addToStateCount(result.byNoun[noun], abbr, 0);
 				});
 			});
@@ -301,7 +301,69 @@ function FdaService() {
 		});
 	};
 
-	this.statesAbbr = [
+	this.getRecallStates = function(noun, id, callback) {
+		var dbNoun = serviceSelf.NOUN_FDA_TO_DB[noun];
+
+		var params = {
+			productType: dbNoun,
+			eventId: id
+		};
+
+		// Get states for recall id
+		models.sequelize.query('SELECT states FROM v_states_enforcements WHERE product_type = :productType AND event_id = :eventId', {replacements: params, type: models.sequelize.QueryTypes.SELECT}).then(function(results) {
+			if(results && results.length) {
+
+				var result = {
+					distribution_states: results[0].states.length == serviceSelf.STATES_ABBR.length ? ['NATIONWIDE'] : results[0].states
+				}
+
+				callback(null, result);
+			}
+			else {
+				callback(null, null);
+			}
+		}, function(error) {
+			logger.error(error);
+			callback(error, null);
+		});
+	};
+
+	this.getAllRecallStates = function(noun, callback) {
+		var dbNoun = serviceSelf.NOUN_FDA_TO_DB[noun];
+
+		var params = {
+			productType: dbNoun
+		};
+
+		// Get states for recall id
+		models.sequelize.query('SELECT event_id, states FROM v_states_enforcements WHERE product_type = :productType', {replacements: params, type: models.sequelize.QueryTypes.SELECT}).then(function(results) {
+			if(results && results.length) {
+				var distributions = {};
+				var result = {
+					distribution_states: distributions
+				};
+
+				results.forEach(function(result) {
+					if(result.states.length == serviceSelf.STATES_ABBR.length) {
+						distributions[result.event_id] = ['NATIONWIDE']
+					}
+					else {
+						distributions[result.event_id] = result.states;
+					}
+				});
+
+				callback(null, result);
+			}
+			else {
+				callback(null, null);
+			}
+		}, function(error) {
+			logger.error(error);
+			callback(error, null);
+		});
+	}
+
+	this.STATES_ABBR = [
 		'al', 'ak', 'az', 'ar', 'ca', 'co', 'ct', 'de', 'fl', 'ga',
 		'hi', 'id', 'il', 'in', 'ia', 'ks', 'ky', 'la', 'me', 'md',
 		'ma', 'mi', 'mn', 'ms', 'mo', 'mt', 'ne', 'nv', 'nh', 'nj',
