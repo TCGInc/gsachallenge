@@ -201,7 +201,7 @@ for convenience:
  * Set up or used a continuous integration system to automate the
    running of tests and continuously deployed their code to their IaaS
    or PaaS provider
-   * Screenshots in "docs/evidence" 
+   * Screenshots and Jenkins config in "docs/evidence" 
 
  * Set up or used configuration management
    * [This project in Github](https://github.com/TCGInc/gsachallenge)
