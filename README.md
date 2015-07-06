@@ -260,6 +260,138 @@ in /opt/gsachallenge:
 
     0 3 * * * cd /opt/gsachallenge/database/bootstrap/; /usr/bin/perl fdaApiDataLoader.pl > /dev/null
 
+## Public API ##
+
+Two API endpoints are provided for accessing the results of our distribution pattern normalization effort. The first endpoint returns the states in which a product was distributed for a given category of products (drug, device, food). The second endpoint returns the states in which a product was distributed for a specific recall.
+
+### 1. /fda/recalls/[productType]/states
+
+Endpoint to get distribution states for all recalls of a given product type
+
+#### HTTP Method
+GET
+
+#### Parameters:
+
+| Parameter | Description |
+|----------|----------|
+|  productType  |  Provide one of the openFDA nouns (food, device, drug)  |
+
+#### Output Format:
+Every response will contain two properties:
+| Property | Description |
+|----------|----------|
+|  result  |  The result of the call, if successful.  |
+|  status  | Metadata about the result including if an error occurred and what the error was. |
+
+Response JSON structure:
+```json
+{
+    "result": {
+        "distributionStates": {
+            "<event id>": [
+                "<state>",
+                ...
+            ],
+            "<event id>": [
+                "<state>",
+                ...
+            ]
+        }
+    },
+    "status": {
+        "error": <true/false>,
+        "message": "<Error message if applicable>",
+    }
+}
+```
+*Note:* If a recalled product was distributed in all 50 states and Washington, DC only a single "NATIONWIDE" element will be included in the array.
+#### Sample output:
+```json
+{
+    "result": {
+        "distributionStates": {
+            "33431": [
+                "NATIONWIDE"
+            ],
+            "33728": [
+                "NATIONWIDE"
+            ],
+            "37530": [
+                "KY",
+                "NC",
+                "NY"
+            ],
+			...
+		}
+    },
+    "status": {
+        "error": false
+    }
+}
+```
+
+### 2. /fda/recalls/[productType]/[eventId]/states
+
+Endpoint to get distribution states of a product in a specific recall
+
+#### HTTP Method
+GET
+
+#### Parameters:
+
+| Parameter | Description |
+|----------|----------|
+|  productType  |  Provide one of the openFDA nouns (food, device, drug)  |
+|  eventId  | Event ID of the recall  |
+
+#### Output Format:
+Every response will contain two properties:
+| Property | Description |
+|----------|----------|
+|  result  |  The result of the call, if successful. This will be null if the event ID is not found.  |
+|  status  | Metadata about the result including if an error occurred and what the error was. |
+
+Response JSON structure:
+```json
+{
+    "result": {
+        "distributionStates": [
+            "<state>",
+            ...
+        ]
+    },
+    "status": {
+        "error": <true/false>,
+        "message": "<Error message if applicable>",
+    }
+}
+```
+*Note:* If a recalled product was distributed in all 50 states and Washington, DC only a single "NATIONWIDE" element will be included in the array.
+
+#### Sample output:
+```json
+{
+    "result": {
+        "distributionStates": [
+            "CO",
+            "FL",
+            "GA",
+            "MD",
+            "MO",
+            "OH",
+            "PA",
+            "TX",
+            "UT",
+            "WA"
+        ]
+    },
+    "status": {
+        "error": false
+    }
+}
+```
+
 ## Public domain ##
 
 This project is in the worldwide [public domain](LICENSE.md).
