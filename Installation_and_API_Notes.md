@@ -156,11 +156,11 @@ Response JSON structure:
 {
     "result": {
         "distributionStates": {
-            "<event id>": [
+            "<recall number>": [
                 "<state>",
                 ...
             ],
-            "<event id>": [
+            "<recall number>": [
                 "<state>",
                 ...
             ]
@@ -178,19 +178,20 @@ Response JSON structure:
 {
     "result": {
         "distributionStates": {
-            "33431": [
+            "Z-0563-2014": [
                 "NATIONWIDE"
             ],
-            "33728": [
+            "Z-0466-2014": [
                 "NATIONWIDE"
             ],
-            "37530": [
-                "KY",
-                "NC",
-                "NY"
+            "Z-0556-2014": [
+                "MO",
+                "NY",
+                "TN",
+                "WV"
             ],
-			...
-		}
+            ...
+        }
     },
     "status": {
         "error": false
@@ -198,7 +199,7 @@ Response JSON structure:
 }
 ```
 
-### 2. /fda/recalls/[productType]/[eventId]/states
+### 2. /fda/recalls/[productType]/[recallNumber]/states
 
 Endpoint to get distribution states of a product in a specific recall
 
@@ -210,13 +211,13 @@ GET
 | Parameter | Description |
 |----------|----------|
 |  productType  |  Provide one of the openFDA nouns (food, device, drug)  |
-|  eventId  | Event ID of the recall  |
+|  recallNumber  | Recall number of the recall  |
 
 #### Output Format:
 Every response will contain two properties:
 | Property | Description |
 |----------|----------|
-|  result  |  The result of the call, if successful. This will be null if the event ID is not found.  |
+|  result  | The result of the call, if successful. This will be null if the recall number is not found.  |
 |  status  | Metadata about the result including if an error occurred and what the error was. |
 
 Response JSON structure:
