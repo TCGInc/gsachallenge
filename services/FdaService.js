@@ -86,6 +86,12 @@ function FdaService() {
 		if(params.classifications.length) {
 			core_where += 'AND classification = ANY(:classifications) ';
 		}
+	        /* The FDA Dataset had over 10,000 nationwide recalls. As a result, the original (and
+                   simple query ended up reviewing 580,000 rows and taking almost a second. In the following
+		   query we have two parts: one that counts up the nationwide recalls (length of states
+		   is 51) and the rest. By splitting the query in this way, we review less than 60,000 rows
+		   and subsequently it is almost 10 times faster.
+		*/
 	        var sql = 'SELECT COALESCE(nwide.count + swide.count, nwide.count, swide.count) count, ' +
                           '       COALESCE(swide.product_type, nwide.product_type) productType, ' +
                           '       lower(COALESCE(swide.state, nwide.state)) stateAbbr ' +
