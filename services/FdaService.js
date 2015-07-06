@@ -288,7 +288,6 @@ function FdaService() {
 		};
 
 		models.enforcements.find(params).then(function(model) {
-			model.recallInitiationDate
 			callback(null, model);
 		}, function(error) {
 			logger.error(error);
