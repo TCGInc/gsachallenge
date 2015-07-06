@@ -5,24 +5,38 @@ gsachallenge - TCG's GSA ADS 18F Challenge Submission
 
 Our GSA Agile Delivery Services submission allows users to search and
 navigate the openFDA: food, device, and drug enforcement data
-(available at http://open.fda.gov).  This tool exposes all API data
-elements but specializes on the US State through a State normalization
-routine (natural languate to states).  This application provides key
-services:
+(available at http://open.fda.gov).  The key contributions of this tool are:
 
- 1. routines to analyze and clean the natural language distribution
-    pattern, and
- 2. the resulting desktop and mobile UI to navigate recall data by state
-    (through a touch-interactive map of the United States).
+ 1. converting the original free-text (natural language) location
+    information in the FDA data into normalized state data,
 
-##Development Approach##
+ 2. presenting the data in a responsive touch-interactive map of the
+    United States, and
+
+ 3. exposing the normalized data in a REST API.
+
+## Development Approach ##
+
 To successfully complete this prototype iteration, our team: 
 
-* Convened frequently with our external focus group, and utilized human centered design techniques to inspire, ideate, and implement;  
-* Used a modified Agile Scrum approach to review status, define daily sprints, and collaboratively prioritize work; 
-* Leveraged existing development environments and technology selections (see "Architecture" below) based on 18F's answers at the industry conference, company capabilities, and this application's needs; 
-* Tracked progress with an open source development tracker (Redmine), while also triaging focus group feedback in real-time using an open Google Sheet; and
-* Utilized continuous integration, automated testing, and focus group review to reduce cycle time, while improving the product's overall quality. 
+ * convened frequently with our external focus group, and utilized
+   human centered design techniques to inspire, ideate, and implement;
+
+ * used an Agile Scrum approach to review status, define daily
+   sprints, and prioritize work;
+
+ * leveraged existing development environments and technology
+   selections based on 18F's answers at the industry conference,
+   company capabilities, and this application's needs;
+
+ * tracked progress with an open source development tracker (Redmine),
+   while also triaging focus group feedback in real-time using a
+   Google spreadsheet; and
+
+ * utilized continuous integration, automated testing, and focus group
+   review to reduce cycle time, while improving the product's overall
+   quality.
+
 
 ## Architecture ##
 
@@ -37,43 +51,41 @@ Through initial user experience discussions, it quickly became clear
 that the desired end goal was a web-based responsive-design single
 page application that permitted free-text search, location-based
 search, and navigation of FDA enforcement data. This led to the
-following selection of component technologies (the licenses are listed after their names):
+following selection of component technologies (the licenses are listed
+after their names):
 
- * Node.js (MIT License) - back-end environment - Node.js
-   allows us to simplify our development environment by using the same
-   language, JavaScript, across the full application stack. As a
-   foundational technology it addresses all three of the factors
-   through its use at 18F and our familiarity with it.
+ * Node.js (MIT License) - back-end environment - Allows us to
+   simplify our development environment by using the same language,
+   JavaScript, across the full application stack. As a foundational
+   technology it addresses all three of the factors through its use at
+   18F and our familiarity with it.
 
- * Express (MIT License) - node.js web application framework - We use
-   Express to provide the HTTP application requests and develop REST
-   services for data and search requests from the single-page
+ * Express (MIT License) - node.js web application framework -
+   Provides the HTTP application requests and REST service
+   infrastructure for data and search requests from the single-page
    application.
 
- * AngularJS (MIT License) - data binding (model-view) - Within our
-   single-page application, we rely on AngularJS to automatically
-   update our interactive widgets based upon retrieved data.
+ * AngularJS (MIT License) - data binding (model-view) - Automatically
+   updates our interactive widgets based upon retrieved data.
 
  * PostgreSQL (PostgreSQL License - OSI Approved) - relational
-   database - We use PostgreSQL for its flexibility, providing both
-   traditional relational database and JSON object storage. In
-   addition, we rely upon its built-in free text searching to quickly
-   slice through the FDA data.
+   database - Provides both traditional relational database and JSON
+   object storage. In addition, we rely upon its built-in free text
+   searching to quickly slice through the FDA data.
 
- * jQuery Datatables (MIT License) - Interactive table widget - By
-   itself, jQuery provides general DOM and CSS manipulation. The
-   Datatables plugin creates a highly polished and interactive table
-   for information display, sorting, and paging.
+ * jQuery Datatables (MIT License) - Interactive table widget - jQuery
+   provides general DOM and CSS manipulation. The Datatables plugin
+   creates a highly polished and interactive table for information
+   display, sorting, and paging.
 
- * Font Awesome (MIT License) - vector icons and font framework - This
-   framework simlifies the iconography used in our single-page
-   application.
+ * Font Awesome (MIT License) - vector icons and font framework -
+   Simplifies the iconography used in our single-page application.
 
  * Bootstrap (MIT License) - responsive layout - We use Bootstrap to
-   allows us to reformat the page structure and individual widgets to
-   support a variety of mobile and desktop configurations.
+   reformat the page structure and individual widgets to support a
+   variety of mobile and desktop configurations.
 
- * App.js (MIT License) - web widgets - App.js provides us a number of
+ * App.js (MIT License) - web widgets - Provides us a number of
    widgets (such as a date-picker) that behave like mobile native
    elements.
 
