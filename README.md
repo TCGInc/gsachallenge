@@ -69,10 +69,11 @@ technologies are listed after their names):
    widgets (such as a date-picker) that behave like mobile native
    elements.
 
- * Karma/Mocha (MIT License) - unit testing framework - With Karma and
-   Mocha we are able to exercise the services and front end (through
-   phantomjs). By plugging our unit test harness into Jenkins, we are
-   able to generate a unit test report within continuous integration.
+ * Protractor/Mocha (MIT License) - unit testing framework - With  
+ Protractor and Mocha we are able to exercise the services and 
+ front end (through phantomjs). By plugging our unit test harness
+ into Jenkins, we are able to generate a unit test report within 
+ continuous integration.
 
  * Jenkins (MIT License) - continuous integration, testing, and
    production deployment - By installing and configuration Jenkins, we
@@ -132,7 +133,10 @@ production machines. This allowed us to quickly configure and verify
 our various environments.
 
 ### Relationship to the US Services Playbook ###
-* TODO
+
+We have provided a mapping of our how team implemented the US  
+Digital Services Playbook's thirteen plays and their associated checklists  
+in our docs > us_digital_services_playbook_mapping folder. 
 
 ### Containerization -- Using Docker to easily get started ###
 
