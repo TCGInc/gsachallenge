@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.3.5">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>gsachallenge@git.tcg.com:~/gsac</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>develop</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="list"/>
+    <extensions/>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers>
+    <hudson.triggers.SCMTrigger>
+      <spec>H/2 * * * *</spec>
+      <ignorePostCommitHooks>false</ignorePostCommitHooks>
+    </hudson.triggers.SCMTrigger>
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>npm install
+</command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>export PORT=8081;
+npm run citest || :
+gulp lint || :</command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>sudo pm2 restart all</command>
+    </hudson.tasks.Shell>
+    <hudson.tasks.Shell>
+      <command>gulp test-protractor;
+gulp liquibase;</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <org.tap4j.plugin.TapPublisher plugin="tap@1.22">
+      <testResults>test.tap</testResults>
+      <failIfNoResults>false</failIfNoResults>
+      <failedTestsMarkBuildAsFailure>false</failedTestsMarkBuildAsFailure>
+      <outputTapToConsole>false</outputTapToConsole>
+      <enableSubtests>false</enableSubtests>
+      <discardOldReports>false</discardOldReports>
+      <todoIsFailure>false</todoIsFailure>
+      <includeCommentDiagnostics>false</includeCommentDiagnostics>
+      <validateNumberOfTests>false</validateNumberOfTests>
+      <planRequired>true</planRequired>
+      <verbose>true</verbose>
+    </org.tap4j.plugin.TapPublisher>
+    <hudson.plugins.checkstyle.CheckStylePublisher plugin="checkstyle@3.42">
+      <healthy></healthy>
+      <unHealthy></unHealthy>
+      <thresholdLimit>low</thresholdLimit>
+      <pluginName>[CHECKSTYLE] </pluginName>
+      <defaultEncoding></defaultEncoding>
+      <canRunOnFailed>false</canRunOnFailed>
+      <usePreviousBuildAsReference>false</usePreviousBuildAsReference>
+      <useStableBuildAsReference>false</useStableBuildAsReference>
+      <useDeltaValues>false</useDeltaValues>
+      <thresholds plugin="analysis-core@1.71">
+        <unstableTotalAll></unstableTotalAll>
+        <unstableTotalHigh></unstableTotalHigh>
+        <unstableTotalNormal></unstableTotalNormal>
+        <unstableTotalLow></unstableTotalLow>
+        <failedTotalAll></failedTotalAll>
+        <failedTotalHigh></failedTotalHigh>
+        <failedTotalNormal></failedTotalNormal>
+        <failedTotalLow></failedTotalLow>
+      </thresholds>
+      <shouldDetectModules>false</shouldDetectModules>
+      <dontComputeNew>true</dontComputeNew>
+      <doNotResolveRelativePaths>true</doNotResolveRelativePaths>
+      <pattern>checkstyle-*.xml</pattern>
+    </hudson.plugins.checkstyle.CheckStylePublisher>
+    <hudson.plugins.clover.CloverPublisher plugin="clover@4.4.0">
+      <cloverReportDir>coverage</cloverReportDir>
+      <cloverReportFileName>clover.xml</cloverReportFileName>
+      <healthyTarget>
+        <methodCoverage>70</methodCoverage>
+        <conditionalCoverage>80</conditionalCoverage>
+        <statementCoverage>80</statementCoverage>
+      </healthyTarget>
+      <unhealthyTarget/>
+      <failingTarget/>
+    </hudson.plugins.clover.CloverPublisher>
+    <hudson.tasks.junit.JUnitResultArchiver plugin="junit@1.2-beta-4">
+      <testResults>protractor-test-results.xml</testResults>
+      <keepLongStdio>false</keepLongStdio>
+      <testDataPublishers/>
+      <healthScaleFactor>1.0</healthScaleFactor>
+    </hudson.tasks.junit.JUnitResultArchiver>
+  </publishers>
+  <buildWrappers>
+    <jenkins.plugins.nodejs.tools.NpmPackagesBuildWrapper plugin="nodejs@0.2.1">
+      <nodeJSInstallationName>system node</nodeJSInstallationName>
+    </jenkins.plugins.nodejs.tools.NpmPackagesBuildWrapper>
+  </buildWrappers>
+</project>
