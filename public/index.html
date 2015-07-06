@@ -1,6 +1,6 @@
 <!doctype html>
 
-<html class="no-js" ng-app="gsaChallenge">
+<html lang="en" class="no-js" ng-app="gsaChallenge">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -77,105 +77,93 @@
 		<div class="container">
 			<h1>U.S. Food and Drug Administration</h1>
 			<h2>U.S. Food and Drug Administration Recalls</h2>
-			<p>Recalls are actions taken by a firm to remove a product from the market. Recalls may be conducted on a firm’s own initiative, by FDA request, or by FDA order under statutory authority. Whereas not all recalls are announced in the media or on our <a href="http://www.fda.gov/Safety/Recalls/default.htm">Recalls press release</a> page, all recalls monitored by FDA are included in FDA’s weekly Enforcement Report once they are classified according to the level of hazard involved.</p>
+			<p>Recalls are actions taken by a firm to remove a product from the market. <a class="btn-coll" data-toggle="collapse" href=".headcoll" aria-expanded="false" aria-controls="headcoll">Read more...</a> <span class="collapse headcoll">Recalls may be conducted on a firm’s own initiative, by FDA request, or by FDA order under statutory authority. Whereas not all recalls are announced in the media or on our <a href="http://www.fda.gov/Safety/Recalls/default.htm" analytics-on analytics-event="Link" analytics-category="External" analytics-label="http://www.fda.gov/Safety/Recalls/default.htm">Recalls press release</a> page, all recalls monitored by FDA are included in FDA’s weekly Enforcement Report once they are classified according to the level of hazard involved.</span></p>
 		</div>
 	</header>
 
 	<div class="container">
 
-	<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+		<alert class="initial-hide" ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" ng-class="(savedSearch.id) ? 'ang-show' : ''">{{alert.msg}}</alert>
 
   	<div class="row">
-			<div class="col-md-8 col-md-push-4 col-lg-9 col-lg-push-3">
-				<div ng-show="savedSearch.id > 0" class="ss-head">
+			<div class="col-md-9 col-md-push-3">
+				<div ng-hide="!savedSearch.id" class="ss-head initial-hide" ng-class="(savedSearch.id) ? 'ang-show' : ''">
 					<h3>{{savedSearch.name}}</h3>
 					<p>{{savedSearch.description}}</p>
 				</div>
-				<heatmap state-counts="stateCounts" highlighted-states="highlightedStates" map-clicked-callback="mapClicked">
+				<heatmap state-counts="stateCounts" highlighted-states="highlightedStates" map-clicked-callback="mapClicked"></heatmap>
+				<div class="save-share">
+					<save-search></save-search>
+				</div>
 			</div>
-			<div class="col-md-4 col-md-pull-8 col-lg-3 col-lg-pull-9">
+			<div class="col-md-3 col-md-pull-9">
 				<div class="form-wrapper">
 					<div class="form-group group-types">
 						<label class="label-block"><i class="fa fa-question-circle" data-toggle="popover" data-placement="bottom" data-container="body" title="Product Types" data-content="<p><strong>Food:</strong> Food producers recall their products from the marketplace when the products are mislabeled or when the food may present a health hazard to consumers because the food is contaminated or has caused a foodborne illness outbreak.</p><p><strong>Drugs:</strong> Recalls are actions taken by a firm to remove a product from the market. Recalls may be conducted on a firm's own initiative, by FDA request, or by FDA order under statutory authority.</p><p><strong>Devices:</strong> FDA posts consumer information about the most serious medical device recalls. These products are on the list because there is a reasonable chance that they could cause serious health problems or death.</p>"></i>Product Type</label>
 						<label for="typeFood" class="checkbox-inline">Food</label>
-						<input type="checkbox" name="typeFood" id="typeFood" ng-model="searchParams.eventTypeFood">
+						<input type="checkbox" name="typeFood" id="typeFood" ng-model="searchParams.eventTypeFood" analytics-on analytics-event="Filter" analytics-category="Product Type" analytics-label="Food">
 						<label for="typeDrugs" class="checkbox-inline">Drugs</label>
-						<input type="checkbox" name="typeDrugs" id="typeDrugs" ng-model="searchParams.eventTypeDrug">
+						<input type="checkbox" name="typeDrugs" id="typeDrugs" ng-model="searchParams.eventTypeDrug" analytics-on analytics-event="Filter" analytics-category="Product Type" analytics-label="Drugs">
 						<label for="typeDevices" class="checkbox-inline">Devices</label>
-						<input type="checkbox" name="typeDevices" id="typeDevices" ng-model="searchParams.eventTypeDevice">
+						<input type="checkbox" name="typeDevices" id="typeDevices" ng-model="searchParams.eventTypeDevice" analytics-on analytics-event="Filter" analytics-category="Product Type" analytics-label="Devices">
 					</div>
 					<div class="form-group">
-						<label for="dateFrom">Start Date<i class="fa fa-question-circle" data-toggle="popover" data-placement="top" data-container="body" title="Date Range" data-content="Search by the date the product was recalled."></i></label>
+						<i class="fa fa-question-circle" data-toggle="popover" data-placement="top" data-container="body" title="Date Range" data-content="Search by the date the product was recalled."></i>
+						<label for="dateFrom">Start Date</label>
 						<p class="input-group">
-							<input type="text" id="dateFrom" class="form-control" datepicker-popup="MM/dd/yyyy" show-button-bar="false" is-open="dateOpen.from" ng-model="searchParams.dateFrom">
+							<input type="text" id="dateFrom" class="form-control" datepicker-popup="MM/dd/yyyy" show-button-bar="false" is-open="dateOpen.from" ng-model="searchParams.dateFrom" analytics-on analytics-event="Filter" analytics-category="Start Date (Field)">
 							<span class="input-group-btn">
-							<button type="button" class="btn btn-default" ng-click="openDate($event, 'from')"><i class="glyphicon glyphicon-calendar"></i></button>
+							<button type="button" class="btn btn-default" ng-click="openDate($event, 'from')" analytics-on analytics-event="Filter" analytics-category="Start Date (Button)"><i class="glyphicon glyphicon-calendar"></i></button>
 							</span>
 						</p>
 					</div>
 					<div class="form-group">
 						<label for="dateTo">End Date</label>
 						<p class="input-group">
-							<input type="text" id="dateTo" class="form-control" datepicker-popup="MM/dd/yyyy" show-button-bar="false" is-open="dateOpen.to" ng-model="searchParams.dateTo">
+							<input type="text" id="dateTo" class="form-control" datepicker-popup="MM/dd/yyyy" show-button-bar="false" is-open="dateOpen.to" ng-model="searchParams.dateTo" analytics-on analytics-event="Filter" analytics-category="End Date (Field)">
 							<span class="input-group-btn">
-							<button type="button" class="btn btn-default" ng-click="openDate($event, 'to')"><i class="glyphicon glyphicon-calendar"></i></button>
+							<button type="button" class="btn btn-default" ng-click="openDate($event, 'to')" analytics-on analytics-event="Filter" analytics-category="End Date (Button)"><i class="glyphicon glyphicon-calendar"></i></button>
 							</span>
 						</p>
 					</div>
 					<div class="form-group">
-						<label for="productDescription"><i class="fa fa-question-circle" data-toggle="popover" data-placement="top" data-container="body" title="Product Description" data-content="Search by the description of the recalled product."></i>Product Description</label>
-						<input type="text" name="productDescription" id="productDescription" class="form-control" ng-model="searchParams.productDescription">
+						<i class="fa fa-question-circle" data-toggle="popover" data-placement="top" data-container="body" title="Product Description" data-content="Search by the description of the recalled product."></i>
+						<label for="productDescription">Product Description</label>
+						<input type="text" name="productDescription" id="productDescription" class="form-control" ng-model="searchParams.productDescription" ng-model-options="{ debounce: 500 }" analytics-on analytics-event="Filter" analytics-category="Product Description">
 					</div>
 					<div class="form-group">
-						<label for="recallReason"><i class="fa fa-question-circle" data-toggle="popover" data-placement="top" data-container="body" title="Reason for Recall" data-content="Search by the reason the product was recalled."></i>Reason for Recall</label>
-						<input type="text" name="recallReason" id="recallReason" class="form-control" ng-model="searchParams.recallReason">
+						<i class="fa fa-question-circle" data-toggle="popover" data-placement="top" data-container="body" title="Reason for Recall" data-content="Search by the reason the product was recalled."></i>
+						<label for="recallReason">Reason for Recall</label>
+						<input type="text" name="recallReason" id="recallReason" class="form-control" ng-model="searchParams.recallReason" ng-model-options="{ debounce: 500 }" analytics-on analytics-event="Filter" analytics-category="Reason for Recall">
 					</div>
 					<div class="form-group">
-						<label for="recallingFirm"><i class="fa fa-question-circle" data-toggle="popover" data-placement="top" data-container="body" title="Recalling Firm" data-content="Search by the name of the company that produced the recalled product."></i>Recalling Firm</label>
-						<input type="text" name="recallingFirm" id="recallingFirm" class="form-control" ng-model="searchParams.recallingFirm" typeahead="item for item in autocomplete('recallingFirm', $viewValue)" typeahead-min-length="3" typeahead-wait-ms="500">
+						<i class="fa fa-question-circle" data-toggle="popover" data-placement="top" data-container="body" title="Recalling Firm" data-content="Search by the name of the company that produced the recalled product."></i>
+						<label for="recallingFirm">Recalling Firm</label>
+						<input type="text" name="recallingFirm" id="recallingFirm" class="form-control" ng-model="searchParams.recallingFirm" typeahead="item for item in autocomplete('recallingFirm', $viewValue)" typeahead-min-length="3" typeahead-wait-ms="500" analytics-on analytics-event="Filter" analytics-category="Recalling Firm">
 					</div>
 					<div class="form-group group-types">
-						<label class="label-block"><i class="fa fa-question-circle" data-toggle="popover" data-placement="top" data-container="body" title="Severity Classes" data-content="<p><strong>Class I recall:</strong> a situation in which there is a reasonable probability that the use of or exposure to a violative product will cause serious adverse health consequences or death.</p><p><strong>Class II recall:</strong> a situation in which use of or exposure to a violative product may cause temporary or medically reversible adverse health consequences or where the probability of serious adverse health consequences is remote.</p><p><strong>Class III recall:</strong> a situation in which use of or exposure to a violative product is not likely to cause adverse health consequences.</p>"></i>Severity Class</label>
+						<i class="fa fa-question-circle" data-toggle="popover" data-placement="top" data-container="body" title="Severity Classes" data-content="<p><strong>Class I recall:</strong> a situation in which there is a reasonable probability that the use of or exposure to a violative product will cause serious adverse health consequences or death.</p><p><strong>Class II recall:</strong> a situation in which use of or exposure to a violative product may cause temporary or medically reversible adverse health consequences or where the probability of serious adverse health consequences is remote.</p><p><strong>Class III recall:</strong> a situation in which use of or exposure to a violative product is not likely to cause adverse health consequences.</p>"></i>
+						<label class="label-block">Severity Class</label>
 						<label for="classificationClass1" class="checkbox-inline">I</label>
-						<input type="checkbox" name="classificationClass1" id="classificationClass1" ng-model="searchParams.classificationClass1">
+						<input type="checkbox" name="classificationClass1" id="classificationClass1" ng-model="searchParams.classificationClass1" analytics-on analytics-event="Filter" analytics-category="Severity Class" analytics-label="I">
 						<label for="classificationClass2" class="checkbox-inline">II</label>
-						<input type="checkbox" name="classificationClass2" id="classificationClass2" ng-model="searchParams.classificationClass2">
+						<input type="checkbox" name="classificationClass2" id="classificationClass2" ng-model="searchParams.classificationClass2" analytics-on analytics-event="Filter" analytics-category="Severity Class" analytics-label="II">
 						<label for="classificationClass3" class="checkbox-inline">III</label>
-						<input type="checkbox" name="classificationClass3" id="classificationClass3" ng-model="searchParams.classificationClass3">
+						<input type="checkbox" name="classificationClass3" id="classificationClass3" ng-model="searchParams.classificationClass3" analytics-on analytics-event="Filter" analytics-category="Severity Class" analytics-label="III">
 					</div>
 					<div class="form-group">
-						<label for="states"><i class="fa fa-question-circle" data-toggle="popover" data-placement="top" data-container="body" title="States" data-content="<p>Filter by one or more states.</p><p><em>You can toggle states by clicking on the map, or by holding the <strong>Ctrl</strong> button (<strong>⌘</strong> on a Mac) and clicking on states below.</em></p>"></i>States</label>
+						<i class="fa fa-question-circle" data-toggle="popover" data-placement="top" data-container="body" title="States" data-content="<p>Filter by one or more states.</p><p><em>You can toggle states by clicking on the map, or by holding the <strong>Ctrl</strong> button (<strong>⌘</strong> on a Mac) and clicking on states below.</em></p>"></i>
+						<label for="states">States</label>
 						<select multiple name="states" id="states" class="form-control" ng-model="highlightedStates" ng-options="abbr as name for (name, abbr) in stateOptions" ng-click="selectState()"></select>
 					</div>
 					<div class="form-group group-c">
-						<button class="btn btn-default btn-xs" ng-click="clearFilters()">Clear Filters</button>
+						<button class="btn btn-default btn-xs" ng-click="clearFilters()" analytics-on analytics-event="Filter" analytics-category="Clear" analytics-label="Clear Filters">Clear Filters</button>
 					</div>
 				</div>
 			</div>
   	</div>
 
   	<div class="row">
-			<div class="col-xs-12">
-				<div class="sharing clearfix">
-					<div class="row">
-						<div class="col-sm-4 col-md-4 clearfix">
-							<save-search>
-						</div>
-						<div class="col-sm-8 col-md-8 clearfix" ng-hide="!savedSearch.id">
-							<label>Share this Search:</label>
-							<share-this url="shareThisUrl" service="email"></share-this>
-							<share-this url="shareThisUrl" service="facebook"></share-this>
-							<share-this url="shareThisUrl" service="twitter"></share-this>
-							<share-this url="shareThisUrl" service="tumblr"></share-this>
-							<share-this url="shareThisUrl" service="reddit"></share-this>
-							<share-this url="shareThisUrl" service="sharethis"></share-this>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
-  		<div class="row">
 			<div class="col-xs-12">
 	    	<div class="btn-group highlighted-states">
 	    		<span ng-repeat="state in highlightedStates | orderBy | stateName">
@@ -188,11 +176,27 @@
 
 	</div>
 
-
+	<footer class="site-footer">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-3">
+					<h1><a href="http://www.tcg.com" analytics-on analytics-event="Link" analytics-category="External" analytics-label="http://www.tcg.com">Turner Consulting Group. “Yes, it <em>can</em> be done!”</a></h1>
+				</div>
+				<div class="col-md-6">
+					<p>Brought to you by the fine folks at <a href="http://www.tcg.com" analytics-on analytics-event="Link" analytics-category="External" analytics-label="http://www.tcg.com">TCG</a>.</p>
+					<ul>
+						<li><i class="fa fa-map-marker"></i>306 Florida Avenue NW<span>,&nbsp;</span><br>Washington, DC 20001</li>
+						<li><i class="fa fa-envelope"></i><a href="mailto:talktous@tcg.com" analytics-on analytics-event="Link" analytics-category="External" analytics-label="mailto:talktous@tcg.com">talktous@tcg.com</a><b>|</b><br><i class="fa fa-phone"></i>202-986-5533</li>
+					</ul>
+				</div>
+				<div class="col-md-3">
+					<a href="https://github.com/TCGInc/gsachallenge" class="btn btn-default btn-sm" analytics-on analytics-event="Link" analytics-category="External" analytics-label="https://github.com/TCGInc/gsachallenge"><i class="fa fa-github-alt"></i> View on GitHub</a>
+				</div>
+			</div>
+		</div>
+	</footer>
 
 	<recall-detail></recall-detail>
-
-
 
 	<script>
 		$(document).ready(function() {
@@ -200,24 +204,6 @@
 			$("#dateTo").mask("99/99/9999",{placeholder:"mm/dd/yyyy"});
 		});
 	</script>
-
-
-	<footer style="background-color: #444749">
-		<div class="container" style="padding: 20px">
-			<div class="row">
-				<div class="col-md-3">
-					<img src="http://tcg.com/images/tcg-logo.gif">
-				</div>
-				<div class="col-md-7">
-					<p style="color: white">Brought to you by the fine folks at <a style="color: white" href="http://www.tcg.com">TCG</a>. "Yes. It <em>can</em> be done!"
-					<br>306 Florida Avenue NW, Washington, DC 20001 | <a style="color: white" href="mailto:talktous@tcg.com">talktous@tcg.com</a> | 202-986-5533</p>
-				</div>
-				<div class="col-md-2">
-					<a style="color: white" href="https://github.com/TCGInc/gsachallenge"><i class="fa fa-github-alt"></i> View on GitHub</a>
-				</div>
-			</div>
-		</div>
-	</footer>
 
 </body>
 </html>

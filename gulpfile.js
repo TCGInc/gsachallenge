@@ -159,7 +159,7 @@ gulp.task('liquibase', shell.task([
 
 
 gulp.task('styles', function( ) {
-	return sass(paths.styles.src, {
+  return sass(paths.styles.src, {
     loadPath: [
       paths.node.src + '/bootstrap-sass/assets/stylesheets',
       paths.node.src + '/font-awesome/scss'
@@ -196,9 +196,11 @@ gulp.task('img', function() { 
     .pipe(gulp.dest(paths.img.dest));
 });
 
-gulp.task('ux', function() {
+gulp.task('watch', function() {
 	gulp.watch(paths.styles.watch, ['styles']);
   gulp.watch(paths.icons.src,    ['icons']);
   gulp.watch(paths.bsicons.src,  ['bsicons']);
   gulp.watch(paths.img.src,      ['img']);
 });
+
+  gulp.task('ux', ['styles', 'icons', 'bsicons', 'img', 'watch']);

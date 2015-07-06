@@ -43,10 +43,11 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 		'to': false
 	}
 
+	var initCheck = 0;
 
 	// Remove an alert from being displayed at the top of the page.
 	$scope.closeAlert = function(index) {
-		utilityService.closeAlert($scope.alerts, index);
+		utilityService.closeAlert($scope, index);
 	}
 
 	// Page callback to set search parameters to their default values.
@@ -94,13 +95,13 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 
 			searchResult = searchResult.substring(1);
 			searchResult = searchResult.replace(/^(\d+).*$/, "$1");
-			try {
-				$http.get("/filters/" + searchResult).
-					success(function(data, status, headers, config) {
-						if (data.status.error) {
-							throw data.status.message;
-						}
-
+			$http.get("/filters/" + searchResult).
+				success(function(data, status, headers, config) {
+					if (data.status.error) {
+						$log.error(data.status.message);
+						initializeSearchParameters();
+					}
+					else {
 						var getDate = d3.time.format("%Y-%m-%d");
 
 						// Load highlighted states.
@@ -132,15 +133,12 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 							name: data.result.name,
 							description: data.result.description
 						}
-					}).
-					error(function(data, status, headers, config) {
-						throw JSON.stringify(data) + JSON.stringify(status);
-					})
-			}
-			catch(errorMessage) {
-				$log.error(errorMessage);
-				utilityService.addAlert($scope.alerts, "warning", "No saved search was found for this search ID.");
-			}
+					}
+				}).
+				error(function(data, status, headers, config) {
+					$log.error(JSON.stringify(data) + JSON.stringify(status));
+					initializeSearchParameters();
+				});
 		}
 		else {
 			initializeSearchParameters();
@@ -177,30 +175,49 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 			return;
 		}
 
-		try {
-			$http.get("/fda/recalls/counts?" + queryString).
-				success(function(data, status, headers, config) {
-					if (data.status.error) {
-						throw data.status.message;
-					}
-					else {
-						$scope.alerts = [];
-						$scope.stateCounts = data.result.aggregate;
-					}
-				}).
-				error(function(data, status, headers, config) {
-					throw JSON.stringify(data) + JSON.stringify(status);
-				})
-		}
-		catch(errorMessage) {
-			$log.error(errorMessage);
-			utilityService.addAlert($scope.modalAlerts, "danger", "There is a system problem when searching.");
-		}
+		$http.get("/fda/recalls/counts?" + queryString).
+			success(function(data, status, headers, config) {
+				if (data.status.error) {
+					$log.error(data.status.message);
+					utilityService.addAlert($scope, "danger", "There was a system problem while performing the search. Check the console for details.");
+				}
+				else {
+					utilityService.closeAllAlerts($scope);
+					$scope.stateCounts = data.result.aggregate;
+				}
+			}).
+			error(function(data, status, headers, config) {
+				$log.error(JSON.stringify(data) + JSON.stringify(status));
+				utilityService.addAlert($scope, "danger", "There was a system problem while performing the search. Check the console for details.");
+			});
 	}
 
 	// Refresh the stateCounts (which will then refresh the heatmap) when the user changes a search parameter.
 	$scope.$watchCollection("searchParams", function(searchParams) {
-		if (searchParams) {
+		function validParameters(searchParams) {
+			var isValid = true;
+			utilityService.closeAllAlerts($scope);
+
+			if (searchParams.dateFrom) {
+				var dateFrom = utilityService.parseDateString(searchParams.dateFrom);
+				if (!dateFrom || !/^(19|20)\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/.test(dateFrom)) {
+					utilityService.addAlert($scope, "danger", "Invalid Start Date in the search form. Please correct.");
+					isValid = false;
+				}
+			}
+
+			if (searchParams.dateTo) {
+				var dateTo = utilityService.parseDateString(searchParams.dateTo);
+				if (!dateTo || !/^(19|20)\d\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/.test(dateTo)) {
+					utilityService.addAlert($scope, "danger", "Invalid End Date in the search form. Please correct.");
+					isValid = false;
+				}
+			}
+
+			return isValid;
+		}
+
+		if (searchParams && validParameters(searchParams)) {
 			refreshStateCounts(searchParams);
 			refreshDetailsTable();
 		}
@@ -237,6 +254,8 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 	$scope.mapClicked = function(stateAbbr) {
 		refreshHighlightedStates(stateAbbr, true);
 		refreshDetailsTable();
+		var stateName = convert_state(stateAbbr,'name');
+  	ga('send', 'event', 'State (Map)', 'Filter', stateName);
     }
 
 	// Configure state details table.
@@ -258,6 +277,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 				$('td:eq(4)', nRow).text(parts[1] + "/" + parts[2] + "/" + parts[0]);
 			}
 	    	$('td', nRow).bind('click', function() {
+  			ga('send', 'event', 'Recall Detail', 'Click', aData.event_id);
 				$("recall-detail span")
 					.data("event_id", aData.event_id)
 					.data("product_type", aData.product_type.toLowerCase())
@@ -349,6 +369,14 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 				}
 			}, 500);
 		}
+		if ( initCheck != 0 ) {
+			$scope.savedSearch = {
+				id: 0,
+				name: "",
+				description: ""
+			};
+		}
+		initCheck = $scope.savedSearch.id;
 	}
 
 	// Query the server for lists to send to the autocomplete search form elements.
@@ -360,7 +388,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 		if ($scope.searchParams.eventTypeDevice) queryString += "&includeDevices=true";
 
 		return $http.get(queryString).then(function(response) {
-			$scope.alerts = [];
+			utilityService.closeAllAlerts($scope);
 			var trimmedResult = response.data.result.map(function(result) {
 				// Trim long result records to better fit into the autocomplete dropdown.
 				if (result.length > 50) {
@@ -374,7 +402,7 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
       		return trimmedResult;
     	},
     	function(error) {
-    		utilityService.addAlert($scope.alerts, "danger", "There was a problem with your lookup.");
+    		utilityService.addAlert($scope, "danger", "The system had a problem looking up the recalling firm.");
     		$log.error(JSON.stringify(error));
     	});
 	}

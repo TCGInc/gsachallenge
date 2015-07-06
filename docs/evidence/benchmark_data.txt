@@ -1,0 +1,87 @@
+Approach
+========
+
+There are three key URLs that are important to the general operation
+of the website:
+
+ * http://18fchallenge.tcg.com/ - The main URL
+
+ * http://18fchallenge.tcg.com/fda/recalls - A REST service that pulls
+   the first page of full recall data
+
+ * http://18fchallenge.tcg.com/fda/recalls/counts - A REST service
+   that pulls the counts for the data set
+
+We can then us Apache Benchmark (AB) to exercise these URLs with
+concurrency and estimate the number of users that is able to be
+supported with a given configuration.
+
+
+Initial Results
+===============
+
+We configured production with a t2.large EC2 instance and conducted
+our initial benchmarks. The results showed that the "recalls" query
+was limiting our multi-user performance. If we assume each user will
+make one request per 10 seonds, then the recalls query would limit us
+to 10 active simultaneous users with the current configuration before
+we would encounter performance degredation.
+
+butch@18fchallenge:~$ ab -c 50 -n 1000 "http://18fchallenge.tcg.com/"
+
+Time taken for tests:   0.732 seconds
+Requests per second:    1366.29 [#/sec] (mean)
+Time per request:       36.595 [ms] (mean)
+Time per request:       0.732 [ms] (mean, across all concurrent requests)
+
+butch@18fchallenge:~$ ab -c 10 -n 200 "http://18fchallenge.tcg.com/fda/recalls?includeFood=true&includeDrugs=true&includeDevices=true&includeClass1=true&includeClass2=true&includeClass3=true&offset=0&limit=10&orderBy=productType&orderDir=asc&stateAbbr="
+
+Time taken for tests:   207.756 seconds
+Requests per second:    0.96 [#/sec] (mean)
+Time per request:       10387.805 [ms] (mean)
+Time per request:       1038.780 [ms] (mean, across all concurrent requests)
+
+butch@18fchallenge:~$ ab -c 10 -n 200 "http://18fchallenge.tcg.com/fda/recalls/counts?includeFood=true&includeDrugs=true&includeDevices=true&includeClass1=true&includeClass2=true&includeClass3=true"
+
+Time taken for tests:   47.399 seconds
+Requests per second:    4.22 [#/sec] (mean)
+Time per request:       2369.965 [ms] (mean)
+Time per request:       236.996 [ms] (mean, across all concurrent requests)
+
+
+Optimizing Recalls
+==================
+
+By turning the key table used in the recalls service to a
+"materialized view", we dramatically increased the performance of the
+recalls service (from an average of 1038 ms to 14 ms). As a result the
+count service becamse our limiting factor. If we assume each user will
+make one request per 10 seonds, then the count query would limit us to
+42 active simultaneous users with the current configuration before we
+would encounter performance degredation.
+
+butch@18fchallenge:~$ ab -c 50 -n 1000 "http://18fchallenge.tcg.com/"
+
+Time taken for tests:   0.710 seconds
+Requests per second:    1407.79 [#/sec] (mean)
+Time per request:       35.517 [ms] (mean)
+Time per request:       0.710 [ms] (mean, across all concurrent requests)
+
+butch@18fchallenge:~$ ab -c 10 -n 200 "http://18fchallenge.tcg.com/fda/recalls?includeFood=true&includeDrugs=true&includeDevices=true&includeClass1=true&includeClass2=true&includeClass3=true&offset=0&limit=10&orderBy=productType&orderDir=asc&stateAbbr="
+
+Time taken for tests:   2.782 seconds
+Requests per second:    71.89 [#/sec] (mean)
+Time per request:       139.102 [ms] (mean)
+Time per request:       13.910 [ms] (mean, across all concurrent requests)
+Transfer rate:          5334.50 [Kbytes/sec] received
+
+butch@18fchallenge:~$ ab -c 10 -n 200 "http://18fchallenge.tcg.com/fda/recalls/counts?includeFood=true&includeDrugs=true&includeDevices=true&includeClass1=true&includeClass2=true&includeClass3=true"
+
+Time taken for tests:   47.682 seconds
+Requests per second:    4.19 [#/sec] (mean)
+Time per request:       2384.123 [ms] (mean)
+Time per request:       238.412 [ms] (mean, across all concurrent requests)
+
+
+
+

@@ -1,6 +1,7 @@
 <script type="text/ng-template" id="saveSearch.html">
     <div class="modal-header">
-        <h4 class="modal-title">Enter a name and description to remember this search.</h4>
+        <h4 class="modal-title">Enter a name and description for this search.</h4>
+        <p>After you save, you can share your search.</p>
     </div>
     <alert ng-repeat="alert in modalAlerts" type="{{alert.type}}" close="closeModalAlert($index)">{{alert.msg}}</alert>
     <div class="modal-body">
@@ -14,10 +15,19 @@
 		</div>
     </div>
     <div class="modal-footer">
-        <button class="btn btn-default" ng-click="cancel()">Cancel</button>
-        <button class="btn btn-primary" ng-click="ok()">Save</button>
+        <button class="btn btn-default" ng-click="cancel()" analytics-on analytics-event="Click" analytics-category="Save" analytics-label="Cancel">Cancel</button>
+        <button class="btn btn-primary" ng-click="ok()" analytics-on analytics-event="Click" analytics-category="Save" analytics-label="Save Search">Save</button>
     </div>
 </script>
 
-<label>Save this Search:</label>
-<span class="save_icon" ng-click="openModal()">Save</span>
+<button class="btn btn-primary" ng-click="openModal()" analytics-on analytics-event="Click" analytics-category="Save (Button)" analytics-label="Open Modal"><i class="fa fa-share-square"></i> Save &amp; Share this Search</button>
+<div class="search-saved" ng-hide="!savedSearch.id">Saved Search — Click one of the buttons below to share this search.</div>
+<div class="share-btns">
+    <share-this url="shareThisUrl" service="email" analytics-on analytics-event="Click" analytics-category="Share" analytics-label="Email"></share-this>
+    <share-this url="shareThisUrl" service="facebook" analytics-on analytics-event="Click" analytics-category="Share" analytics-label="Facebook"></share-this>
+    <share-this url="shareThisUrl" service="twitter" analytics-on analytics-event="Click" analytics-category="Share" analytics-label="Twitter"></share-this>
+    <share-this url="shareThisUrl" service="tumblr" analytics-on analytics-event="Click" analytics-category="Share" analytics-label="Tumblr"></share-this>
+    <share-this url="shareThisUrl" service="reddit" analytics-on analytics-event="Click" analytics-category="Share" analytics-label="Reddit"></share-this>
+    <share-this url="shareThisUrl" service="sharethis" analytics-on analytics-event="Click" analytics-category="Share" analytics-label="ShareThis"></share-this>
+    <div class="share-over" ng-click="openModal()" ng-hide="savedSearch.id" analytics-on analytics-event="Click" analytics-category="Save (Overlay)" analytics-label="Open Modal"></div>
+</div>

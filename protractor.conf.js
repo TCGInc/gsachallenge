@@ -4,9 +4,6 @@ exports.config = {
 	specs: ['tests/protractor-*.js'],
 	multiCapabilities: [
 		{
-			browserName: 'firefox'
-		},
-		{
 			browserName: 'chrome'
 		}
 	],

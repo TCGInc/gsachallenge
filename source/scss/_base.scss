@@ -24,9 +24,25 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 800;
 }
 
+h1 {
+  font-size: 28px;
+}
 
-select[multiple], select.form-control[multiple] {
-  margin-top: 5px;
+h2 {
+  font-size: 21px;
+}
+
+h3 {
+  font-size: 18px;
+}
+
+textarea, textarea.form-control, input.form-control,
+input[type=text], input[type=password], input[type=email],
+input[type=number], [type=text].form-control,
+[type=password].form-control, [type=email].form-control,
+[type=tel].form-control, [contenteditable].form-control {
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 select[multiple], select.form-control[multiple],
@@ -39,19 +55,24 @@ input[type=number], [type=text].form-control,
   background: linear-gradient(to bottom, rgba(white,.0) , rgba(white,.7));
 }
 
-share-this {
-  display: inline-block !important;
-  height: 32px !important;
-  line-height: 32px !important;
-  vertical-align: middle !important;
+.btn-coll {
+  @media (min-width: $screen-sm) {
+    display: none;
+  }
 }
 
-share-this * {
-  display: block !important;
-  float: left;
-  height: 32px !important;
-  line-height: 32px !important;
-  vertical-align: middle !important;
+.btn-hide {
+  display: none;
+}
+
+.collapse.in {
+  display: inline;
+}
+
+.detail-title .prod-type {
+  margin-right: 15px;
+  position: relative;
+  bottom: -8px;
 }
 
 .form-wrapper {
@@ -69,28 +90,28 @@ share-this * {
       display: inline-block;
       font-size: 13px;
       font-weight: 400;
-      padding-left: 5px;
-      &:nth-child(2) {
-        padding-left: 0;
-      }
-      &+ input {
-        margin-left: 5px;
-      }
+      padding-left: 0;
     }
     &.label-block {
       display: block;
       margin-bottom: 5px;
     }
-    .fa {
-      color: $brand-primary;
-      cursor: pointer;
-      float: right;
-      &:active,
-      &:focus,
-      &:hover {
-        color: $brand-danger;
-      }
+  }
+  .fa-question-circle {
+    color: $brand-primary;
+    cursor: pointer;
+    float: right;
+    font-size: 14px;
+    position: relative;
+    top: -2px;
+    &:active,
+    &:focus,
+    &:hover {
+      color: $brand-danger;
     }
+  }
+  .input-group {
+    clear: both;
   }
 }
 
@@ -99,7 +120,17 @@ share-this * {
   text-align: center;
 }
 
+.group-types {
+  margin-left: -5px;
+  margin-right: -5px;
+  label {
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+}
+
 .highlighted-states {
+  margin-top: 30px;
   text-align: center;
   width: 100%;
   .btn-default {
@@ -117,63 +148,152 @@ share-this * {
   }
 }
 
-.modal-title {
-  font-size: 18px;
+.initial-hide {
+  display: none;
+  &.ang-show {
+    display: block;
+  }
+}
+
+.recall-report {
+  div[class^="col-sm"],
+  div[class^="col-xs"] {
+    margin-bottom: 15px;
+  }
+  h5 {
+    margin: 0;
+  }
+  .init-date {
+    @media (min-width: $screen-sm) {
+      text-align: right;
+    }
+  }
+}
+
+.modal-lg .modal-title {
+  text-align: center;
 }
 
 .popover {
-  max-width: 350px;
-  width: 350px;
-}
-
-.save_icon {
-  @include hide-text;
-  background-image: url(../img/save.svg);
-  cursor: pointer;
-  height: 32px;
-  margin: 0 20px 0 3px;
-  width: 32px;
-  &:active,
-  &:focus,
-  &:hover {
-    opacity: .7;
-  }
-  .no-svg & {
-    background-image: url(../img/save.png);
-  }
-}
-
-.sharing {
-  background-color: $gray-lightest;
-  border-radius: $border-radius-small;
-  line-height: 32px;
-  margin: 30px 0 20px;
-  padding: 0 10px 15px;
-  text-align: center;
+  max-width: 100%;
+  width: 100%;
   @media (min-width: $screen-sm) {
-    padding: 10px;
+    max-width: 600px;
+    width: 600px;
   }
-  label {
-    display: block;
-    font-family: $font-family-headers;
-    font-size: 14px;
-    font-weight: 800;
-    height: 32px;
-    margin: 10px 0 0 0;
-    vertical-align: middle;
-    @media (min-width: $screen-sm) {
-      display: inline-block;
-      margin: 0 6px 0 0;
+}
+
+.save-share {
+  margin: 0 0 20px;
+  text-align: center;
+  @media (min-width: $screen-md) {
+    margin: 40px 0 0;
+  }
+  .fa {
+    margin-right: 5px;
+  }
+}
+
+.search-saved {
+  background-color: $gray-lighter;
+  border-radius: $border-radius-small;
+  font-family: $font-family-headers;
+  font-weight: 800;
+  line-height: 48px;
+  margin-bottom: -48px;
+  padding: 10px;
+  position: relative;
+  top: -48px;
+  z-index: 2;
+}
+
+.share-btns {
+  height: 32px;
+  margin: 15px auto 0;
+  position: relative;
+  text-align: center;
+  width: 300px;
+  share-this {
+    z-index: 1;
+  }
+  .share-over {
+    background-color: rgba(white,.5);
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 2;
+  }
+}
+
+.site-footer {
+  background-color: $gray-dark;
+  color: white;
+  font-size: 14px;
+  margin-top: 20px;
+  padding: 20px;
+  text-align: center;
+  @media (min-width: $screen-md) {
+    font-size: 16px;
+    padding-bottom: 5px;
+  }
+  li, p {
+    a {
+      border-bottom: 1px solid white;
+      color: white;
+      &:active,
+      &:focus,
+      &:hover {
+        border-bottom: 1px solid $brand-danger;
+        color: white;
+        text-decoration: none;
+      }
     }
   }
-  span {
-    display: inline-block;
-    height: 32px;
-    vertical-align: middle;
-    &.st {
-      position: relative;
-      top: -3px;
+  h1 {
+    margin: 0 0 15px;
+    a {
+      @include hide-text;
+      background-image: url(../img/tcg.svg);
+      height: 75px;
+      margin: 0;
+      width: 185px;
+      .no-svg & {
+        background-image: url(../img/tcg.png);
+      }
     }
+  }
+  li {
+    list-style: none;
+    b {
+      margin: 0 25px 0 30px;
+    }
+    b,
+    span {
+      display: none;
+      @media (min-width: $screen-md) {
+        display: inline-block;
+      }
+    }
+    br {
+      @media (min-width: $screen-md) {
+        display: none;
+      }
+    }
+  }
+  ul {
+    padding: 0;
+  }
+  .btn {
+    margin-top: 15px;
+    @media (min-width: $screen-md) {
+      margin-top: 0;
+    }
+  }
+  .fa {
+    margin-right: 7px;
   }
 }
 
@@ -194,8 +314,19 @@ share-this * {
   }
   h2 {
     color: white;
-    font-size: 24px;
+    font-size: 18px;
     margin: 20px 0 0;
+    @media (min-width: $screen-sm) {
+      font-size: 24px;
+    }
+  }
+  h3 {
+    color: white;
+    font-size: 16px;
+    margin: 20px 0 0;
+    @media (min-width: $screen-sm) {
+      font-size: 21px;
+    }
   }
   p {
     font-size: 14px;
@@ -214,6 +345,11 @@ share-this * {
       border-bottom: 1px solid $gray-light;
       color: $gray-light;
       text-decoration: none;
+    }
+  }
+  .collapse {
+    @media (min-width: $screen-sm) {
+      display: inline;
     }
   }
 }

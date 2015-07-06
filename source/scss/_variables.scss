@@ -6,7 +6,7 @@ $fa-font-path:        "../fonts" !default;
 
 
 @import url("//fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic");
-@import url("//fonts.googleapis.com/css?family=Raleway:500,800");
+@import url("//fonts.googleapis.com/css?family=Raleway:800");
 
 
 //== Colors
@@ -15,7 +15,7 @@ $fa-font-path:        "../fonts" !default;
 
 $gray-base:             #000 !default;
 $gray-darker:           lighten($gray-base, 13.5%) !default; // #222
-$gray-dark:             #212121 !default;
+$gray-dark:             #333 !default;
 $gray:                  #666 !default;
 $gray-light:            #bbb !default;
 $gray-lighter:          lighten($gray-base, 93.5%) !default; // #eee

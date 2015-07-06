@@ -17,13 +17,13 @@ app.directive("recallDetail", function($modal, $http, $log, utilityService) {
 				if (productType == "devices") productType = "device";
 				if (productType == "drugs") productType = "drug";
 
-				try {
-					$http.get("/fda/recalls/" + productType + "/" + eventId).
-						success(function(data, status, headers, config) {
-							if (data.status.error) {
-								throw data.status.message;
-							}
-
+				$http.get("/fda/recalls/" + productType + "/" + eventId).
+					success(function(data, status, headers, config) {
+						if (data.status.error) {
+							$log.error(data.status.message);
+							utilityService.addAlert(scope, "danger", "There is a system problem when retrieving this detail.");
+						}
+						else {
 							function reformatDate(rawDate) {
 								var parts = rawDate.toString().match(/^(\d{4})(\d{2})(\d{2})$/);
 								return parts[2] + "/" + parts[3] + "/" + parts[1];
@@ -31,7 +31,6 @@ app.directive("recallDetail", function($modal, $http, $log, utilityService) {
 
 							data.result.recall_initiation_date = reformatDate(data.result.recall_initiation_date);
 							data.result.report_date = reformatDate(data.result.report_date);
-
 							scope.details = data.result;
 
 						    $modal.open({
@@ -41,19 +40,16 @@ app.directive("recallDetail", function($modal, $http, $log, utilityService) {
 								size: "lg",
 								scope: scope
 						    });
+						}
 
-							// Close data table processing spinner.
-							$("#DataTables_Table_0_processing").hide();
-						}).
-						error(function(data, status, headers, config) {
-							throw JSON.stringify(data) + JSON.stringify(status);
-						});
-				}
-				catch(errorMessage) {
-					$log.error(errorMessage);
-					utilityService.addAlert($scope.modalAlerts, "danger", "There is a system problem when retrieving the detail.");
-				}
-
+						// Close data table processing spinner.
+						$("#DataTables_Table_0_processing").hide();
+					}).
+					error(function(data, status, headers, config) {
+						$log.error(JSON.stringify(data) + JSON.stringify(status));
+						utilityService.addAlert(scope, "danger", "There is a system problem when retrieving this detail.");
+						$("#DataTables_Table_0_processing").hide();
+					});
 			};
 		}
     }

@@ -23,7 +23,7 @@ function FdaService() {
 		"food": "Food"
 	};
 
-	// Convert a list of FDA API style nouns (drug, device, food) to 
+	// Convert a list of FDA API style nouns (drug, device, food) to
 	// the nouns used in the database (Drugs, Devices, Food)
 	this.convertFdaToDbNouns = function(nouns) {
 		var dbNouns = [];
@@ -65,44 +65,57 @@ function FdaService() {
 
 		// Convert list of nouns to match the db product_type column
 		var dbNouns = this.convertFdaToDbNouns(params.nouns);
+		params.productType = dbNouns;
+		if(params.productType.length === 0){
+			params.productType = [''];
+		}
 
-		var findAll = {
-			attributes: [[models.Sequelize.fn('COUNT', '*'), 'count'], ['product_type', 'productType'], [models.Sequelize.fn('LOWER', models.sequelize.col('state_abbr')), 'stateAbbr']],
-			where: {
-				productType: {
-					in: dbNouns
-				},
-				recallInitiationDate: {
-					$between: [params.fromDate, params.toDate]
-				}
-			},
-			group: ['product_type', 'state_abbr'],
-			order: [['state_abbr'], ['product_type']]
-		};
-
+		var coreWhere = ' AND product_type = ANY(:productType) AND recall_initiation_date between :fromDate AND :toDate ';
 		if(params.productDescription) {
-			findAll.where.productDescription = {
-				$ilike: '%' + params.productDescription + '%'
-			};
+			params.productDescription = '%' + params.productDescription + '%';
+			coreWhere += 'AND product_description ilike :productDescription ';
 		}
 		if(params.reasonForRecall) {
-			findAll.where.reasonForRecall = {
-				$ilike: '%' + params.reasonForRecall + '%'
-			};
+			params.reasonForRecall = '%' + params.reasonForRecall + '%';
+			coreWhere += 'AND reason_for_recall ilike :reasonForRecall ';
 		}
 		if(params.recallingFirm) {
-			findAll.where.recallingFirm = {
-				$ilike: '%' + params.recallingFirm + '%'
-			};
+			params.recallingFirm = '%' + params.recallingFirm + '%';
+			coreWhere += 'AND recalling_firm ilike :recallingFirm ';
 		}
 		if(params.classifications.length) {
-			findAll.where.classification = {
-				in: params.classifications
-			};
+			coreWhere += 'AND classification = ANY(:classifications) ';
 		}
+		/* The FDA Dataset had over 10,000 nationwide recalls. As a result, the original (and
+		simple) query ended up reviewing 580,000 rows and taking almost a second. In the following
+		query we have two parts: one that counts up the nationwide recalls (length of states
+		is 51) and the rest. By splitting the query in this way, we review less than 60,000 rows
+		and subsequently it is almost 10 times faster.
+		*/
+		var sql = 'SELECT COALESCE(nwide.count + swide.count, nwide.count, swide.count) count, ' +
+			'       COALESCE(swide.product_type, nwide.product_type) productType, ' +
+			'       lower(COALESCE(swide.state, nwide.state)) stateAbbr ' +
+			'FROM ' +
+			' (SELECT count, state_abbr state, product_type ' +
+			'  FROM (SELECT count(*) count, product_type ' +
+			'        FROM v_states_enforcements enforcements ' +
+			'        WHERE array_length(states,1) = 51 ' +
+			coreWhere +
+			'        GROUP BY product_type) as a1, ' +
+			'       states) as nwide ' +
+			' FULL OUTER JOIN    ' +
+			' (SELECT count(*) count, a.state, a.product_type ' +
+			'  FROM ' +
+			'    (SELECT unnest(states) state, product_type ' +
+			'     FROM v_states_enforcements enforcements ' +
+			'     WHERE array_length(states,1) < 51 ' +
+			coreWhere +
+			'    ) as a ' +
+			'  GROUP BY a.state, a.product_type) as swide ' +
+			'  ON swide.product_type = nwide.product_type AND swide.state = nwide.state ' +
+			' ORDER BY stateAbbr, productType';
 
-		// Query
-		models.enforcements.findAll(findAll).then(function(results) {
+		models.sequelize.query(sql, {replacements: params, type: models.sequelize.QueryTypes.SELECT}).then(function(results) {
 
 			// Init result object
 			var result = {
@@ -126,9 +139,9 @@ function FdaService() {
 
 			// Add each database result to the aggregate and noun result lists
 			results.forEach(function(cnt) {
-				addToStateCount(result.aggregate, cnt.stateAbbr, parseInt(cnt.dataValues.count));
+				addToStateCount(result.aggregate, cnt.stateabbr, parseInt(cnt.count));
 
-				addToStateCount(result.byNoun[serviceSelf.NOUN_DB_TO_FDA[cnt.productType]], cnt.stateAbbr, parseInt(cnt.dataValues.count));
+				addToStateCount(result.byNoun[serviceSelf.NOUN_DB_TO_FDA[cnt.producttype]], cnt.stateabbr, parseInt(cnt.count));
 			});
 
 			callback(null, result);
@@ -213,6 +226,9 @@ function FdaService() {
 		// Convert list of nouns to match the db product_type column
 		var dbNouns = this.convertFdaToDbNouns(params.nouns);
 		params.productType = dbNouns;
+		if(params.productType.length === 0){
+			params.productType = [''];
+		}
 
 		var raw = 'FROM v_states_enforcements WHERE product_type = ANY(:productType) AND recall_initiation_date between :fromDate AND :toDate ';
 		if(params.stateAbbr && params.stateAbbr.length) {

@@ -1,0 +1,102 @@
+
+/***************************************
+
+GSA Challenge TCG development Description and 
+ VM setup instructions
+ for a windows machine
+
+***************************************/
+
+
+Summary:  This project requires a development setup that quickly ramps coders into productivity.  Therefore, we have a pre-configured VM that bootstraps developers.  This VM stack is used used by all contributers and includes all technologies and testing utilities used for development, testing and deployment.  The stack includes:
+
+VM image - runnable by VMWare
+	Ubuntu 12.0.4
+	Node.js
+	Postgress
+	Express
+	Angular
+	JQuery
+	Bootstrap
+	Mocha
+	Karma
+	Winston
+	Google Analytics
+	SSH Keys
+	Git
+	
+Coding the project will organzied through typical stories documented in Redmine.tcg.com.
+
+The following instructions step a developer through setting up their environment.  
+
+Estimated time:  35 minutes.
+
+
+Software Requirements:
+VM Player :   http://www.vmware.com/products/player
+decompresssion tool:  http://www.7-zip.org/
+The TCG VM: Request location from Butch
+
+Setup Instuctions:
+
+1.  Download the gziped, TAR file
+	download = 20 minutes
+
+2.  gunzip and extract the tar file
+	gunzip = 10 minutes
+	tar -x = 4 minutes
+
+3.  Spin up the VM.
+       either:  double click on the ../gsadev/Ubuntu 64-bit.vmx
+       or:  run VMPlayer and select the .mvdk image
+       
+4.  login to the VM:  ubuntu / gsadev
+
+(ON MY MACHINE, TO GET OUT OF THE CONSOLE WINDOW AND GET MOUSE BACK, KEY:  CNTRL-ALT)
+
+5.  Get the IP address obtained by the VM when it booted:  run "ifconfig" 
+       write down your IP
+       
+6.  Kill Jenkins on this VM
+       run:  sudo bash  (enter password 'gsadev')
+       run:  service jenkins stop
+       run:  echo manual > /etc/init/jenkins.override
+             
+       cd to:  /var/lib/jenkins/jobs/GSA-Challenge
+       run:  chmod -R 777 workspace
+      
+       EXIT from bash
+       
+7.     cd to:  workspace
+                  
+       run: git clone gsachallenge@git.tcg.com:~/gsac       
+       cd to:  gsac             
+       git checkout develop
+       
+            
+8.  Open your windows explorer and map a drive to this VM for software development:
+   	on my computer, right mouse click and select "map network drive"
+   	enter:  \\[ip address of your VM]\code
+   	
+9.  back in the VM, fire up node  (Note this will run on port 80)
+        cd:  workspace/gsac
+        run:  sudo node index.js
+        verify:  open browser to http://[local IP of VM]/
+
+10.  Alter some code using windows and test locally using your own browser 
+      (quick test is to alter gsac/public/index.html)
+      
+	
+11.  git commit and push
+        
+        run: git config --global user.name "First Last"
+	run: git config --global user.mail me.last         
+        run: git commit -a (edit text file and save)      
+        run: git push origin develop
+        
+
+Results - changes made, pushed to GIT, auto deployed to integration server here:
+
+http://gsachallenge.tcg.com
+
+
