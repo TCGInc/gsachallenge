@@ -1,3 +1,6 @@
+/*global $*/
+/*global ga*/
+
 $(function() {
   $('[data-toggle="popover"]').popover({
     html: 'true',
