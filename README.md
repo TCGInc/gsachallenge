@@ -5,15 +5,38 @@ gsachallenge - TCG's GSA ADS 18F Challenge Submission
 
 Our GSA Agile Delivery Services submission allows users to search and
 navigate the openFDA: food, device, and drug enforcement data
-(available at http://open.fda.gov).  This tool exposes all API data
-elements but specializes on the US State through a State normalization
-routine (natural languate to states).  This application provides key
-services:
+(available at http://open.fda.gov).  The key contributions of this tool are:
 
- 1. routines to analyze and clean the natural language distribution
-    pattern, and
- 2. the resulting desktop and mobile UI to navigate recall data by state
-    (through a touch-interactive map of the United States).
+ 1. converting the original free-text (natural language) location
+    information in the FDA data into normalized state data,
+
+ 2. presenting the data in a responsive touch-interactive map of the
+    United States, and
+
+ 3. exposing the normalized data in a REST API.
+
+## Development Approach ##
+
+To successfully complete this prototype iteration, our team: 
+
+ * convened frequently with our external focus group, and utilized
+   human centered design techniques to inspire, ideate, and implement;
+
+ * used an Agile Scrum approach to review status, define daily
+   sprints, and prioritize work;
+
+ * leveraged existing development environments and technology
+   selections based on 18F's answers at the industry conference,
+   company capabilities, and this application's needs;
+
+ * tracked progress with an open source development tracker (Redmine),
+   while also triaging focus group feedback in real-time using a
+   Google spreadsheet; and
+
+ * utilized continuous integration, automated testing, and focus group
+   review to reduce cycle time, while improving the product's overall
+   quality.
+
 
 ## Architecture ##
 
@@ -28,44 +51,41 @@ Through initial user experience discussions, it quickly became clear
 that the desired end goal was a web-based responsive-design single
 page application that permitted free-text search, location-based
 search, and navigation of FDA enforcement data. This led to the
-following selection of component technologies (the licenses for the
-technologies are listed after their names):
+following selection of component technologies (the licenses are listed
+after their names):
 
- * Node.js (MIT License) - back-end environment - Node.js
-   allows us to simplify our development environment by using the same
-   language, JavaScript, across the full application stack. As a
-   foundational technology it addresses all three of the factors
-   through its use at 18F and our familiarity with it.
+ * Node.js (MIT License) - back-end environment - Allows us to
+   simplify our development environment by using the same language,
+   JavaScript, across the full application stack. As a foundational
+   technology it addresses all three of the factors through its use at
+   18F and our familiarity with it.
 
- * Express (MIT License) - node.js web application framework - We use
-   Express to provide the HTTP application requests and develop REST
-   services for data and search requests from the single-page
+ * Express (MIT License) - node.js web application framework -
+   Provides the HTTP application requests and REST service
+   infrastructure for data and search requests from the single-page
    application.
 
- * AngularJS (MIT License) - data binding (model-view) - Within our
-   single-page application, we rely on AngularJS to automatically
-   update our interactive widgets based upon retrieved data.
+ * AngularJS (MIT License) - data binding (model-view) - Automatically
+   updates our interactive widgets based upon retrieved data.
 
  * PostgreSQL (PostgreSQL License - OSI Approved) - relational
-   database - We use PostgreSQL for its flexibility, providing both
-   traditional relational database and JSON object storage. In
-   addition, we rely upon its built-in free text searching to quickly
-   slice through the FDA data.
+   database - Provides both traditional relational database and JSON
+   object storage. In addition, we rely upon its built-in free text
+   searching to quickly slice through the FDA data.
 
- * jQuery Datatables (MIT License) - Interactive table widget - By
-   itself, jQuery provides general DOM and CSS manipulation. The
-   Datatables plugin creates a highly polished and interactive table
-   for information display, sorting, and paging.
+ * jQuery Datatables (MIT License) - Interactive table widget - jQuery
+   provides general DOM and CSS manipulation. The Datatables plugin
+   creates a highly polished and interactive table for information
+   display, sorting, and paging.
 
- * Font Awesome (MIT License) - vector icons and font framework - This
-   framework simlifies the iconography used in our single-page
-   application.
+ * Font Awesome (MIT License) - vector icons and font framework -
+   Simplifies the iconography used in our single-page application.
 
  * Bootstrap (MIT License) - responsive layout - We use Bootstrap to
-   allows us to reformat the page structure and individual widgets to
-   support a variety of mobile and desktop configurations.
+   reformat the page structure and individual widgets to support a
+   variety of mobile and desktop configurations.
 
- * App.js (MIT License) - web widgets - App.js provides us a number of
+ * App.js (MIT License) - web widgets - Provides us a number of
    widgets (such as a date-picker) that behave like mobile native
    elements.
 
@@ -122,6 +142,86 @@ Interactive map application is an n-tier environment:
  * Presentation tier: Angular/Bootstrap/etc. single-page application
 
 ## Key Challenge Requirements ##
+### 24.0A Pool Three Evaluation Criteria and Evidence ###
+
+While Attachment E provides more narrative and context, we have
+provided a mapping of each evaluation criteria with its evidence here
+for convenience:
+
+ * Assigned one leader, gave that person authority and responsibility,
+   and held that person accountable for the quality of the prototype
+   submitted
+   * Project Charter in "docs/management" 
+   * Triage of development and user feedback issues in docs/tickets
+
+ * Assembled a multidisciplinary and collaborative team including a
+   minimum of 5 labor categories from the Development Pool labor
+   categories to design and develop the prototype
+   * Attachment C
+   * Project Charter in "docs/management" 
+
+ * Understand what people need, by including people in the prototype
+   development and design process
+   * Project Charter in "docs/management"
+   * UX artifacts in "docs/ux"
+
+ * Used at least three "human-centered design" techniques or tools
+   * UX artifacts in "docs/ux"
+
+ * Created or used a design style guide and/or a pattern library
+   * [Style Guide](http://18fchallenge.tcg.com/style-guide.html) 
+
+ * Performed usability tests with people
+   * "Focus Group Notes..." in "docs/ux"
+   * User acceptance issue/enhancement reports in "docs/tickets" 
+   * Redmine development tickets in "docs/tickets" 
+
+ * Used an iterative approach, where feedback informed subsequent work
+   or versions of the prototype
+   * See previous bullet.  
+
+ * Created a prototype that works on multiple devices, and presents a
+   responsive design
+   * User acceptance issue/enhancement reports in "docs/tickets" 
+   * CSS in "public/css" and index.html 
+
+ * Used at least five modern and open-source technologies, regardless
+   of architectural layer (frontend, backend, etc.)
+   * See previous "Architecture" section in this readme. 
+
+ * Deployed the prototype on an Infrastructure as a Service (IaaS) or
+   Platform as a Service (PaaS) provider, and indicated which provider
+   they used
+   * See "Use of IaaS" below.  
+
+ * Wrote unit tests for their code
+   * Screenshots in "docs/evidence"
+   * Tests in "tests" 
+
+ * Set up or used a continuous integration system to automate the
+   running of tests and continuously deployed their code to their IaaS
+   or PaaS provider
+   * Screenshots in "docs/evidence" 
+
+ * Set up or used configuration management
+   * [This project in Github](https://github.com/TCGInc/gsachallenge)
+
+ * Set up or used continuous monitoring
+   * Nagios and fail2ban screenshots in "docs/evidence" 
+
+ * Deploy their software in a container (i.e., utilized
+   operating-system-level virtualization)
+   * "docker" file in repository
+
+ * Provided sufficient documentation to install and run their
+   prototype on another machine
+   * "Installation_and_API_Notes.md" in root
+
+ * Prototype and underlying platforms used to create and run the
+   prototype are openly licensed and free of charge
+   * See "Public Domain" below
+   * See previous "Architecture" section
+
 ### Use of IaaS ###
 
 We deployed our prototype (18fchallenge.tcg.com) into Amazon's IaaS
@@ -136,264 +236,9 @@ our various environments.
 
 We have provided a mapping of our how team implemented the US  
 Digital Services Playbook's thirteen plays and their associated checklists  
-in our docs > us_digital_services_playbook_mapping folder. 
+in our "docs/us_digital_services_playbook_mapping" folder. 
 
-### Containerization -- Using Docker to easily get started ###
-
-In a traditional Docker deployment, individual services are split into
-separate containers (so that one main process is run in its own
-container). This generally encourages container reuse. For this
-prototype, we have an opportunity to leverage Docker for a
-non-traditional use case: to permit curious individuals to easily
-instantiate their own copy of the FDA Recall Interactive Map.
-
-To do this:
-
- * Please install docker for your environment:
-   https://docs.docker.com/installation/
- * Checkout or download a full copy of the project's source code from
-   github: https://github.com/TCGInc/gsachallenge
-
-        git clone https://github.com/TCGInc/gsachallenge.git
-
- * Change your directory to gsachallenge/docker and run the build
-   script to create the "gsachallenge" docker image (this requires a
-   user with sudo privileges):
-
-        cd gsachallenge/docker
-        ./build_docker.sh
-
- * You can then run the "gsachallenge" docker image ("-d" tells docker
-   to run the image in the background, while "-p 8888:80" maps the
-   container's web port, port 80, to localhost's port 8888):
-
-        sudo docker run -d -p 8888:80 gsachallenge
-
- * It takes a number of seconds for the docker image server to come
-   on-line, after which you can access the local copy of the FDA
-   Recall interactive map at http://localhost:8888/
-
- * NOTE: The resulting docker images have two mount points: /gsac for
-   the source code and /var/lib/postgres/9.4/main for the PostgreSQL
-   database. The easiest way to initialize these mount points is to
-   copy the directories from the completed docker file system. The
-   purpose of using the volume points is to allow updating the source
-   code and persisting data across docker environments.
-
-### How to get started (manually) ###
-
-Installing the FDA Recall Interactive Map from scratch is a bit more
-involved than building a Docker container. The following instructions
-assume an Ubuntu 12.04 LTS system (though it could be run on any
-environment that supports Postgres 9.4 and Node):
-
- * Get the latest source from github:
-
-        git clone https://github.com/TCGInc/gsachallenge.git
-
- * Install PostgreSQL 9.4 (or later). As root:
-
-        # Add the Postgres repository and install the key
-        echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list
-        wget --quiet -O - --no-check-certificate https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-        # install the packages
-        apt-get update
-        apt-get -y install postgresql-9.4 postgresql-contrib-9.4
-
- * Create the gsac user and database (update the authentication as
-   needed):
-
-        su - postgres
-        /etc/init.d/postgresql start
-        psql --command "CREATE USER gsac WITH SUPERUSER PASSWORD 'gsac123';"
-        createdb -O gsac gsac
-        exit
-
- * Import the database. The simplest method is to import the database
-   from the github project (alternatively you can re-import and clean
-   the openFDA data following the instructions in
-   gsachallenge/database/bootstrap/README.txt):
-
-        gunzip -c gsachallenge/docker/gsac.sql.gz | PGPASSWORD=gsac123 psql -U gsac
-
- * Install node and NPM (version 0.10 was necessary for Karma/Mocha):
-        
-        # Install node
-        wget http://nodejs.org/dist/v0.10.38/node-v0.10.38.tar.gz
-        tar -zxf node-v0.10.38.tar.gz
-        # Get compilation tools
-        apt-get -y install build-essential
-        # Compile node
-        cd node-v0.10.38 && ./configure && make install
-        cd ..
-        # Grab and install NPM
-        wget --no-check-certificate https://www.npmjs.org/install.sh && sh ./install.sh
-
- * Install node package dependencies:
-
-        cd gsachallenge
-        npm install
-        cd ..
-
- * Run node
-
-        cd gsachallenge
-        node index.js
-
-At this point you should be able to access the application at
-http://localhost/ .
-
-## Cron job to update the database from openFDA ##
-
-We download a copy of the openFDA data into a local PostgreSQL
-database so that we can massage the location information. Therefore,
-we want to make sure to periodically check openFDA for new data. The
-perl script database/bootstrap/fdaApiDataLoader.pl accomplishes this
-task. To install this script, first install the dependencies:
-
-    sudo apt-get install libdbd-pg-perl libxml-simple-perl libjson-pp-perl libdatetime-perl
-
-edit database/bootstrap/fdaApiDataLoader.pl to match your database
-password, and then add a cron job to periodically call the script. The following
-cron line will update the database at 3AM and assumes that the source is installed
-in /opt/gsachallenge:
-
-    0 3 * * * cd /opt/gsachallenge/database/bootstrap/; /usr/bin/perl fdaApiDataLoader.pl > /dev/null
-
-## Public API ##
-
-Two API endpoints are provided for accessing the results of our distribution pattern normalization effort. The first endpoint returns the states in which a product was distributed for a given category of products (drug, device, food). The second endpoint returns the states in which a product was distributed for a specific recall.
-
-### 1. /fda/recalls/[productType]/states
-
-Endpoint to get distribution states for all recalls of a given product type
-
-#### HTTP Method
-GET
-
-#### Parameters:
-
-| Parameter | Description |
-|----------|----------|
-|  productType  |  Provide one of the openFDA nouns (food, device, drug)  |
-
-#### Output Format:
-Every response will contain two properties:
-| Property | Description |
-|----------|----------|
-|  result  |  The result of the call, if successful.  |
-|  status  | Metadata about the result including if an error occurred and what the error was. |
-
-Response JSON structure:
-```json
-{
-    "result": {
-        "distributionStates": {
-            "<recall number>": [
-                "<state>",
-                ...
-            ],
-            "<recall number>": [
-                "<state>",
-                ...
-            ]
-        }
-    },
-    "status": {
-        "error": <true/false>,
-        "message": "<Error message if applicable>",
-    }
-}
-```
-*Note:* If a recalled product was distributed in all 50 states and Washington, DC only a single "NATIONWIDE" element will be included in the array.
-#### Sample output:
-```json
-{
-    "result": {
-        "distributionStates": {
-            "Z-0563-2014": [
-                "NATIONWIDE"
-            ],
-            "Z-0466-2014": [
-                "NATIONWIDE"
-            ],
-            "Z-0556-2014": [
-                "MO",
-                "NY",
-                "TN",
-                "WV"
-            ],
-			...
-		}
-    },
-    "status": {
-        "error": false
-    }
-}
-```
-
-### 2. /fda/recalls/[productType]/[recallNumber]/states
-
-Endpoint to get distribution states of a product in a specific recall
-
-#### HTTP Method
-GET
-
-#### Parameters:
-
-| Parameter | Description |
-|----------|----------|
-|  productType  |  Provide one of the openFDA nouns (food, device, drug)  |
-|  recallNumber  | Recall number of the recall  |
-
-#### Output Format:
-Every response will contain two properties:
-| Property | Description |
-|----------|----------|
-|  result  | The result of the call, if successful. This will be null if the recall number is not found.  |
-|  status  | Metadata about the result including if an error occurred and what the error was. |
-
-Response JSON structure:
-```json
-{
-    "result": {
-        "distributionStates": [
-            "<state>",
-            ...
-        ]
-    },
-    "status": {
-        "error": <true/false>,
-        "message": "<Error message if applicable>",
-    }
-}
-```
-*Note:* If a recalled product was distributed in all 50 states and Washington, DC only a single "NATIONWIDE" element will be included in the array.
-
-#### Sample output:
-```json
-{
-    "result": {
-        "distributionStates": [
-            "CO",
-            "FL",
-            "GA",
-            "MD",
-            "MO",
-            "OH",
-            "PA",
-            "TX",
-            "UT",
-            "WA"
-        ]
-    },
-    "status": {
-        "error": false
-    }
-}
-```
-
-## Public domain ##
+## Public Domain ##
 
 This project is in the worldwide [public domain](LICENSE.md).
 
