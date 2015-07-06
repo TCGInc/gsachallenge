@@ -66,7 +66,7 @@ module.exports = function (app) {
 			var states = req.body.stateAbbr;
 
 			states.forEach(function(state, idx) {
-				if(FdaService.statesAbbr.indexOf(state.trim().toLowerCase()) === -1) {
+				if(FdaService.STATES_ABBR.indexOf(state.trim().toLowerCase()) === -1) {
 					errors.push('Invalid stateAbbr (' + state + ').');
 				}
 

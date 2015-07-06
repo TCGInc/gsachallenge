@@ -8,7 +8,7 @@ module.exports = function (app) {
 
 	var FdaService = require('../services/FdaService')();
 
-	// Callback which sends a the result object or error as json
+	// Return a callback which sends the result object or error as json
 	function getSendResponseCallback(res) {
 		return function commonCallback(err, result) {
 			if(err) {
@@ -172,7 +172,7 @@ module.exports = function (app) {
 				var states = req.query.stateAbbr.split(",");
 
 				states.forEach(function(state, idx) {
-					if(FdaService.statesAbbr.indexOf(state.trim().toLowerCase()) === -1) {
+					if(FdaService.STATES_ABBR.indexOf(state.trim().toLowerCase()) === -1) {
 						preproc.errors.push('Invalid stateAbbr (' + state + ').');
 					}
 
@@ -233,6 +233,23 @@ module.exports = function (app) {
 
 	});
 
+	// Return our normalized states given a noun
+	app.get('/fda/recalls/:noun/states', function(req, res) {
+		validateAndRespond(req, res, function() {
+			var preproc = {
+				errors: []
+			};
+
+			if(!FdaService.isValidNoun(req.params.noun)) {
+				preproc.errors.push("Invalid noun '" + req.params.noun + "'.");
+			}
+
+			return preproc;
+		}, function() {
+			FdaService.getAllRecallStates(req.params.noun, getSendResponseCallback(res));
+		});
+	});
+
 	// Return a specific recall by noun and id
 	app.get('/fda/recalls/:noun/:id', function(req, res) {
 		validateAndRespond(req, res, function() {
@@ -247,6 +264,23 @@ module.exports = function (app) {
 			return preproc;
 		}, function() {
 			FdaService.getRecallEvent(req.params.noun, req.params.id, getSendResponseCallback(res));
+		});
+	});
+
+	// Return our normalized states given a noun and recall id
+	app.get('/fda/recalls/:noun/:id/states', function(req, res) {
+		validateAndRespond(req, res, function() {
+			var preproc = {
+				errors: []
+			};
+
+			if(!FdaService.isValidNoun(req.params.noun)) {
+				preproc.errors.push("Invalid noun '" + req.params.noun + "'.");
+			}
+
+			return preproc;
+		}, function() {
+			FdaService.getRecallStates(req.params.noun, req.params.id, getSendResponseCallback(res));
 		});
 	});
 };

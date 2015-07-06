@@ -83,9 +83,8 @@ function FdaService() {
 			params.recallingFirm = '%' + params.recallingFirm + '%';
 			coreWhere += 'AND recalling_firm ilike :recallingFirm ';
 		}
-		if(params.classifications.length) {
-			coreWhere += 'AND classification = ANY(:classifications) ';
-		}
+		coreWhere += 'AND classification = ANY(:classifications ::text[]) ';
+
 		/* The FDA Dataset had over 10,000 nationwide recalls. As a result, the original (and
 		simple) query ended up reviewing 580,000 rows and taking almost a second. In the following
 		query we have two parts: one that counts up the nationwide recalls (length of states
@@ -124,7 +123,7 @@ function FdaService() {
 			};
 
 			// Init state counts in aggregate result object
-			serviceSelf.statesAbbr.forEach(function (abbr) {
+			serviceSelf.STATES_ABBR.forEach(function (abbr) {
 				addToStateCount(result.aggregate, abbr, 0);
 			});
 
@@ -132,7 +131,7 @@ function FdaService() {
 			params.nouns.forEach(function(noun) {
 				result.byNoun[noun] = {};
 
-				serviceSelf.statesAbbr.forEach(function (abbr) {
+				serviceSelf.STATES_ABBR.forEach(function (abbr) {
 					addToStateCount(result.byNoun[noun], abbr, 0);
 				});
 			});
@@ -252,9 +251,7 @@ function FdaService() {
 			params.recallingFirm = '%' + params.recallingFirm + '%';
 			raw += 'AND recalling_firm ilike :recallingFirm ';
 		}
-		if(params.classifications.length) {
-			raw += 'AND classification = ANY(:classifications) ';
-		}
+		raw += 'AND classification = ANY(:classifications ::text[]) ';
 
 		// Get count of recalls matching criteria
 		models.sequelize.query('SELECT COUNT(*) AS count ' + raw, {replacements: params, type: models.sequelize.QueryTypes.SELECT}).then(function(count) {
@@ -301,7 +298,92 @@ function FdaService() {
 		});
 	};
 
-	this.statesAbbr = [
+	// Returns distribution states of a given recall. Returns NATIONWIDE if distributed in all states
+	// {
+	// 	distributionStates: [
+	// 		state,
+	// 		state,
+	// 		state,
+	// 		...
+	// 	]
+	// }
+	this.getRecallStates = function(noun, id, callback) {
+		var dbNoun = serviceSelf.NOUN_FDA_TO_DB[noun];
+
+		var params = {
+			productType: dbNoun,
+			eventId: id
+		};
+
+		// Get states for recall id
+		models.sequelize.query('SELECT states FROM v_states_enforcements WHERE product_type = :productType AND event_id = :eventId', {replacements: params, type: models.sequelize.QueryTypes.SELECT}).then(function(results) {
+			if(results && results.length) {
+
+				var result = {
+					distributionStates: results[0].states.length === serviceSelf.STATES_ABBR.length ? ['NATIONWIDE'] : results[0].states.sort()
+				};
+
+				callback(null, result);
+			}
+			else {
+				callback(null, null);
+			}
+		}, function(error) {
+			logger.error(error);
+			callback(error, null);
+		});
+	};
+
+	// Returns distribution states for all recalls in a given noun. Returns NATIONWIDE if distributed in all states
+	// {
+	// 	distributionStates: {
+	// 		event id: [
+	// 			state,
+	// 			state,
+	// 			...
+	// 		],
+	// 		event id: [
+	// 			...
+	// 		],
+	// 		...
+	// 	}
+	// }
+	this.getAllRecallStates = function(noun, callback) {
+		var dbNoun = serviceSelf.NOUN_FDA_TO_DB[noun];
+
+		var params = {
+			productType: dbNoun
+		};
+
+		// Get states for recall id
+		models.sequelize.query('SELECT event_id, states FROM v_states_enforcements WHERE product_type = :productType', {replacements: params, type: models.sequelize.QueryTypes.SELECT}).then(function(results) {
+			if(results && results.length) {
+				var distributions = {};
+				var result = {
+					distributionStates: distributions
+				};
+
+				results.forEach(function(res) {
+					if(res.states.length === serviceSelf.STATES_ABBR.length) {
+						distributions[res.event_id] = ['NATIONWIDE'];
+					}
+					else {
+						distributions[res.event_id] = res.states.sort();
+					}
+				});
+
+				callback(null, result);
+			}
+			else {
+				callback(null, null);
+			}
+		}, function(error) {
+			logger.error(error);
+			callback(error, null);
+		});
+	};
+
+	this.STATES_ABBR = [
 		'al', 'ak', 'az', 'ar', 'ca', 'co', 'ct', 'de', 'fl', 'ga',
 		'hi', 'id', 'il', 'in', 'ia', 'ks', 'ky', 'la', 'me', 'md',
 		'ma', 'mi', 'mn', 'ms', 'mo', 'mt', 'ne', 'nv', 'nh', 'nj',

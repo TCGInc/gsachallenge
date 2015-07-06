@@ -1,3 +1,6 @@
+/*global browser*/
+/*global by*/
+/*global element*/
 'use strict';
 
 module.exports = {
@@ -16,7 +19,7 @@ module.exports = {
 		element.all(by.css('select#states option')).then(function(options) {
 			options.forEach(function(v) {
 				v.getText().then(function(text) {
-					if (text.indexOf(state) != -1) {
+					if (text.indexOf(state) !== -1) {
 						v.click();
 					}
 				});
@@ -48,8 +51,9 @@ module.exports = {
 	getRandomString: function (characterLength) {
 		var randomText = "";
 		var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-		for (var i = 0; i < characterLength; i++)
+		for (var i = 0; i < characterLength; i++) {
 			randomText += possible.charAt(Math.floor(Math.random() * possible.length));
+		}
 		return randomText;
 	}
 };
