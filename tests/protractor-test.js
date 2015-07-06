@@ -1,3 +1,8 @@
+/*global expect*/
+/*global by*/
+/*global element*/
+'use strict';
+
 describe('GSA Challenge Demo App', function() {
 
 	var dashboard = require('../tests/protractor-dashboard.js');

@@ -453,7 +453,7 @@ describe('FDA data tests', function() {
 				.expect(200)
 				.expect(function(res) {
 					res.body.should.have.property('result');
-					res.body.result.should.have.property('distribution_states', ['NATIONWIDE']);
+					res.body.result.should.have.property('distributionStates', ['NATIONWIDE']);
 					res.body.should.have.property('status');
 					res.body.status.error.should.be.false;
 					(res.body.status.message === undefined).should.be.true;
@@ -501,7 +501,7 @@ describe('FDA data tests', function() {
 				.expect(200)
 				.expect(function(res) {
 					res.body.should.have.property('result');
-					res.body.result.should.have.property('distribution_states');
+					res.body.result.should.have.property('distributionStates');
 					res.body.should.have.property('status');
 					res.body.status.error.should.be.false;
 					(res.body.status.message === undefined).should.be.true;

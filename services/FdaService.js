@@ -301,6 +301,15 @@ function FdaService() {
 		});
 	};
 
+	// Returns distribution states of a given recall. Returns NATIONWIDE if distributed in all states
+	// {
+	// 	distributionStates: [
+	// 		state,
+	// 		state,
+	// 		state,
+	// 		...
+	// 	]
+	// }
 	this.getRecallStates = function(noun, id, callback) {
 		var dbNoun = serviceSelf.NOUN_FDA_TO_DB[noun];
 
@@ -314,8 +323,8 @@ function FdaService() {
 			if(results && results.length) {
 
 				var result = {
-					distribution_states: results[0].states.length == serviceSelf.STATES_ABBR.length ? ['NATIONWIDE'] : results[0].states
-				}
+					distributionStates: results[0].states.length === serviceSelf.STATES_ABBR.length ? ['NATIONWIDE'] : results[0].states
+				};
 
 				callback(null, result);
 			}
@@ -328,6 +337,20 @@ function FdaService() {
 		});
 	};
 
+	// Returns distribution states for all recalls in a given noun. Returns NATIONWIDE if distributed in all states
+	// {
+	// 	distributionStates: {
+	// 		event id: [
+	// 			state,
+	// 			state,
+	// 			...
+	// 		],
+	// 		event id: [
+	// 			...
+	// 		],
+	// 		...
+	// 	}
+	// }
 	this.getAllRecallStates = function(noun, callback) {
 		var dbNoun = serviceSelf.NOUN_FDA_TO_DB[noun];
 
@@ -340,15 +363,15 @@ function FdaService() {
 			if(results && results.length) {
 				var distributions = {};
 				var result = {
-					distribution_states: distributions
+					distributionStates: distributions
 				};
 
-				results.forEach(function(result) {
-					if(result.states.length == serviceSelf.STATES_ABBR.length) {
-						distributions[result.event_id] = ['NATIONWIDE']
+				results.forEach(function(res) {
+					if(res.states.length === serviceSelf.STATES_ABBR.length) {
+						distributions[res.event_id] = ['NATIONWIDE'];
 					}
 					else {
-						distributions[result.event_id] = result.states;
+						distributions[res.event_id] = res.states;
 					}
 				});
 
@@ -361,7 +384,7 @@ function FdaService() {
 			logger.error(error);
 			callback(error, null);
 		});
-	}
+	};
 
 	this.STATES_ABBR = [
 		'al', 'ak', 'az', 'ar', 'ca', 'co', 'ct', 'de', 'fl', 'ga',
