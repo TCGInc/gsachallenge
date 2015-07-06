@@ -277,9 +277,9 @@ app.controller("dashboardController", ["$location", "$scope", "$http", "$log", "
 				$('td:eq(4)', nRow).text(parts[1] + "/" + parts[2] + "/" + parts[0]);
 			}
 	    	$('td', nRow).bind('click', function() {
-  			ga('send', 'event', 'Recall Detail', 'Click', aData.event_id);
+  			ga('send', 'event', 'Recall Detail', 'Click', aData.recall_number);
 				$("recall-detail span")
-					.data("event_id", aData.event_id)
+					.data("recall_number", aData.recall_number)
 					.data("product_type", aData.product_type.toLowerCase())
 					.click();
 	    	});

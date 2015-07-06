@@ -399,13 +399,13 @@ describe('FDA data tests', function() {
 	describe('GET /fda/recalls/:noun/:id', function() {
 		it('returns the recall', function(done) {
 			request(app.app)
-				.get('/fda/recalls/drug/65125')
+				.get('/fda/recalls/drug/D-560-2013')
 				.set('Accept', 'application/json')
 				.expect('Content-Type', /json/)
 				.expect(200)
 				.expect(function(res) {
 					res.body.should.have.property('result');
-					res.body.result.should.have.property('event_id', '65125');
+					res.body.result.should.have.property('eventId', '65125');
 					res.body.should.have.property('status');
 					res.body.status.error.should.be.false;
 					(res.body.status.message === undefined).should.be.true;
@@ -415,7 +415,7 @@ describe('FDA data tests', function() {
 
 		it('returns nothing', function(done) {
 			request(app.app)
-				.get('/fda/recalls/drug/99999999999999')
+				.get('/fda/recalls/drug/ZZZZZZ')
 				.set('Accept', 'application/json')
 				.expect('Content-Type', /json/)
 				.expect(200)
@@ -430,7 +430,7 @@ describe('FDA data tests', function() {
 
 		it('throws error about noun', function(done) {
 			request(app.app)
-				.get('/fda/recalls/invalidnoun/65125')
+				.get('/fda/recalls/invalidnoun/"Z-2264-2014')
 				.set('Accept', 'application/json')
 				.expect('Content-Type', /json/)
 				.expect(200)
@@ -447,7 +447,7 @@ describe('FDA data tests', function() {
 	describe('GET /fda/recalls/:noun/:id/states', function() {
 		it('returns the states', function(done) {
 			request(app.app)
-				.get('/fda/recalls/device/62278/states')
+				.get('/fda/recalls/device/Z-2194-2012/states')
 				.set('Accept', 'application/json')
 				.expect('Content-Type', /json/)
 				.expect(200)
@@ -463,7 +463,7 @@ describe('FDA data tests', function() {
 
 		it('returns nothing', function(done) {
 			request(app.app)
-				.get('/fda/recalls/device/999999999/states')
+				.get('/fda/recalls/device/ZZZZZZZZZ/states')
 				.set('Accept', 'application/json')
 				.expect('Content-Type', /json/)
 				.expect(200)
@@ -478,7 +478,7 @@ describe('FDA data tests', function() {
 
 		it('throws error about noun', function(done) {
 			request(app.app)
-				.get('/fda/recalls/invalidnoun/62278/states')
+				.get('/fda/recalls/invalidnoun/Z-2194-2012/states')
 				.set('Accept', 'application/json')
 				.expect('Content-Type', /json/)
 				.expect(200)
