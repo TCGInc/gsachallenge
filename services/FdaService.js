@@ -320,7 +320,7 @@ function FdaService() {
 			if(results && results.length) {
 
 				var result = {
-					distributionStates: results[0].states.length === serviceSelf.STATES_ABBR.length ? ['NATIONWIDE'] : results[0].states
+					distributionStates: results[0].states.length === serviceSelf.STATES_ABBR.length ? ['NATIONWIDE'] : results[0].states.sort()
 				};
 
 				callback(null, result);
@@ -368,7 +368,7 @@ function FdaService() {
 						distributions[res.event_id] = ['NATIONWIDE'];
 					}
 					else {
-						distributions[res.event_id] = res.states;
+						distributions[res.event_id] = res.states.sort();
 					}
 				});
 
