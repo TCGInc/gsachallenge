@@ -1,54 +1,54 @@
 <script type="text/ng-template" id="recallDetail.html">
     <div class="modal-header">
         <button type="button" class="close" ng-click="close()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title detail-title"><span class="prod-type type-{{details['product_type'] | lowercase}}"></span>{{details['product_type']}} Recall</h4>
+        <h4 class="modal-title detail-title"><span class="prod-type type-{{details['productType'] | lowercase}}"></span>{{details['productType']}} Recall</h4>
     </div>
     <alert ng-repeat="alert in modalAlerts" type="{{alert.type}}" close="closeModalAlert($index)">{{alert.msg}}</alert>
     <div class="modal-body recall-report">
         <div class="row">
             <div class="col-sm-6">
-                <h5>{{details['recall_number']}} ({{details['event_id']}})</h5>
+                <h5>{{details['recallNumber']}} ({{details['eventId']}})</h5>
             </div>
             <div class="col-sm-6">
-                <h5 class="init-date">{{details['recall_initiation_date']}}</h5>
+                <h5 class="init-date">{{details['recallInitiationDate'] | date : 'shortDate'}}</h5>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-4">
-                <strong>{{details['recalling_firm']}}</strong><br>
+                <strong>{{details['recallingFirm']}}</strong><br>
                 {{details['city']}}, {{details['state']}}
             </div>
             <div class="col-sm-4">
                 <strong>{{details['classification']}}</strong><br>
-                {{details['voluntary_mandated']}}
+                {{details['voluntaryMandated']}}
             </div>
             <div class="col-sm-4">
                 <strong>{{details['status']}}</strong><br>
-                Report Date: {{details['report_date']}}
+                Report Date: {{details['reportDate'] | date : 'shortDate'}}
             </div>
         </div>
         <div class="row">
             <div class="col-xs-12">
                 <strong>Product:</strong><br>
-                {{details['product_description']}}
+                {{details['productDescription']}}
             </div>
         </div>
         <div class="row">
             <div class="col-xs-12">
                 <strong>Reason:</strong><br>
-                {{details['reason_for_recall']}}
+                {{details['reasonForRecall']}}
             </div>
         </div>
         <div class="row">
             <div class="col-xs-12">
                 <strong>Distributed:</strong><br>
-                {{details['distribution_pattern']}}
+                {{details['distributionPattern']}}
             </div>
         </div>
         <div class="row">
             <div class="col-xs-12">
                 <strong>Quantity:</strong><br>
-                {{details['product_quantity']}}
+                {{details['productQuantity']}}
             </div>
         </div>
     </div>

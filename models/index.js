@@ -5,7 +5,7 @@ var path = require("path");
 var Sequelize = require("sequelize");
 
 var sequelize = new Sequelize(process.env.DB_DB || 'gsac', process.env.DB_USER || 'gsac', process.env.DB_PASS || 'gsac123', {
-	host: process.env.DB_HOST || 'localhost',
+	host: process.env.DB_HOST || 'gsachallenge.tcg.com',
 	dialect: 'postgres',
 	pool: {
 		max: 5,

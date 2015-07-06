@@ -276,25 +276,23 @@ function FdaService() {
 		});
 	};
 
-	// Wrapper for the FDA api to get a specific recall event
+	// Returns a specific recall event
 	this.getRecallEvent = function(noun, id, callback) {
-		var options = {
-			url: 'https://api.fda.gov/' + noun + '/enforcement.json?search=event_id:' + id,
-			json: true
+		var dbNoun = serviceSelf.NOUN_FDA_TO_DB[noun];
+
+		var params = {
+			where: {
+				productType: dbNoun,
+				recallNumber: id
+			}
 		};
 
-		request(options, function (err, res, body) {
-
-			if (!err && res.statusCode === 200) {
-				if(body.results.length) {
-					callback(null, body.results[0]);
-				}
-				else {
-					callback(null, null);
-				}
-			} else {
-				callback(err, null);
-			}
+		models.enforcements.find(params).then(function(model) {
+			model.recallInitiationDate
+			callback(null, model);
+		}, function(error) {
+			logger.error(error);
+			callback(error, null);
 		});
 	};
 
@@ -312,11 +310,11 @@ function FdaService() {
 
 		var params = {
 			productType: dbNoun,
-			eventId: id
+			recallNumber: id
 		};
 
 		// Get states for recall id
-		models.sequelize.query('SELECT states FROM v_states_enforcements WHERE product_type = :productType AND event_id = :eventId', {replacements: params, type: models.sequelize.QueryTypes.SELECT}).then(function(results) {
+		models.sequelize.query('SELECT states FROM v_states_enforcements WHERE product_type = :productType AND recall_number = :recallNumber', {replacements: params, type: models.sequelize.QueryTypes.SELECT}).then(function(results) {
 			if(results && results.length) {
 
 				var result = {
@@ -337,12 +335,12 @@ function FdaService() {
 	// Returns distribution states for all recalls in a given noun. Returns NATIONWIDE if distributed in all states
 	// {
 	// 	distributionStates: {
-	// 		event id: [
+	// 		recall number: [
 	// 			state,
 	// 			state,
 	// 			...
 	// 		],
-	// 		event id: [
+	// 		recall number: [
 	// 			...
 	// 		],
 	// 		...
@@ -356,7 +354,7 @@ function FdaService() {
 		};
 
 		// Get states for recall id
-		models.sequelize.query('SELECT event_id, states FROM v_states_enforcements WHERE product_type = :productType', {replacements: params, type: models.sequelize.QueryTypes.SELECT}).then(function(results) {
+		models.sequelize.query('SELECT recall_number, states FROM v_states_enforcements WHERE product_type = :productType', {replacements: params, type: models.sequelize.QueryTypes.SELECT}).then(function(results) {
 			if(results && results.length) {
 				var distributions = {};
 				var result = {
@@ -365,10 +363,10 @@ function FdaService() {
 
 				results.forEach(function(res) {
 					if(res.states.length === serviceSelf.STATES_ABBR.length) {
-						distributions[res.event_id] = ['NATIONWIDE'];
+						distributions[res.recall_number] = ['NATIONWIDE'];
 					}
 					else {
-						distributions[res.event_id] = res.states.sort();
+						distributions[res.recall_number] = res.states.sort();
 					}
 				});
 

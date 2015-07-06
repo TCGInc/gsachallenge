@@ -10,14 +10,14 @@ app.directive("recallDetail", function($modal, $http, $log, utilityService) {
 				$("#DataTables_Table_0_processing").show();
 
 				// Retrive query variables from the HTML element.
-				var eventId = $("span", element).data("event_id");
+				var recallNumber = $("span", element).data("recall_number");
 				var productType = $("span", element).data("product_type");
 
 				// Reformat product type to meet endpoint specs.
 				if (productType == "devices") productType = "device";
 				if (productType == "drugs") productType = "drug";
 
-				$http.get("/fda/recalls/" + productType + "/" + eventId).
+				$http.get("/fda/recalls/" + productType + "/" + recallNumber).
 					success(function(data, status, headers, config) {
 						if (data.status.error) {
 							$log.error(data.status.message);
@@ -29,8 +29,8 @@ app.directive("recallDetail", function($modal, $http, $log, utilityService) {
 								return parts[2] + "/" + parts[3] + "/" + parts[1];
 							}
 
-							data.result.recall_initiation_date = reformatDate(data.result.recall_initiation_date);
-							data.result.report_date = reformatDate(data.result.report_date);
+							//data.result.recall_initiation_date = reformatDate(data.result.recall_initiation_date);
+							//data.result.report_date = reformatDate(data.result.report_date);
 							scope.details = data.result;
 
 						    $modal.open({
